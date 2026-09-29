@@ -1008,7 +1008,7 @@ Error: could not start the worker 3 thread: <OS error>. The system refused a new
 
 `worker N` is `writer` or `tagger N` for a tagged BAM. A tagged-BAM run removes
 its partial output and a parquet run removes its files, as for any other
-failure (code only; `validation/demos/resource-limits` describes the limits).
+failure (code only; `alnbase-validation/demos/resource-limits` describes the limits).
 
 **Failure and partial outputs**:
 

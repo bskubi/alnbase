@@ -1,7 +1,0 @@
-# One tag naming the strand of origin the run settled on, so each record's call can be
-# read straight off the BAM. The values are the four strand names themselves.
-[tag.YV.strand]
-OT   = ["OT"]
-CTOT = ["CTOT"]
-OB   = ["OB"]
-CTOB = ["CTOB"]

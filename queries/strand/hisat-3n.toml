@@ -16,7 +16,7 @@
 # is no separate PBAT file; see directional.toml for why.)
 #
 # Checked 2026-09-17 against real HISAT-3N 2.2.1-3n-0.0.3 output, built from commit f5dda37
-# (validation/demos/hisat-3n-strand), paired-end. On ordinary partly converted reads all
+# (alnbase-validation/demos/hisat-3n-strand), paired-end. On ordinary partly converted reads all
 # eight records were called with the conversion strand and the sequenced direction their
 # origin implies; YZ was the same on both mates of every pair, 0x10 agreed with how SEQ was
 # really stored on every record, and SEQ was reference-forward throughout. A sweep of 456

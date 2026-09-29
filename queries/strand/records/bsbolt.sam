@@ -2,7 +2,7 @@
 @SQ	SN:chr1	LN:1000
 @CO	Records for queries/strand/bsbolt.toml
 @CO	queries/strand/bsbolt.toml -- YS alone; note 0x10 is inverted on the two _G2A records.
-@CO	The FLAGs are the ones BSBolt itself wrote in validation/demos/bsbolt-strand: 0x10 and
+@CO	The FLAGs are the ones BSBolt itself wrote in alnbase-validation/demos/bsbolt-strand: 0x10 and
 @CO	0x20 both come from the Crick contig rather than from orientation, so neither is set on
 @CO	a Watson record and both are set on a Crick one. 0x2 is absent there only because bwa
 @CO	had too few pairs to estimate an insert size, so it is left off here too.

@@ -275,7 +275,7 @@ No run-time checking of the declared rule against the FLAG. A counter for record
 declared sequenced direction disagrees with 0x10 was proposed and rejected: there are too
 many ways for an input to be wrong to chase each with its own detector, and reading the
 aligner's source to find and document the bug — as was done for BSBolt in
-`validation/demos/premethyst-bugs/README.md` — is the productive form of the same work. The
+`alnbase-validation/demos/premethyst-bugs/README.md` — is the productive form of the same work. The
 shipped file per aligner is where that knowledge lands.
 
 ## Open questions

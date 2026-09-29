@@ -1,7 +1,0 @@
-# Bismark 0.25.1 (Perl), the version most published data used; aligner + extractor.
-name: bismark
-channels: [conda-forge, bioconda]
-dependencies:
-  - bismark=0.25.1
-  - bowtie2
-  - samtools=1.24

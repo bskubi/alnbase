@@ -19,7 +19,7 @@
 # started at. That applies to every single-end run, including --pbat and --non_directional.
 #
 # --non_directional paired-end is covered as well, checked 2026-09-17 against a real
-# --non_directional BAM (validation/demos/bismark-nondirectional-pe): four pairs, one per
+# --non_directional BAM (alnbase-validation/demos/bismark-nondirectional-pe): four pairs, one per
 # strand of origin, all eight records called as the strand they were sequenced from.
 # Bismark swaps 0x40 and 0x80 on CTOT and CTOB pairs so browsers do not call them
 # discordant (:8818-8867), and the run confirms it: on those two pairs every record's mate
@@ -30,7 +30,7 @@
 # prefer.
 #
 # --pbat is covered too, and this is the file to use for it in both layouts, checked
-# 2026-09-18 against real --pbat output (validation/demos/pbat-strand): 402 paired-end and
+# 2026-09-18 against real --pbat output (alnbase-validation/demos/pbat-strand): 402 paired-end and
 # 201 single-end records, every one called as the strand it was built from. Do not reason
 # from the library here. Under --pbat every pair is CTOT or CTOB, so the 0x40/0x80 swap above
 # applies to all of them and the paired-end BAM arrives in the directional arrangement --

@@ -12,7 +12,7 @@
 # paired-end run emits all four ZS values, because read 2 is searched against the
 # complementary chain (align.cpp:93-94).
 #
-# Checked 2026-09-17 against real BSMAP 2.90 output (validation/demos/bsmap-strand), both
+# Checked 2026-09-17 against real BSMAP 2.90 output (alnbase-validation/demos/bsmap-strand), both
 # layouts: two pairs at -n 0 and four at -n 1. All four ZS values did appear at -n 0, from
 # two pairs alone, so a two-way reading of ZS would be wrong on half of a directional
 # library's records. The FLAG was conformant on all twelve records -- 0x10 set exactly when

@@ -2,7 +2,7 @@
 
 `MethylDackel extract`, commit `3c77bda` (GitHub master; the bioconda release has
 bugs this one fixes, so validation builds from source). Sources cited below are
-that tree. Background: `docs/design/research/methylation-tools.md` §2.
+that tree. Background: `alnbase-validation/docs/research/methylation-tools.md` §2.
 
 Run it with `--insertions skip`, which is alnbase's default: MethylDackel walks a
 pileup and never sees an inserted base, and skipping keeps the reference bases on
@@ -74,5 +74,5 @@ mates overlap, which is why the comparison runs on fragments without overlap; se
 ## Known bugs
 
 Confirmed by execution, with reproductions in
-`validation/demos/methyldackel-bugs/`. That directory's `run.sh` reads this
+`alnbase-validation/demos/methyldackel-bugs/`. That directory's `run.sh` reads this
 preset's `queries.toml` as the mirror it compares against.

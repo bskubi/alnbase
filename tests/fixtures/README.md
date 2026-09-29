@@ -1,7 +1,7 @@
 # Hand-written fixtures
 
-The rest of the suite rests on two legs, and they share a blind spot. Simulated truth
-([`../sims/`](../sims/)) says what the reads were made from, but a simulator only produces
+The validation suite (alnbase-validation) rests on two legs, and they share a blind spot.
+Simulated truth (alnbase-validation `sims/`) says what the reads were made from, but a simulator only produces
 the cases it models, and BSReadSim models none of the ones below. Mirroring says alnbase
 and Bismark or MethylDackel agree call for call, which is worth a great deal — and says
 nothing at all if the two are wrong the same way.

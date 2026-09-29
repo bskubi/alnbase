@@ -1,9 +1,0 @@
-# MethSCAn (methscan prepare), GitHub master 72f38fb (= 1.1.0): the reader that
-# ScaleMethyl's write_bismark.py links to for its .cov output.
-name: methscan
-channels: [conda-forge]
-dependencies:
-  - python=3.11
-  - pip
-  - pip:
-    - "git+https://github.com/anders-biostat/MethSCAn@72f38fbec6995b849726dd508765e327c298a307"

@@ -3,7 +3,7 @@
 @CO	Records for queries/strand/bs-seeker2-se.toml
 @CO	queries/strand/bs-seeker2-se.toml -- XO, single-end only. The FLAGs are the ones
 @CO	BS-Seeker2 writes, inverted on the two RC classes, seen in
-@CO	validation/demos/bs-seeker2-strand.
+@CO	alnbase-validation/demos/bs-seeker2-strand.
 @CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
 @CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
 @CO	conversion strand. Anything after the first "/" is a label for the reader.

@@ -12,13 +12,13 @@
 # on every *_G2A record -- read 2 of every pair in a directional library. Any rule that
 # reads 0x10 on this input, including alnbase's own historical one, calls those records on
 # the wrong strand and counts off_5p from the wrong end
-# (validation/demos/premethyst-bugs/README.md). Deriving both from YS avoids the bit
+# (alnbase-validation/demos/premethyst-bugs/README.md). Deriving both from YS avoids the bit
 # entirely, so BSBolt BAMs need no FLAG repair before alnbase reads them.
 #
 # Valid for -UN (non-directional) unchanged. Note 0x20 is also never set on a Watson
 # record (:854,868); nothing here depends on it.
 #
-# Checked 2026-09-17 against real BSBolt BAMs (validation/demos/bsbolt-strand), both
+# Checked 2026-09-17 against real BSBolt BAMs (alnbase-validation/demos/bsbolt-strand), both
 # layouts: two pairs directional and four under -UN, every record called as the strand it
 # was sequenced from, and SEQ reference-forward throughout. The inverted bit was counted
 # rather than assumed -- 0x10 contradicts how SEQ was really stored on every *_G2A record

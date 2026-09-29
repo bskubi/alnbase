@@ -36,7 +36,7 @@ A preset is a specification, not a test harness. It is not run against the tool 
 names and its outputs are not diffed against that tool's: reproducing another
 caller's numbers is not a goal here, and where a tool has a correctness bug,
 agreeing with it would mean reproducing the bug. Bugs are demonstrated separately,
-by minimal reproductions under `validation/demos/`, which isolate a defect better
+by minimal reproductions under `alnbase-validation/demos/`, which isolate a defect better
 than a dataset-wide diff that mixes every other difference in with it.
 
 ## Running one

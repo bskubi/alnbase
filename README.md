@@ -103,15 +103,28 @@ samtools collate -O in.bam | alnbase overlap - - \
 - [`docs/alnbase.md`](docs/alnbase.md) — the full guide: the column model, the
   query file format, every command, and how to inspect a query before running
   it.
-- [`docs/reference/06-aggregation.md`](docs/reference/06-aggregation.md) — turning
-  hit rows into per-position, window, per-cell and per-read products with
-  `alnbase-agg`, a Python package in [`python/`](python/) that compiles a
-  declarative recipe into one DuckDB query.
-  [`python/examples/cg_ch.toml`](python/examples/cg_ch.toml) is a commented recipe
-  to copy.
+- [`python/README.md`](python/README.md) — `alnbase-agg`, which turns hit rows
+  into the files other tools read (bedGraph, Bismark `.cov`, CGmap, Amethyst H5, …)
+  by running a SQL script in DuckDB.
 - [`docs/bismark-xm.toml`](docs/bismark-xm.toml) — Bismark's eight `XM` codes,
   including `u`/`U` for cytosines whose context the reference does not
   determine. A working file to copy.
+
+## Repository layout
+
+| directory | what it holds |
+| --- | --- |
+| `src/` | the alnbase binary, with its unit tests |
+| `docs/` | the guide, the CLI reference, the reference manual and its runnable examples, and design notes |
+| `python/` | `alnbase-agg`, the export package, with its formats, examples and tests |
+| `queries/strand/` | one strand rule per aligner; every run needs one |
+| `presets/` | Bismark's and MethylDackel's extraction, written out as a query file and a SQL script |
+| `tests/` | checks outside `cargo test`: an independent coordinate oracle and hand-written edge-case fixtures |
+| `scripts/` | developer utilities |
+
+Comparisons against other tools, reproductions of their bugs, and research notes on
+them are in a separate repository,
+[alnbase-validation](https://github.com/bskubi/alnbase-validation).
 
 ## Before trusting the output
 

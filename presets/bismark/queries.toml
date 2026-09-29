@@ -6,7 +6,7 @@
 # 
 # Bismark (v0.25.1) makes its call at alignment time (`bismark`,
 # `extract_corresponding_genomic_sequence_single_end` and `methylation_call`;
-# docs/design/research/methylation-tools.md §1.2). In alnbase's walk every read is
+# alnbase-validation/docs/research/methylation-tools.md §1.2). In alnbase's walk every read is
 # oriented along its conversion strand, so a cytosine call is always "reference C,
 # read C (methylated) or T (unconverted)", and its context is the columns after it.
 # 

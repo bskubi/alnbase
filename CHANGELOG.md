@@ -206,7 +206,7 @@ rule for assays that convert nothing and loses the one for PBAT libraries.
   still count from the sequencer's 5' end. Reaching for `directional.toml` instead makes the
   walk follow each fragment's orientation and reverse-complements roughly half the data.
 - **`queries/strand/pbat.toml` is deleted**, along with its records file, on the evidence of
-  `validation/demos/pbat-strand/`. The rule was a correct reading of a conformant BAM from a
+  `alnbase-validation/demos/pbat-strand/`. The rule was a correct reading of a conformant BAM from a
   PBAT library, but no such BAM is produced: both pipelines built for PBAT put the reads back
   into the directional arrangement first, Bismark `--pbat` by swapping 0x40 and 0x80 on every
   pair (under `--pbat` every pair is CTOT or CTOB) and methylpy `--pbat` by exchanging the
@@ -224,7 +224,7 @@ BISCUIT's `YD` distinguishes two states, so the file declares the conversion str
 tag and the sequenced direction from FLAG 0x10. That second half is a claim about the
 aligner, not a default, and it is measured now.
 
-- **`validation/demos/biscuit-strand/`** builds four read pairs, one per strand of origin and
+- **`alnbase-validation/demos/biscuit-strand/`** builds four read pairs, one per strand of origin and
   each named for the strand its read 1 was sequenced from, and aligns them with BISCUIT 1.10.3
   twice: two pairs with `-b 1`, and all four with the default non-directional `-b 0`. Every
   record's conversion strand and sequenced direction is the one its strand of origin implies
@@ -246,7 +246,7 @@ aligner, not a default, and it is measured now.
 - The same slip in `alnbase query --help`, which offered `CT = ["OT", "CTOB"]` as a
   `[tag.XX.strand]` table "by conversion strand", is corrected to `CT = ["OT", "CTOT"]`,
   matching the reference docs and `queries/strand/bismark.toml`. That was the last surviving
-  copy of the inversion `docs/design/research/strand-determination.md` found in the Bismark
+  copy of the inversion `alnbase-validation/docs/research/strand-determination.md` found in the Bismark
   example; the example itself was fixed when the survey reported it.
 - FLAG 0x2 is absent from every record in the demo, and the README says explicitly that this
   is not a BISCUIT behaviour: its bwa-derived aligner had too few pairs to estimate an insert
@@ -258,7 +258,7 @@ aligner, not a default, and it is measured now.
 `queries/strand/bsbolt.toml` exists because BSBolt's FLAG 0x10 is wrong. That had only ever
 been read out of BSBolt's source; it is measured now.
 
-- **`validation/demos/bsbolt-strand/`** builds four read pairs, one per strand of origin and
+- **`alnbase-validation/demos/bsbolt-strand/`** builds four read pairs, one per strand of origin and
   each named for the strand its read 1 was sequenced from, and aligns them with BSBolt 1.6.0
   twice: two pairs as a directional library, which already exercises all four `YS` values,
   and all four under `-UN`. Every record comes back as the strand it was sequenced from, and
@@ -272,7 +272,7 @@ been read out of BSBolt's source; it is measured now.
 - **`queries/strand/records/bsbolt.sam`** had shipped with conformant FLAGs (99/147/83/163).
   It now carries the ones BSBolt itself writes (65/129/113/177), where 0x10 and 0x20 both
   follow the Crick contig rather than orientation.
-- **`validation/demos/premethyst-bugs/`**' note that BSBolt paired-end BAMs need their
+- **`alnbase-validation/demos/premethyst-bugs/`**' note that BSBolt paired-end BAMs need their
   read-2 FLAGs repaired before alnbase reads them is superseded: with `bsbolt.toml` they do
   not.
 
@@ -281,7 +281,7 @@ been read out of BSBolt's source; it is measured now.
 `--non_directional` paired-end was the one layout `queries/strand/bismark.toml` declined to
 claim. It is claimed now, on the strength of a Bismark BAM rather than a reading of Bismark.
 
-- **`validation/demos/bismark-nondirectional-pe/`** builds four read pairs, one per strand
+- **`alnbase-validation/demos/bismark-nondirectional-pe/`** builds four read pairs, one per strand
   of origin and each named for the strand its read 1 was sequenced from, and aligns them
   with Bismark 0.25.1 under `--non_directional`. All eight records come back as the strand
   they were sequenced from, and alnbase's scan line (0 of 480 compared bases differ from
@@ -300,7 +300,7 @@ claim. It is claimed now, on the strength of a Bismark BAM rather than a reading
 The first shipped strand rule checked against its own aligner rather than against the
 reading of that aligner's source it came from.
 
-- **`validation/demos/bs-seeker2-strand/`** aligns four reads — one per strand of origin,
+- **`alnbase-validation/demos/bs-seeker2-strand/`** aligns four reads — one per strand of origin,
   each named for the strand it was built from — with BS-Seeker2 2.1.8 and runs the BAM
   through `queries/strand/bs-seeker2-se.toml`. Every read comes back as the strand it came
   from, and alnbase's own scan line (0 of 240 compared bases differ from the reference)
@@ -536,7 +536,7 @@ Fixes the Bismark `XR` example, which named the wrong strands.
   the read itself shows, so it is `CT` for the two converted originals, OT and
   OB, and `GA` for their complements, CTOT and CTOB — which is what the
   surrounding comment always said and what real Bismark BAMs contain
-  (`docs/design/research/strand-determination.md`). The strand tables are user
+  (`alnbase-validation/docs/research/strand-determination.md`). The strand tables are user
   configuration, so no code changed and no behaviour did; what changed is the
   example everyone copies, the `bismark-tags` reference example's output, and
   the independent model it is checked against, which had the same inversion.

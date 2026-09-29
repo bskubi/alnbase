@@ -54,7 +54,7 @@ methylpy's output BAM is conformant and carries no conversion tag, so it is
 directional arrangement: paired-end methylpy exchanges the two mate files
 (`call_mc_pe.py:225-227`), single-end it reverse-complements every read
 (`utilities.py:817`). Read from methylpy 1.4.7 in
-`../../validation/demos/pbat-strand/`, not run.
+`alnbase-validation/demos/pbat-strand/`, not run.
 
 "All four strands" means the rule yields OT, CTOT, OB or CTOB, from which the walk
 direction and the read's sequenced direction both follow by biology; "conversion strand"
@@ -63,7 +63,7 @@ and the sequenced direction separately and reports the strand of origin as unkno
 
 The split those inputs cannot cross is a strand and its own PCR copy, which hit the same
 converted contig — measured on BISCUIT's output in
-`../../validation/demos/biscuit-strand/`, where `YD:A:f` held OT and CTOT and `YD:A:r` held
+`alnbase-validation/demos/biscuit-strand/`, where `YD:A:f` held OT and CTOT and `YD:A:r` held
 OB and CTOB. Such a file has to read FLAG 0x10 for the sequenced direction, which is a claim
 about the aligner and not a default; on BISCUIT the bit agreed with how SEQ was really stored
 on every record of both a `-b 1` and a `-b 0` run.
@@ -72,7 +72,7 @@ Two rules can apply to one BAM. bwa-meth is directional-only, so `bwameth.toml` 
 `directional.toml` both describe its output — one from the aligner's own evidence, the other
 from the library's design — and on a real bwa-meth BAM they put the same anchors at the same
 reference positions, 0 disagreements over 29 and 37 hits in
-`../../validation/demos/bwameth-strand/`. `directional.toml` additionally names the strand of
+`alnbase-validation/demos/bwameth-strand/`. `directional.toml` additionally names the strand of
 origin. That agreement is a consistency check, not a correctness one: both rules trace back to
 the contig bwa-meth chose, so they agree even on a record it placed on the wrong strand.
 
@@ -81,7 +81,7 @@ compare it against; Bismark supplies one. Its `XR`/`XG` names all four strands f
 own conversion and the index that won, which is evidence the FLAG rule never touches, so on a
 directional Bismark BAM the two calls are independent and the fixture holds a third answer
 besides. Over 402 paired-end and 202 single-end records in
-`../../validation/demos/directional-strand/`, both rules called every record the strand it was
+`alnbase-validation/demos/directional-strand/`, both rules called every record the strand it was
 built from and disagreed about none. That run is also why the file now names Bismark
 single-end: Bismark sets 0x10 there from the genome conversion rather than from SEQ's
 orientation, but on a directional library the two coincide, because matching the bottom-strand
@@ -94,7 +94,7 @@ on CTOT and CTOB pairs and under `--pbat` every pair is one of those; methylpy `
 exchanges the mate files (`call_mc_pe.py:225-227`) or reverse-complements every read
 (`utilities.py:817`). So **Bismark `--pbat` output is `bismark.toml` in both layouts**, and
 `directional.toml` is also correct for the paired-end arm. On real `--pbat` output in
-`../../validation/demos/pbat-strand/` the deleted PBAT rule named the opposite conversion
+`alnbase-validation/demos/pbat-strand/` the deleted PBAT rule named the opposite conversion
 strand on 402 of 402 paired-end records — 17.09% of read bases then differ from the reference,
 against 0.00% under `directional.toml`. The library does not determine the rule; the BAM does,
 and that demo is the worked example of the difference.
@@ -117,7 +117,7 @@ and bwa-meth's name the converted contig the read was aligned to; HISAT-3N align
 three-letter indexes and then decides by counting the read's C→T and G→A differences, so its
 `YZ` is a conclusion drawn from the same alignment the caller is about to read. It is right
 whenever there is one difference to count — measured over 456 reads in
-`../../validation/demos/hisat-3n-strand/` — and when the counts tie, which a fully methylated
+`alnbase-validation/demos/hisat-3n-strand/` — and when the counts tie, which a fully methylated
 read makes them do, it falls back to the strand a directional library would have had. That is
 wrong for every read from a PCR copy, half the sweep, at the right position and MAPQ 60. A
 rule cannot see the difference, because the tag looks the same either way.
@@ -126,7 +126,7 @@ A tag can also say less than its name suggests. dnmtools' `CV` is the conversion
 shows as it came off the sequencer, not the reference strand that carried it, so the
 conversion strand is `CV` combined with 0x10 — which is how abismal, the aligner that writes
 the tag, computes it itself. `dnmtools.toml` originally read `CV` alone and was backwards on
-every reverse record, 4 of 8 in `../../validation/demos/dnmtools-strand/`; it now declares the
+every reverse record, 4 of 8 in `alnbase-validation/demos/dnmtools-strand/`; it now declares the
 combination and gets 0 of 8 wrong. Outside abismal's PBAT modes `CV` is the mate number and
 nothing more, the same emptiness bwa-meth's `YC` has.
 
@@ -135,13 +135,13 @@ strand from a literal table of FLAG integers (`caller.py:235-267`), and `astair.
 table written out, so an alnbase run mirrors asTair's extraction rather than describing an
 aligner's output. Mirroring it reproduces asTair's own `.mods` file — 261 positions in common,
 none disagreeing, mod 710 against 711 and unmod 1954 against 1954 in
-`../../validation/demos/astair-strand/`. A rule of this shape has to be total in a way a tag
+`alnbase-validation/demos/astair-strand/`. A rule of this shape has to be total in a way a tag
 rule does not: any FLAG outside the six is neither strand, so the file declares `unknown` for
 them and the run skips and counts them, two records of 410 in that demo.
 
 A four-way tag can still be wrong. BSMAP's `ZS` names all four strands, and at `-n 1` it
 names the opposite conversion strand for some copy-strand reads, measured at 10 of 228 in
-`../../validation/demos/bsmap-strand/`. A rule reports what the tag says, which is the
+`alnbase-validation/demos/bsmap-strand/`. A rule reports what the tag says, which is the
 honest thing for it to do; what surfaces such a record is alnbase's count of read bases that
 differ from the reference, which stops being zero on data that is otherwise clean.
 
@@ -150,18 +150,18 @@ differ from the reference, which stops being zero on data that is otherwise clea
 Three of these aligners set FLAG 0x10 from the reference strand the read matched rather than
 from the read's own orientation: Bismark single-end, BSBolt on every `*_G2A` record (read 2
 of every directional pair, measured on its output in
-`../../validation/demos/bsbolt-strand/`), and BS-Seeker2's `RC` classes (measured in
-`../../validation/demos/bs-seeker2-strand/`). All of them still store SEQ in
+`alnbase-validation/demos/bsbolt-strand/`), and BS-Seeker2's `RC` classes (measured in
+`alnbase-validation/demos/bs-seeker2-strand/`). All of them still store SEQ in
 the reference's forward orientation, so a rule that names the strand of origin places and
 orients the record correctly without consulting 0x10 at all — which is why the file for each
 of those three is a plain declaration and not a special case. `bsbolt.toml` in particular
 removes the need to repair read-2 FLAGs before alnbase reads a BSBolt BAM
-(`../../validation/demos/premethyst-bugs/README.md`).
+(`alnbase-validation/demos/premethyst-bugs/README.md`).
 
 The mate bit can lie in the same way. Under `--non_directional`, Bismark swaps 0x40 and
 0x80 on CTOT and CTOB pairs so that browsers do not discard them as discordant, so on those
 pairs every record's mate bit names the other mate — measured on its output in
-`../../validation/demos/bismark-nondirectional-pe/`, four of eight records. `XR` and `XG`
+`alnbase-validation/demos/bismark-nondirectional-pe/`, four of eight records. `XR` and `XG`
 stay with the record they describe, so `bismark.toml` is unaffected; a rule that inferred
 the strand from "read 1 or read 2" would have those records backwards. Under `--pbat` every
 pair is CTOT or CTOB, so the swap applies to all of them, which is what makes a PBAT-shaped
@@ -180,7 +180,7 @@ rule wrong on that output and `directional.toml` right.
   record, drops the paired bit and writes `CV:A:T` on everything.
 - **Copy-strand reads in a bwa-meth BAM.** bwa-meth accepts directional libraries only. A
   CTOT or CTOB read that reaches it is usually dropped, but the fraction that maps — 32 of 228
-  in `../../validation/demos/bwameth-strand/` — is placed on the opposite conversion strand at
+  in `alnbase-validation/demos/bwameth-strand/` — is placed on the opposite conversion strand at
   the right position and high MAPQ, with nothing in the record to mark it. No rule can recover
   that; the library has to be filtered before alignment.
 - **A non-directional pair in a TAPS BAM.** asTair is directional-only by design, so this is
@@ -188,7 +188,7 @@ rule wrong on that output and `directional.toml` right.
   which is why it handles the CTOT and CTOB *records* that are read 2 of every ordinary
   fragment; a pair whose read 1 came off the copy strand inverts that orientation and both
   mates are counted on the wrong side, measured at 4 of 8 probe records in
-  `../../validation/demos/astair-strand/`. Nothing upstream catches it, since TAPS leaves the
+  `alnbase-validation/demos/astair-strand/`. Nothing upstream catches it, since TAPS leaves the
   reference unconverted, and only 7 of 24480 read bases differ from the reference, so
   alnbase's mismatch count does not mark it either. The fix is upstream of alignment.
 - **Non-directional input with no evidence at all** — Bismark `--non_directional` under

@@ -13,7 +13,7 @@
 # strand taken from the aligner's own evidence rather than from the library's design; use
 # directional.toml when you need conv_strand or a Bismark-style [tag.XX.strand].
 #
-# Checked 2026-09-17 against real bwa-meth 0.2.10 output (validation/demos/bwameth-strand),
+# Checked 2026-09-17 against real bwa-meth 0.2.10 output (alnbase-validation/demos/bwameth-strand),
 # paired-end. On a directional library all four records were called with the conversion
 # strand and the sequenced direction their origin implies; 0x10 agreed with how SEQ was
 # really stored on every mapped record, and SEQ was reference-forward throughout. YD was the

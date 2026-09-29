@@ -3,7 +3,7 @@
 # For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with --directional-mapping,
 # methylpy's own output BAM, Bismark 0.25.1 directional paired-end or single-end, BSMAP 2.90
 # -n 0 single-end -- any input where the library is directional and FLAG 0x10 means what SAM
-# says. Read 2026-09-17; evidence in docs/design/research/strand-determination.md, case 1.
+# says. Read 2026-09-17; evidence in alnbase-validation/docs/research/strand-determination.md, case 1.
 #
 # This is alnbase's historical `--library directional` rule, written out: the read number
 # picks the converted original or its complement, and 0x10 picks the strand. An unpaired
@@ -19,7 +19,7 @@
 # since under --pbat every pair is CTOT or CTOB (bismark:8818-8866), and methylpy --pbat
 # exchanges the mate files (call_mc_pe.py:225-227) or reverse-complements every read
 # (utilities.py:817). So this file is the right one for Bismark --pbat paired-end output --
-# measured at 0 of 402 records wrong in validation/demos/pbat-strand, where a rule written for
+# measured at 0 of 402 records wrong in alnbase-validation/demos/pbat-strand, where a rule written for
 # the PBAT library was wrong on all 402 -- with the caveat that it names the strand of origin
 # as the converted original where the read actually came off the copy. Use bismark.toml when
 # the origin matters.
@@ -32,7 +32,7 @@
 # For an assay with no conversion at all, use unconverted.toml: this file would make the walk
 # follow each fragment's orientation and reverse-complement roughly half the records.
 #
-# Checked 2026-09-18 against real Bismark output (validation/demos/directional-strand), which
+# Checked 2026-09-18 against real Bismark output (alnbase-validation/demos/directional-strand), which
 # is the only way to check a rule that reads no tag: Bismark's XR/XG names all four strands
 # from evidence this file never touches, so the two rules are independent, and the fixture
 # knows which strand each read was built from. Over 402 paired-end and 202 single-end records

@@ -43,7 +43,7 @@ came from — so they catch a rule that stops agreeing with its own documentatio
 that swaps two conditions, a condition that stops parsing the way it used to, a strand
 declared and then forgotten. They cannot catch the aligner changing what it writes, because
 they are not that aligner's output. Only running a real BAM through the rule can, which is
-what the validation demos are for. `validation/demos/bs-seeker2-strand/` is the first of
+what the validation demos are for. `alnbase-validation/demos/bs-seeker2-strand/` is the first of
 those, and it found something these records had wrong: they carried the FLAGs a conformant
 aligner would write on the two `RC` classes rather than the inverted ones BS-Seeker2
 writes. No call changed, because that rule reads only `XO` -- but a records file exists to

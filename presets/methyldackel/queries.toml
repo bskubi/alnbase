@@ -2,7 +2,7 @@
 #
 # MethylDackel walks a pileup: at a reference C (reference G for reads from the bottom
 # strand) it counts a read C as methylated and a read T as unmethylated, and takes the
-# context from the reference alone (docs/design/research/methylation-tools.md §2):
+# context from the reference alone (alnbase-validation/docs/research/methylation-tools.md §2):
 #   - the next reference base G is CpG; otherwise the base after decides: G is CHG,
 #     anything else CHH;
 #   - an N counts as "not G", and so does a position past the end of the contig, so a

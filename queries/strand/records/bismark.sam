@@ -4,7 +4,7 @@
 @CO	queries/strand/bismark.toml -- the XR/XG table in that file's comment, both layouts.
 @CO	The four pe rows also cover --non_directional paired-end: there a CTOT pair writes
 @CO	the same two records as an OT pair with the mate bit swapped between them, so no
-@CO	new combination appears (validation/demos/bismark-nondirectional-pe).
+@CO	new combination appears (alnbase-validation/demos/bismark-nondirectional-pe).
 @CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
 @CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
 @CO	conversion strand. Anything after the first "/" is a label for the reader.

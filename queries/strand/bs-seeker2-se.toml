@@ -2,7 +2,7 @@
 #
 # Read 2026-09-17 from BS-Seeker2 GitHub master (bs_single_end.py:415-432; FLAG built at
 # output.py:54-61), and run against BS-Seeker2 v2.1.8's own output the same day
-# (validation/demos/bs-seeker2-strand): one read per strand of origin, each called as the
+# (alnbase-validation/demos/bs-seeker2-strand): one read per strand of origin, each called as the
 # strand it was built from.
 #
 # XO's first character is the genome strand and the second the read's direction within it,

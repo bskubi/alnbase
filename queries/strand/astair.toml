@@ -12,7 +12,7 @@
 # bottom. This file is that table, written out, so that an alnbase run can mirror asTair's
 # own extraction exactly.
 #
-# Checked 2026-09-18 against real asTair output (validation/demos/astair-strand), on a TAPS
+# Checked 2026-09-18 against real asTair output (alnbase-validation/demos/astair-strand), on a TAPS
 # fixture of 205 pairs aligned with bwa mem. Mirroring the table reproduces asTair's own
 # .mods file: 261 positions in common, none disagreeing, mod 710/711 and unmod 1954/1954.
 # The one position alnbase reports that asTair does not is the bottom-strand cytosine of a CG

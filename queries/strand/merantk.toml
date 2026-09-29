@@ -9,7 +9,7 @@
 # not map at all.
 #
 # Checked 2026-09-17 against real meRanGh and meRanGs output
-# (validation/demos/merantk-strand), on a fixture with one pair from each of the four strands
+# (alnbase-validation/demos/merantk-strand), on a fixture with one pair from each of the four strands
 # of origin. Both tools were run three ways -- paired-end, -f alone and -r alone -- and all
 # twenty mapped records were called the strand they were really sequenced from.
 #

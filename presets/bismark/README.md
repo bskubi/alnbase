@@ -4,7 +4,7 @@ Bismark v0.25.1. The call is made at alignment time, in `bismark`
 (`extract_corresponding_genomic_sequence_single_end`, `methylation_call`), and
 written into the read's `XM` tag; `bismark_methylation_extractor` then reads that
 tag rather than the reference. Background:
-`docs/design/research/methylation-tools.md` §1.2.
+`alnbase-validation/docs/research/methylation-tools.md` §1.2.
 
 Run it with `--insertions emit`. Bismark's context is read-projected, so it sees
 inserted bases, and an inserted base is what makes a context unknown (rule 3

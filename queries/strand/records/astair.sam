@@ -3,7 +3,7 @@
 @CO	Records for queries/strand/astair.toml
 @CO	queries/strand/astair.toml -- asTair's own table of six FLAG integers, plus the unknown arm
 @CO	that makes it total. FLAG 65 is what bwa gave the not-proper pair in
-@CO	validation/demos/astair-strand; without the arm the run aborts on it.
+@CO	alnbase-validation/demos/astair-strand; without the arm the run aborts on it.
 @CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
 @CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
 @CO	conversion strand. Anything after the first "/" is a label for the reader.

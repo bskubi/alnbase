@@ -15,7 +15,7 @@
 # on the forward strand carries C>T against the reference, so '+'; the same read mapped
 # reverse reads G>A against the reference, so '-'.
 #
-# Checked 2026-09-17 against real abismal 3.3.0 output (validation/demos/dnmtools-strand),
+# Checked 2026-09-17 against real abismal 3.3.0 output (alnbase-validation/demos/dnmtools-strand),
 # paired-end, on a fixture with one pair from each of the four strands of origin. Under -R
 # all eight records mapped at NM:i:0 and this rule gave every one the conversion strand its
 # origin implies. An earlier version of this file read CV alone -- CV:A:T as '+' -- and was

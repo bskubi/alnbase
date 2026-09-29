@@ -8,4 +8,4 @@ fall to `Cx` rather than being called CHH or silently dropped.
 This is the boundary where off-by-one errors live. BISCUIT's `pileup` builds half-open
 windows that end at the contig length, so it loses the last position of every contig and,
 with `-g`, of every region; a run sharded into adjacent regions loses one position per
-shard (BC-18, reproduced in `../demos/biscuit-bugs/`).
+shard (BC-18, reproduced in `alnbase-validation/demos/biscuit-bugs/`).

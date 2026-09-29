@@ -38,7 +38,7 @@ read 1 records, tagged 1, skipped 0
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:2^I# For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with -
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:3^I# methylpy's own output BAM, Bismark 0.25.1 directional paired-en
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:4^I# single-end -- any input where the library is directional and FL
-@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:5^I# says. Read 2026-09-17; evidence in docs/design/research/strand-
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:5^I# says. Read 2026-09-17; evidence in alnbase-validation/docs/rese
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:6^I#
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:7^I# This is alnbase's historical `--library directional` rule, writ
 @CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:8^I# picks the converted original or its complement, and 0x10 picks 
@@ -70,7 +70,7 @@ read 1 records, tagged 1, skipped 0
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:2^I# For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:3^I# methylpy's own output BAM, Bismark 0.25.1 directional paired-
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:4^I# single-end -- any input where the library is directional and 
-@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:5^I# says. Read 2026-09-17; evidence in docs/design/research/stran
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:5^I# says. Read 2026-09-17; evidence in alnbase-validation/docs/re
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:6^I#
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:7^I# This is alnbase's historical `--library directional` rule, wr
 @CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:8^I# picks the converted original or its complement, and 0x10 pick
