@@ -1,7 +1,7 @@
 @HD	VN:1.6	SO:unsorted
 @SQ	SN:chr1	LN:1000
-@CO	Records for queries/strand/unconverted.toml
-@CO	queries/strand/unconverted.toml -- no conversion chemistry, so every record walks the reference forward and 0x10 says only which way the read was sequenced. The original strand is forward on everything.
+@CO	Records for query/strand/unconverted.toml
+@CO	query/strand/unconverted.toml -- no conversion chemistry, so every record walks the reference forward and 0x10 says only which way the read was sequenced. The original strand is forward on everything.
 @CO	These records carry no aux tag, because the rule reads none. They are the four
 @CO	paired layouts and both single-end orientations: the original strand is forward on
 @CO	every one of them, which is the point, and only the aligned direction moves.

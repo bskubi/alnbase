@@ -215,7 +215,7 @@
 //!   output carries the columns that you filter on downstream. alnbase does not
 //!   add a second implementation of a filter that another program already has.
 //! - **Knowledge ships as query files, not as code.** The rules for each aligner
-//!   and each protocol live in `queries/`, which users can read and fork.
+//!   and each protocol live in `query/`, which users can read and fork.
 //!   Support for a new aligner therefore never needs a recompile.
 
 mod alignment;

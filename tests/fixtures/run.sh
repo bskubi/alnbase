@@ -10,7 +10,7 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 : "${PY:?set PY}" "${ALNBASE:?set ALNBASE}"
-STRAND="$HERE/../../queries/strand/directional.toml"
+STRAND="$HERE/../../query/strand/directional.toml"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 

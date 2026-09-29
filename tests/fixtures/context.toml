@@ -7,7 +7,7 @@
 #
 # Bismark's rule is different: it projects the reference through the read's
 # CIGAR, so a deleted base is skipped and an inserted one makes the context
-# unknown. ../../presets/bismark/queries.toml writes that rule out, and
+# unknown. ../../query/extract/bismark.toml writes that rule out, and
 # indel_reference_rule/README.md shows the two disagreeing on purpose.
 #
 # Run without `--insertions emit`, so an inserted read base contributes no

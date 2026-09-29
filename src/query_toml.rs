@@ -117,7 +117,7 @@ order, and a query may name a pattern declared below it.
                     forward, reverse and unknown; exactly one key must match
                     each record, and `unknown` skips it. The strand of origin
                     follows from the pair. Rules for each surveyed aligner ship
-                    in `queries/strand/`.
+                    in `query/strand/`.
 
 Codes in a row are uppercase IUPAC, plus:
   .  -  Z     gap                 =   both sides the same unambiguous base
@@ -761,7 +761,7 @@ GA = ["OB", "CTOB"]
     }
 
     /// A strand rule is a query file like any other, so a file that holds
-    /// nothing else is still a file: `queries/strand/*.toml` are all like this.
+    /// nothing else is still a file: `query/strand/*.toml` are all like this.
     #[test]
     fn a_file_of_only_a_strand_rule_parses() {
         let f = parse_file(
@@ -780,7 +780,7 @@ GA = ["OB", "CTOB"]
     /// the engine's own tests. The files are the interface.
     #[test]
     fn every_shipped_strand_rule_parses() {
-        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand");
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("query/strand");
         let mut seen = 0;
         for entry in std::fs::read_dir(&dir).unwrap() {
             let path = entry.unwrap().path();

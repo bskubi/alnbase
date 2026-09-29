@@ -1,7 +1,7 @@
 //! Recover a read's strand from a rule that the user declares. The program
 //! never assumes the strand.
 //!
-//! The rules ship as query files under `queries/strand/`, one per aligner.
+//! The rules ship as query files under `query/strand/`, one per aligner.
 //! This module is the engine those files drive: it parses the two
 //! `[strand.*]` tables into a [`StrandRule`] and answers, per record, the two
 //! things the walk needs.
@@ -611,7 +611,7 @@ impl StrandRule {
     ///
     /// This is what a rule promises to be able to say. A file that declares a
     /// key it never gets asked about is a claim with nothing behind it, so the
-    /// record fixtures under `queries/strand/records/` are required to exercise
+    /// record fixtures under `query/strand/records/` are required to exercise
     /// each of these at least once.
     pub fn declared_keys(&self) -> Vec<String> {
         let original = self.original.iter().map(|(k, _)| format!("original.{}", k.name()));
@@ -704,7 +704,7 @@ fn reject_identical<'a>(
     Ok(())
 }
 
-/// The shipped `queries/strand/directional.toml`, parsed once.
+/// The shipped `query/strand/directional.toml`, parsed once.
 ///
 /// Tests everywhere in the crate need a strand for the walk, and they take it
 /// from the file a user would take it from: a fixture written out in Rust
@@ -716,7 +716,7 @@ pub fn directional() -> std::sync::Arc<StrandRule> {
     static RULE: OnceLock<Arc<StrandRule>> = OnceLock::new();
     RULE.get_or_init(|| {
         let path =
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand/directional.toml");
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("query/strand/directional.toml");
         let src = std::fs::read_to_string(&path).expect("the shipped directional rule");
         let (original, aligned) = tables_of(&src);
         let rule = StrandRule::from_tables(&original, &aligned)
@@ -762,7 +762,7 @@ mod tests {
     const FLAG_ALIGNED: &[(&str, &str)] = &[("forward", "not is_reverse"), ("reverse", "is_reverse")];
 
     /// The rule for a conformant directional library, which is
-    /// `queries/strand/directional.toml`.
+    /// `query/strand/directional.toml`.
     fn directional() -> StrandRule {
         StrandRule::from_tables(
             &pairs(&[
@@ -1073,9 +1073,9 @@ mod tests {
     /// file that the engine cannot load is a broken release, not a broken test.
     #[test]
     fn every_shipped_rule_compiles() {
-        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand");
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("query/strand");
         let mut seen = 0;
-        for entry in std::fs::read_dir(&dir).expect("queries/strand exists") {
+        for entry in std::fs::read_dir(&dir).expect("query/strand exists") {
             let path = entry.unwrap().path();
             if path.extension().and_then(|e| e.to_str()) != Some("toml") {
                 continue;
@@ -1086,7 +1086,7 @@ mod tests {
             StrandRule::from_tables(&original, &aligned).unwrap_or_else(|e| panic!("{name}: {e}"));
             seen += 1;
         }
-        assert_eq!(seen, 12, "queries/strand should hold twelve rules");
+        assert_eq!(seen, 12, "query/strand should hold twelve rules");
     }
 
     /// `directional.toml` is what `--library directional` did, and the point of
@@ -1171,7 +1171,7 @@ mod tests {
     fn every_shipped_rule_calls_its_records_as_their_names_say() {
         use rust_htslib::bam::Read as _;
 
-        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand");
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("query/strand");
         let mut seen = 0;
         for entry in std::fs::read_dir(&root).unwrap() {
             let path = entry.unwrap().path();
@@ -1215,7 +1215,7 @@ mod tests {
     /// something that no longer ships, and would otherwise sit there passing.
     #[test]
     fn no_records_file_outlives_its_rule() {
-        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand");
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("query/strand");
         for entry in std::fs::read_dir(root.join("records")).unwrap() {
             let path = entry.unwrap().path();
             if path.extension().and_then(|e| e.to_str()) != Some("sam") {

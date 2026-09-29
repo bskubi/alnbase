@@ -1,7 +1,7 @@
 @HD	VN:1.6	SO:unsorted
 @SQ	SN:chr1	LN:1000
-@CO	Records for queries/strand/astair.toml
-@CO	queries/strand/astair.toml -- asTair's own table of six FLAG integers, plus the unknown arm
+@CO	Records for query/strand/astair.toml
+@CO	query/strand/astair.toml -- asTair's own table of six FLAG integers, plus the unknown arm
 @CO	that makes it total. FLAG 65 is what bwa gave the not-proper pair in
 @CO	alnbase-validation/demos/astair-strand; without the arm the run aborts on it.
 @CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",

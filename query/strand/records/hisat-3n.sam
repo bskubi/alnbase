@@ -1,7 +1,7 @@
 @HD	VN:1.6	SO:unsorted
 @SQ	SN:chr1	LN:1000
-@CO	Records for queries/strand/hisat-3n.toml
-@CO	queries/strand/hisat-3n.toml -- YZ, the 3N index the read hit.
+@CO	Records for query/strand/hisat-3n.toml
+@CO	query/strand/hisat-3n.toml -- YZ, the 3N index the read hit.
 @CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",
 @CO	each side forward or reverse, or "unknown". Anything after the first "/" is a label
 @CO	for the reader. The test that enforces it is in src/strand_rule.rs.

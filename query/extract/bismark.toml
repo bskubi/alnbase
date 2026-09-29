@@ -1,6 +1,6 @@
 # Generate an alnbase query file that reproduces Bismark's XM methylation call.
 # 
-#     python generate.py > queries.toml
+#     python generate.py > bismark.toml   # alnbase's query/extract/bismark.toml
 # 
 # Run alnbase with `--insertions emit` (Bismark sees inserted bases; see rule 3).
 # 

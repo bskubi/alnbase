@@ -109,7 +109,7 @@ impl Strand {
 }
 
 /// The strand rule alnbase used to compile in, kept only as a golden value to
-/// check the shipped `queries/strand/directional.toml` against.
+/// check the shipped `query/strand/directional.toml` against.
 ///
 /// A run gets its strand from a query file's `[strand.*]` tables and from
 /// nowhere else (`docs/design/strand-rules.md`), so this is not a route a user

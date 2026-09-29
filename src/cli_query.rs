@@ -657,12 +657,12 @@ pub struct Resolved {
 /// What a run with no declared strand rule is told.
 ///
 /// It names a file rather than describing one, because the fix is to pass a
-/// file: `queries/strand/` ships one per surveyed aligner, and the right one
+/// file: `query/strand/` ships one per surveyed aligner, and the right one
 /// is a property of the BAM, which alnbase will not guess at.
 pub const NO_STRAND_RULE: &str = "no strand rule: one --query-file must declare \
      [strand.original] and [strand.aligned], which say how this aligner records the strand a \
-     read came from. alnbase ships one file per surveyed aligner in queries/strand/ -- pass the \
-     one that matches the BAM, for example --query-file queries/strand/directional.toml";
+     read came from. alnbase ships one file per surveyed aligner in query/strand/ -- pass the \
+     one that matches the BAM, for example --query-file query/strand/directional.toml";
 
 /// The strand rule declared by query files that have already been read --
 /// notably the ones stored in a tagged BAM's header, which is where `extract`
@@ -828,7 +828,7 @@ mod tests {
     /// most of these tests are about something else entirely.
     fn strand_arg() -> String {
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("queries/strand/directional.toml")
+            .join("query/strand/directional.toml")
             .display()
             .to_string()
     }
@@ -1211,7 +1211,7 @@ mod tests {
     #[test]
     fn a_run_with_no_strand_rule_is_refused() {
         let e = parse(&[]).resolve().unwrap_err();
-        assert!(e.contains("queries/strand/directional.toml"), "{e}");
+        assert!(e.contains("query/strand/directional.toml"), "{e}");
     }
 
     /// The dry runs that read no records are exempt, since a rule they would

@@ -9,9 +9,10 @@
 -- The hit tables come from an alnbase run that selected the record fields this
 -- script names:
 --
---     alnbase query -q queries.toml \
---         -F qname,is_first_in_template,ref_name,strand,mapq,qual,off_5p,off_3p,XB \
---         reads.bam calls
+--     alnbase query --parquet --query-file queries.toml \
+--         --query-file query/strand/bsbolt.toml \
+--         -F qname,is_first_in_template,ref_name,strand,mapq,XB:Z \
+--         reads.bam ref.aref calls
 --
 -- Read this top to bottom. It is the whole run: there is no second file that
 -- says what these declarations mean, and nothing is filled in elsewhere.

@@ -1,7 +1,7 @@
 @HD	VN:1.6	SO:unsorted
 @SQ	SN:chr1	LN:1000
-@CO	Records for queries/strand/bs-seeker2-se.toml
-@CO	queries/strand/bs-seeker2-se.toml -- XO, single-end only. The FLAGs are the ones
+@CO	Records for query/strand/bs-seeker2-se.toml
+@CO	query/strand/bs-seeker2-se.toml -- XO, single-end only. The FLAGs are the ones
 @CO	BS-Seeker2 writes, inverted on the two RC classes, seen in
 @CO	alnbase-validation/demos/bs-seeker2-strand.
 @CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",
