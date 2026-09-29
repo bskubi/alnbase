@@ -3,7 +3,7 @@
 `alnbase-agg` turns hit rows into the products other tools expect: per-position
 tables, windows, per-cell summaries, per-read summaries. It is a Python package in
 `python/`, not part of the Rust binary, and it aggregates nothing itself — it
-compiles a declarative recipe into one DuckDB query and lets DuckDB do the work.
+runs a SQL script that you write and lets DuckDB do the work.
 
 ```
 alnbase-agg explain python/examples/cg_ch.toml --hits 'calls_*_*.parquet'
