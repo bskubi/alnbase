@@ -756,6 +756,14 @@ GA = ["OB", "CTOB"]
         let e = bad("[query.q]\nread = \"C~\"\nrefr = \"CGA\"\n");
         assert_eq!(e.at, Loc::Toml("[query.q] read".into()));
         assert!(e.msg.contains("read row is 2 columns, refr row is 3"), "{e}");
+
+        // A `{...}` group is one column, so these rows are the same width.
+        for (read, refr) in [("{CT}~", "CG"), ("C~", "{CT}G"), ("{C.}{G_}", "CG")] {
+            let f = parse_file(&format!("[query.q]\nread = \"{read}\"\nrefr = \"{refr}\"\n"));
+            assert!(f.is_ok(), "{read} / {refr}: {:?}", f.err());
+        }
+        let e = bad("[query.q]\nread = \"{CT}~\"\nrefr = \"CGA\"\n");
+        assert!(e.msg.contains("read row is 2 columns, refr row is 3"), "{e}");
         let e = bad("[query.q]\nread = \"C~\"\nrefr = \"CG\"\nmark = \"+..\"\n");
         assert_eq!(e.at, Loc::Toml("[query.q] mark".into()));
     }

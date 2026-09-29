@@ -160,6 +160,27 @@ pub(crate) fn alias_decl(name: &str, set: &str) -> Result<(char, Seq), String> {
     Ok((c, seq))
 }
 
+/// How many columns a row describes. A `{...}` group is one column however
+/// many characters it takes to write, so counting characters would reject
+/// every row that uses one. An unclosed group counts to the end of the row;
+/// the pattern parser reports it.
+fn row_columns(row: &str) -> usize {
+    let mut n = 0;
+    let mut in_group = false;
+    for c in row.chars() {
+        match c {
+            '{' if !in_group => in_group = true,
+            '}' if in_group => {
+                in_group = false;
+                n += 1;
+            }
+            _ if in_group => {}
+            _ => n += 1,
+        }
+    }
+    n + usize::from(in_group)
+}
+
 /// What one pass over the file's lines yields, before anything is resolved.
 #[cfg_attr(not(test), allow(dead_code))] // the line syntax is test scaffolding now; see the module comment
 
@@ -189,15 +210,14 @@ fn lower_pattern(
             ));
         }
     }
-    if read.chars().count() != refr.chars().count() {
+    let (read_cols, refr_cols) = (row_columns(&read), row_columns(&refr));
+    if read_cols != refr_cols {
         return Err(err(
             rl,
             format!(
-                "pattern '{}': read row is {} columns, refr row is {}. \
+                "pattern '{}': read row is {read_cols} columns, refr row is {refr_cols}. \
                  A misaligned grid shows up here rather than as shifted output.",
                 p.name,
-                read.chars().count(),
-                refr.chars().count()
             ),
         ));
     }
