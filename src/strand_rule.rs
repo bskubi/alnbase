@@ -442,9 +442,31 @@ fn resolve_field(name: &str) -> Result<RecordField> {
     }
 }
 
+/// The FLAG bits a condition can name on its own. Every other yes/no column
+/// (`read_reverse`) is derived from the strand call, so a rule cannot read it.
+pub const FLAG_BITS: &[RecordField] = &[
+    RecordField::IsPaired,
+    RecordField::IsProperPair,
+    RecordField::IsUnmapped,
+    RecordField::IsMateUnmapped,
+    RecordField::IsReverse,
+    RecordField::IsMateReverse,
+    RecordField::IsFirstInTemplate,
+    RecordField::IsLastInTemplate,
+    RecordField::IsSecondary,
+    RecordField::IsSupplementary,
+    RecordField::IsQcFail,
+    RecordField::IsDuplicate,
+];
+
 fn check_boolean(name: &str, f: RecordField) -> Result<()> {
-    if matches!(f.data_type(), arrow::datatypes::DataType::Boolean) {
+    if FLAG_BITS.contains(&f) {
         Ok(())
+    } else if matches!(f.data_type(), arrow::datatypes::DataType::Boolean) {
+        Err(anyhow!(
+            "`{name}` comes from the strand rule itself, so a strand rule cannot read it: \
+             use a FLAG bit such as `is_reverse`"
+        ))
     } else {
         Err(anyhow!(
             "`{name}` is not a yes/no field, so it cannot stand alone: compare it, as in `{name} == ...`"
@@ -997,6 +1019,17 @@ mod tests {
         assert_ne!(loose, other);
     }
 
+    /// Every FLAG bit a condition accepts is one it can evaluate.
+    #[test]
+    fn every_flag_bit_parses_and_reads_its_bit() {
+        for &f in FLAG_BITS {
+            let name = f.static_name().unwrap();
+            let cond = parse_cond(name).unwrap_or_else(|e| panic!("{name}: {e}"));
+            assert!(!cond.eval(&rec(0, &[])), "{name} with no flags set");
+            assert!(cond.eval(&rec(0xFFF, &[])), "{name} with every flag set");
+        }
+    }
+
     /// `true` is what an assay with no conversion needs: one original strand
     /// for every record, said plainly rather than as a tautology over some
     /// field the rule does not otherwise care about.
@@ -1026,6 +1059,9 @@ mod tests {
             (r#"XG == 3"#, "read as text"),
             ("is_reverse = true", "write `==`"),
             ("no_such_field", "unknown field"),
+            // Derived from the strand call, so it would read as false on every
+            // record and send every record to one key.
+            ("read_reverse", "comes from the strand rule itself"),
         ];
         for (src, want) in cases {
             let err = parse_cond(src).unwrap_err().to_string();

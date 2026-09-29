@@ -128,9 +128,8 @@ pub enum RecordField {
     /// -- read 1 and read 2 of the same fragment -- which per-strand files and
     /// M-bias need.
     ///
-    /// Null when the rule names only the conversion strand. Some aligners
-    /// record two strands rather than four, and an invented `OT`/`CTOT` split
-    /// would be a guess presented as a reading.
+    /// Derived from the rule's original strand and aligned direction; see
+    /// [`crate::strand_rule::StrandCall::origin`].
     ConvStrand,
     /// Whether the read as sequenced runs backwards along the reference.
     ///
