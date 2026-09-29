@@ -1,0 +1,6 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:c1	LN:20
+@SQ	SN:c2	LN:8
+start	0	c2	1	60	3M	*	0	0	CAG	III
+end	0	c2	6	60	3M	*	0	0	CCG	III
+overhang	0	c2	7	60	4M	*	0	0	CGAA	IIII

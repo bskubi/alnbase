@@ -1,0 +1,884 @@
+<title>The Flat Read</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --ink: #1c1b19;
+  --ink-2: #57544e;
+  --ink-3: #8b877f;
+  --line: #e0ddd6;
+  --line-2: #cbc7be;
+  --edit: #1a8a5a;
+  --edit-bg: #dff3e8;
+  --bad: #c0392b;
+  --bad-bg: #fbe4e1;
+  --warn: #b8730e;
+  --warn-bg: #fbeed6;
+  --inert: #9a958c;
+  --inert-bg: #eceae5;
+  --accent: #2f5fd0;
+  --accent-bg: #e3ebfb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161a;
+    --panel: #1d1f24;
+    --ink: #ecEAE6;
+    --ink-2: #b2aea6;
+    --ink-3: #7e7a72;
+    --line: #2e3138;
+    --line-2: #3f434c;
+    --edit: #4fd39a;
+    --edit-bg: #12372a;
+    --bad: #ff7a6b;
+    --bad-bg: #3d1e1a;
+    --warn: #e8b055;
+    --warn-bg: #3a2c12;
+    --inert: #6d6963;
+    --inert-bg: #26282d;
+    --accent: #7ba3f5;
+    --accent-bg: #1b2740;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161a;
+  --panel: #1d1f24;
+  --ink: #ecEAE6;
+  --ink-2: #b2aea6;
+  --ink-3: #7e7a72;
+  --line: #2e3138;
+  --line-2: #3f434c;
+  --edit: #4fd39a;
+  --edit-bg: #12372a;
+  --bad: #ff7a6b;
+  --bad-bg: #3d1e1a;
+  --warn: #e8b055;
+  --warn-bg: #3a2c12;
+  --inert: #6d6963;
+  --inert-bg: #26282d;
+  --accent: #7ba3f5;
+  --accent-bg: #1b2740;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 16px 96px; }
+
+h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 12px; font-weight: 700; }
+h2 { font-size: clamp(20px, 3.6vw, 27px); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 6px; font-weight: 650; }
+p  { margin: 0 0 10px; color: var(--ink-2); }
+.lede { font-size: clamp(17px, 2.4vw, 19px); color: var(--ink-2); max-width: 46em; }
+
+header.top { padding: 56px 0 36px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+
+section { padding: 40px 0 8px; }
+.eyebrow {
+  font-family: 'Roboto Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+  margin: 0 0 10px;
+}
+.sub { max-width: 44em; }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 18px; margin: 18px 0;
+}
+.scroller { overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; }
+
+.seqblock { font-family: 'Roboto Mono', monospace; font-size: 13px; }
+.rowlab {
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 3px;
+}
+.cells { display: flex; gap: 1px; }
+.cell {
+  width: var(--cw, 17px); min-width: var(--cw, 17px); height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px; background: var(--inert-bg); color: var(--ink-2);
+  font-weight: 500; transition: background .18s, color .18s;
+}
+.cell.match { background: var(--inert-bg); color: var(--ink-3); }
+.cell.mm    { background: var(--bad-bg); color: var(--bad); font-weight: 700; }
+.cell.hit   { background: var(--edit-bg); color: var(--edit); font-weight: 700; }
+.cell.same  { background: var(--accent-bg); color: var(--accent); }
+.cell.ghost { background: transparent; color: var(--inert); border: 1px dashed var(--line-2); }
+.cell.gap   { background: transparent; color: var(--inert); }
+
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+button.seg {
+  font: inherit; font-size: 13px; font-weight: 550;
+  padding: 7px 13px; border-radius: 999px; cursor: pointer;
+  background: var(--panel); color: var(--ink-2);
+  border: 1px solid var(--line-2); transition: all .15s;
+}
+button.seg:hover { border-color: var(--ink-3); color: var(--ink); }
+button.seg[aria-pressed="true"] {
+  background: var(--ink); color: var(--bg); border-color: var(--ink);
+}
+button.seg .mono { font-family: 'Roboto Mono', monospace; font-size: 12px; opacity: .8; }
+
+.caption { font-size: 15px; color: var(--ink-2); margin: 14px 0 0; max-width: 44em; }
+.caption strong { color: var(--ink); font-weight: 600; }
+
+.tag {
+  display: inline-block; font-family: 'Roboto Mono', monospace; font-size: 11.5px;
+  padding: 1px 6px; border-radius: 4px; background: var(--inert-bg); color: var(--ink-2);
+}
+
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px; margin-top: 16px; }
+.ro { border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px; }
+.ro .k { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.ro .v { font-family: 'Roboto Mono', monospace; font-size: 19px; font-weight: 600; margin-top: 3px; }
+.ro.alarm { border-color: var(--bad); background: var(--bad-bg); }
+.ro.alarm .v, .ro.alarm .k { color: var(--bad); }
+.ro.ok { border-color: var(--edit); background: var(--edit-bg); }
+.ro.ok .v, .ro.ok .k { color: var(--edit); }
+
+.strip { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 8px; }
+.stage {
+  flex: 1 0 auto; min-width: 92px; text-align: left; cursor: pointer;
+  border: 1px solid var(--line-2); border-radius: 8px; background: var(--panel);
+  padding: 9px 10px; font: inherit; transition: all .15s;
+}
+.stage:hover { border-color: var(--ink-3); }
+.stage .n { font-family: 'Roboto Mono', monospace; font-size: 10.5px; color: var(--ink-3); }
+.stage .t { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.25; margin-top: 2px; }
+.stage[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-bg); }
+.stage.swap { border-color: var(--edit); background: var(--edit-bg); }
+.stage.swap .t { color: var(--edit); }
+.stagenote {
+  margin-top: 10px; padding: 11px 13px; border-radius: 8px;
+  background: var(--inert-bg); font-size: 14.5px; color: var(--ink-2); min-height: 44px;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: 'Roboto Mono', monospace; font-size: 12px; font-weight: 600;
+  padding: 5px 9px; border-radius: 6px; background: var(--inert-bg); color: var(--ink-3);
+  border: 1px solid transparent;
+}
+.chip.live { background: var(--edit-bg); color: var(--edit); border-color: var(--edit); }
+
+.forb { display: grid; gap: 12px; }
+.frow {
+  display: grid; grid-template-columns: 1fr; gap: 10px;
+  border: 1px solid var(--line); border-radius: 10px; padding: 13px;
+  background: var(--panel);
+}
+@media (min-width: 620px) { .frow { grid-template-columns: 1fr 190px; align-items: center; } }
+.fwhat { font-size: 14.5px; color: var(--ink-2); }
+.fwhat b { color: var(--ink); }
+.verdict {
+  font-family: 'Roboto Mono', monospace; font-size: 12px; font-weight: 700; line-height: 1.4;
+  color: var(--bad); background: var(--bad-bg); border-radius: 6px; padding: 8px 10px; text-align: center;
+}
+
+.ba { display: grid; gap: 12px; }
+@media (min-width: 640px) { .ba { grid-template-columns: 1fr 1fr; } }
+.bacard { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--panel); }
+.bacard.now { border-style: dashed; }
+.bacard.next { border-color: var(--edit); }
+.bacard h4 { margin: 0 0 8px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.bacard.next h4 { color: var(--edit); }
+.bacard ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--ink-2); }
+.bacard li { margin-bottom: 5px; }
+
+.dots { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 14px; }
+.dot {
+  width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Roboto Mono', monospace; font-size: 11px; font-weight: 700;
+  background: var(--inert-bg); color: var(--ink-3); border: 1px solid transparent;
+}
+.dot.gone { background: var(--edit-bg); color: var(--edit); border-color: var(--edit); }
+.dot.maybe { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+
+details { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+th { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+td.mono { font-family: 'Roboto Mono', monospace; font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+td .st { font-weight: 700; }
+
+.bigrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.big { border: 1px solid var(--edit); background: var(--edit-bg); border-radius: 10px; padding: 12px 14px; }
+.big .k { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--edit); }
+.big .v { font-family: 'Roboto Mono', monospace; font-size: 22px; font-weight: 700; color: var(--edit); margin-top: 4px; }
+.big .was { color: var(--ink-3); text-decoration: line-through; font-size: 15px; font-weight: 500; margin-right: 8px; }
+
+.grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+@media (max-width: 560px) { .grid5 { grid-template-columns: repeat(2, 1fr); } }
+.mini { border: 1px solid var(--line); border-radius: 9px; padding: 9px 8px 7px; }
+.minihead { font-size: 11px; font-weight: 650; color: var(--ink-2); text-align: center; margin-bottom: 7px; letter-spacing: .01em; }
+.bars { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 96px;
+        border-bottom: 1px solid var(--line-2); }
+.barwrap { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+.bar { width: 100%; background: var(--inert); border-radius: 2px 2px 0 0; transition: height .3s; }
+.bar.walk { background: var(--edit); }
+.minifoot { display: flex; gap: 4px; margin-top: 4px; }
+.tick { flex: 1; height: 3px; border-radius: 2px; background: var(--inert); }
+.tick.walk { background: var(--edit); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12.5px; color: var(--ink-2); align-items: center; }
+.legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; background: var(--inert); margin-right: 5px; vertical-align: -1px; }
+.legend .sw.walk { background: var(--edit); }
+.legend .dim { color: var(--ink-3); font-size: 11.5px; }
+
+.foot { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+.note { font-size: 12.5px; color: var(--ink-3); font-style: italic; margin-top: 10px; max-width: 44em; }
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+/* ---------------------------------------------------------------- shared */
+
+function Cells({ chars, kinds, cw }) {
+  return (
+    <div className="cells" style={{ "--cw": (cw || 17) + "px" }}>
+      {chars.map((c, i) => (
+        <div key={i} className={"cell " + (kinds[i] || "match")}>{c}</div>
+      ))}
+    </div>
+  );
+}
+
+function Row({ label, chars, kinds, cw }) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div className="rowlab">{label}</div>
+      <Cells chars={chars} kinds={kinds} cw={cw} />
+    </div>
+  );
+}
+
+/* --------------------------------------------------- 1. the three-letter trick */
+
+const G30 = "ACTAAAAATACAAAAATTAGCCGGGCGTGG";
+const EDITS = [3, 4, 6, 7, 9, 12, 14, 15, 18];
+const R30 = [...G30].map((c, i) => (EDITS.indexOf(i) >= 0 ? "G" : c)).join("");
+const flat3 = (s) => s.replace(/A/g, "G");
+
+const TRICK = [
+  {
+    label: "1. as sequenced",
+    caption: (
+      <>A read off an ADAR-edited hairpin, against the genome it came from. <strong>Nine differences.</strong> The aligner is allowed two. So the read is dropped as unmappable, and the more heavily edited a molecule is, the more certainly it never appears in the data.</>
+    ),
+  },
+  {
+    label: "2. collapse A to G",
+    caption: (
+      <>Rewrite every A as a G, in the read <em>and</em> in the genome. An edited A and an unedited A are now the same letter, the difference disappears, and the read maps. The catch: a three-letter genome is far less unique, so this is only ever run on reads that already failed normal alignment.</>
+    ),
+  },
+  {
+    label: "3. restore and read off",
+    caption: (
+      <>Put the real sequences back, at the position the collapsed read found. <strong>Every column where the read says G and the genome says A is an editing event.</strong> That is the whole idea.</>
+    ),
+  },
+];
+
+function Trick() {
+  const [step, setStep] = useState(0);
+  const cw = 17;
+
+  let gRow, rRow, gK;
+  if (step === 0) {
+    gRow = [...G30]; rRow = [...R30];
+    gK = gRow.map((_, i) => (EDITS.indexOf(i) >= 0 ? "mm" : "match"));
+  } else if (step === 1) {
+    gRow = [...flat3(G30)]; rRow = [...flat3(R30)];
+    gK = gRow.map(() => "same");
+  } else {
+    gRow = [...G30]; rRow = [...R30];
+    gK = gRow.map((_, i) => (EDITS.indexOf(i) >= 0 ? "hit" : "match"));
+  }
+
+  return (
+    <div className="panel">
+      <div className="btnrow">
+        {TRICK.map((t, i) => (
+          <button key={i} className="seg" aria-pressed={step === i} onClick={() => setStep(i)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="scroller">
+        <div className="seqblock">
+          <Row label="read" chars={rRow} kinds={gK} cw={cw} />
+          <Row label="genome" chars={gRow} kinds={gK} cw={cw} />
+        </div>
+      </div>
+      <div className="readouts">
+        <div className={step === 0 ? "ro alarm" : "ro"}>
+          <div className="k">differences</div>
+          <div className="v">{step === 0 ? "9" : "0"}</div>
+        </div>
+        <div className={step === 0 ? "ro alarm" : "ro ok"}>
+          <div className="k">aligner says</div>
+          <div className="v">{step === 0 ? "dropped" : "mapped"}</div>
+        </div>
+        <div className={step === 2 ? "ro ok" : "ro"}>
+          <div className="k">edits recovered</div>
+          <div className="v">{step === 2 ? "9" : "—"}</div>
+        </div>
+      </div>
+      <p className="caption">{TRICK[step].caption}</p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ 2. twelve runs */
+
+const COMBOS = ["A2G", "T2C", "A2C", "T2G", "A2T", "T2A", "G2C", "C2G", "G2A", "C2T", "G2T", "C2A"];
+
+function Twelve() {
+  return (
+    <div className="panel">
+      <div className="chips">
+        {COMBOS.map((c) => (
+          <span key={c} className={"chip" + (c === "A2G" || c === "T2C" ? " live" : "")}>{c}</span>
+        ))}
+      </div>
+      <p className="caption">
+        The collapse is run twelve ways, not one. <strong>A2G</strong> — and <strong>T2C</strong>, which
+        is the same event seen from the other strand — is where ADAR lives. The other ten are negative
+        controls: if G2C lights up as brightly as A2G, you are looking at mapping noise, not an enzyme.
+        Twelve alignments per sample is also why this pipeline is expensive.
+      </p>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------- 3. the flat read */
+
+const DREF = "GTGAAACCCCGTCTCTACTAAAAATACAAAAATTAGCCGG";
+const AS = 4;
+const RLEN = 30;
+const EDIT_OFF = 19;
+const POS0 = 32104501;
+
+function pairing(cig) {
+  const out = [];
+  let r = AS;
+  for (const step of cig) {
+    const n = step[0], op = step[1];
+    for (let k = 0; k < n; k++) {
+      if (op === "M") { out.push({ ref: r, kind: "M" }); r += 1; }
+      else if (op === "S") out.push({ ref: null, kind: "S" });
+      else if (op === "I") out.push({ ref: null, kind: "I" });
+    }
+    if (op === "D") r += n;
+  }
+  return out;
+}
+
+const CIGARS = [
+  { id: "30M", label: "nothing unusual", cig: [[30, "M"]], why: "the read lies flat on the genome, end to end" },
+  { id: "3S27M", label: "3 bases clipped", cig: [[3, "S"], [27, "M"]], why: "leftover adapter, or a read running off the end of an exon" },
+  { id: "12M2D18M", label: "2-base deletion", cig: [[12, "M"], [2, "D"], [18, "M"]], why: "a small deletion in this sample relative to the reference" },
+  { id: "12M3I15M", label: "3-base insertion", cig: [[12, "M"], [3, "I"], [15, "M"]], why: "a small insertion in this sample relative to the reference" },
+];
+
+const FILLER = { S: "T", I: "G" };
+
+function Flat() {
+  const [ci, setCi] = useState(1);
+  const [view, setView] = useState("flat");
+  const cw = 17;
+
+  const cg = CIGARS[ci];
+  const pairs = useMemo(() => pairing(cg.cig), [ci]);
+  const read = useMemo(
+    () => pairs.map((p, i) => (i === EDIT_OFF ? "G" : p.ref === null ? FILLER[p.kind] : DREF[p.ref])),
+    [pairs]
+  );
+
+  const refChars = [...DREF];
+  const refKinds = refChars.map(() => "match");
+
+  // flat view: read base i is compared against genome column AS + i
+  const flatChars = [], flatKinds = [];
+  for (let c = 0; c < DREF.length; c++) {
+    const i = c - AS;
+    if (i < 0 || i >= RLEN) { flatChars.push(""); flatKinds.push("gap"); }
+    else {
+      flatChars.push(read[i]);
+      flatKinds.push(read[i] === DREF[c] ? "match" : "mm");
+    }
+  }
+  const flatMM = flatKinds.filter((k) => k === "mm").length;
+
+  // true view: read base i sits where the CIGAR puts it
+  const trueChars = [], trueKinds = [];
+  for (let c = 0; c < DREF.length; c++) { trueChars.push(""); trueKinds.push("gap"); }
+  const clipped = [], inserted = [];
+  let insertCol = null;
+  pairs.forEach((p, i) => {
+    if (p.ref !== null) {
+      trueChars[p.ref] = read[i];
+      trueKinds[p.ref] = read[i] === DREF[p.ref] ? "match" : (i === EDIT_OFF ? "hit" : "mm");
+    } else if (p.kind === "S") {
+      clipped.push(read[i]);
+    } else {
+      inserted.push(read[i]);
+      if (insertCol === null && i > 0 && pairs[i - 1].ref !== null) insertCol = pairs[i - 1].ref + 1;
+    }
+  });
+  clipped.forEach((ch, k) => {
+    const c = AS - clipped.length + k;
+    if (c >= 0) { trueChars[c] = ch; trueKinds[c] = "ghost"; }
+  });
+  const covered = {};
+  pairs.forEach((p) => { if (p.ref !== null) covered[p.ref] = true; });
+  const cols = Object.keys(covered).map(Number);
+  const first = Math.min.apply(null, cols), last = Math.max.apply(null, cols);
+  for (let c = first; c <= last; c++) {
+    if (!covered[c]) { trueChars[c] = "—"; trueKinds[c] = "ghost"; }
+  }
+
+  const insertChars = [];
+  for (let c = 0; c < DREF.length; c++) insertChars.push("");
+  if (inserted.length && insertCol !== null) {
+    inserted.forEach((ch, k) => { if (insertCol + k < DREF.length) insertChars[insertCol + k] = ch; });
+  }
+
+  const reported = POS0 + AS + EDIT_OFF;
+  const truth = POS0 + pairs[EDIT_OFF].ref;
+  const drift = reported - truth;
+  const trueMM = trueKinds.filter((k) => k === "mm").length;
+
+  return (
+    <div className="panel">
+      <div className="btnrow">
+        {CIGARS.map((c, i) => (
+          <button key={c.id} className="seg" aria-pressed={ci === i} onClick={() => setCi(i)}>
+            {c.label} <span className="mono">{c.id}</span>
+          </button>
+        ))}
+      </div>
+      <div className="btnrow">
+        <button className="seg" aria-pressed={view === "flat"} onClick={() => setView("flat")}>
+          how the pipeline lines them up
+        </button>
+        <button className="seg" aria-pressed={view === "true"} onClick={() => setView("true")}>
+          where the read actually sits
+        </button>
+      </div>
+
+      <div className="scroller">
+        <div className="seqblock" style={{ minWidth: DREF.length * (cw + 1) }}>
+          {view === "true" && inserted.length > 0 && (
+            <Row label="in the read, absent from the genome"
+                 chars={insertChars}
+                 kinds={insertChars.map((c) => (c ? "ghost" : "gap"))} cw={cw} />
+          )}
+          <Row label={view === "flat" ? "read, laid flat from its start position" : "read, placed by its CIGAR"}
+               chars={view === "flat" ? flatChars : trueChars}
+               kinds={view === "flat" ? flatKinds : trueKinds} cw={cw} />
+          <Row label="genome" chars={refChars} kinds={refKinds} cw={cw} />
+        </div>
+      </div>
+
+      <div className="readouts">
+        <div className={view === "flat" && flatMM > 1 ? "ro alarm" : "ro"}>
+          <div className="k">differences seen</div>
+          <div className="v">{view === "flat" ? flatMM : trueMM}</div>
+        </div>
+        <div className="ro">
+          <div className="k">edit reported at</div>
+          <div className="v">{reported.toLocaleString()}</div>
+        </div>
+        <div className="ro ok">
+          <div className="k">edit really at</div>
+          <div className="v">{truth.toLocaleString()}</div>
+        </div>
+        <div className={drift === 0 ? "ro ok" : "ro alarm"}>
+          <div className="k">off by</div>
+          <div className="v">{drift === 0 ? "0" : (drift > 0 ? "+" : "") + drift + " bp"}</div>
+        </div>
+      </div>
+
+      <p className="caption">
+        To decide which genome base each read base sits on, the pipeline cuts a window out of the genome
+        at the read's start position and compares straight down the line: <strong>read base 1 against
+        genome base 1, read base 2 against genome base 2</strong>. It never consults the CIGAR. That is
+        exactly right for <span className="tag">30M</span>. For anything else the two rulers slip apart,
+        the comparison fills with differences that are not real, and the edit that <em>is</em> real is
+        reported at the wrong coordinate. Nothing anywhere checks, so nothing complains.
+      </p>
+      <p className="note">{cg.label} — {cg.why}.</p>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------- 4. what that forbids */
+
+function JunctionRead() {
+  return (
+    <svg viewBox="0 0 320 64" width="100%" style={{ maxWidth: 320, display: "block" }} role="img"
+         aria-label="A read spanning an exon-exon junction">
+      <rect x="6" y="32" width="112" height="18" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+      <rect x="202" y="32" width="112" height="18" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+      <path d="M118 41 L160 27 L202 41" fill="none" stroke="var(--line-2)" strokeWidth="1.5" />
+      <text x="62" y="45" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">exon</text>
+      <text x="258" y="45" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">exon</text>
+      <text x="160" y="22" textAnchor="middle" fontSize="9.5" fill="var(--ink-3)" fontFamily="Inter">intron</text>
+      <rect x="72" y="8" width="46" height="11" rx="2" fill="var(--bad-bg)" stroke="var(--bad)" />
+      <rect x="202" y="8" width="46" height="11" rx="2" fill="var(--bad-bg)" stroke="var(--bad)" />
+      <line x1="118" y1="13.5" x2="202" y2="13.5" stroke="var(--bad)" strokeWidth="1.2" strokeDasharray="3 3" />
+      <text x="160" y="62" textAnchor="middle" fontSize="9.5" fill="var(--bad)" fontFamily="'Roboto Mono', monospace">46M84N46M</text>
+    </svg>
+  );
+}
+
+function IndelRead() {
+  return (
+    <svg viewBox="0 0 320 64" width="100%" style={{ maxWidth: 320, display: "block" }} role="img"
+         aria-label="A read carrying a small deletion">
+      <rect x="6" y="32" width="308" height="18" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+      <text x="160" y="45" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">genome</text>
+      <rect x="60" y="8" width="88" height="11" rx="2" fill="var(--bad-bg)" stroke="var(--bad)" />
+      <rect x="160" y="8" width="100" height="11" rx="2" fill="var(--bad-bg)" stroke="var(--bad)" />
+      <line x1="148" y1="13.5" x2="160" y2="13.5" stroke="var(--bad)" strokeWidth="1.4" strokeDasharray="2 2" />
+      <text x="154" y="62" textAnchor="middle" fontSize="9.5" fill="var(--bad)" fontFamily="'Roboto Mono', monospace">44M4D50M</text>
+    </svg>
+  );
+}
+
+function ClipRead() {
+  return (
+    <svg viewBox="0 0 320 64" width="100%" style={{ maxWidth: 320, display: "block" }} role="img"
+         aria-label="A read whose start does not match the genome">
+      <rect x="6" y="32" width="308" height="18" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+      <text x="160" y="45" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">genome</text>
+      <rect x="44" y="8" width="24" height="11" rx="2" fill="transparent" stroke="var(--inert)" strokeDasharray="3 2" />
+      <rect x="68" y="8" width="178" height="11" rx="2" fill="var(--bad-bg)" stroke="var(--bad)" />
+      <text x="145" y="62" textAnchor="middle" fontSize="9.5" fill="var(--bad)" fontFamily="'Roboto Mono', monospace">9S85M</text>
+    </svg>
+  );
+}
+
+const FORBIDDEN = [
+  {
+    art: <JunctionRead />,
+    what: <><b>A read crossing a splice junction.</b> This is RNA sequencing, and ADAR's favourite substrates are hairpins in introns and 3&prime; UTRs — right where junctions are.</>,
+  },
+  {
+    art: <IndelRead />,
+    what: <><b>A read with a small insertion or deletion.</b> Ordinary variation, present in any sample that is not the reference.</>,
+  },
+  {
+    art: <ClipRead />,
+    what: <><b>A read whose end does not match.</b> Adapter, a low-quality tail, or the edge of an exon.</>,
+  },
+];
+
+function Forbidden() {
+  return (
+    <div className="forb">
+      {FORBIDDEN.map((f, i) => (
+        <div className="frow" key={i}>
+          <div>
+            <div className="fwhat">{f.what}</div>
+            <div style={{ marginTop: 10 }}>{f.art}</div>
+          </div>
+          <div className="verdict">cannot reach<br />the edit caller</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+/* ------------------------------------------------------- 4b. what came back */
+
+const RCLASSES = ["contiguous", "junction", "deletion", "insertion", "clipped"];
+const RARMS = [
+  { id: "a", label: "as published", note: "bwa aln", walk: false, recall: 40.6, by: [99.6, 0.0, 0.0, 0.0, 0.5] },
+  { id: "b", label: "bwa mem", note: "same caller", walk: false, recall: 44.7, by: [99.7, 0.0, 0.6, 0.0, 28.0] },
+  { id: "c", label: "splice-aware", note: "same caller", walk: false, recall: 42.8, by: [99.2, 0.0, 0.6, 0.0, 16.2] },
+  { id: "d", label: "bwa mem", note: "CIGAR walk", walk: true, recall: 85.6, by: [98.3, 30.5, 96.0, 97.5, 97.9] },
+  { id: "e", label: "splice-aware", note: "CIGAR walk", walk: true, recall: 88.8, by: [99.7, 99.7, 90.9, 88.2, 43.3] },
+];
+
+function Results() {
+  return (
+    <div className="panel">
+      <div className="bigrow">
+        <div className="big">
+          <div className="k">editing events recovered</div>
+          <div className="v"><span className="was">40.6%</span> 88.8%</div>
+        </div>
+        <div className="big">
+          <div className="k">of them on the right base</div>
+          <div className="v"><span className="was">99.9%</span> 99.4%</div>
+        </div>
+        <div className="big">
+          <div className="k">junction-spanning reads</div>
+          <div className="v"><span className="was">0.0%</span> 99.7%</div>
+        </div>
+      </div>
+
+      <div className="grid5">
+        {RCLASSES.map((cls, ci) => (
+          <div className="mini" key={cls}>
+            <div className="minihead">{cls}</div>
+            <div className="bars">
+              {RARMS.map((a) => (
+                <div className="barwrap" key={a.id} title={`${a.label}, ${a.note}: ${a.by[ci].toFixed(1)}%`}>
+                  <div className={"bar" + (a.walk ? " walk" : "")}
+                       style={{ height: Math.max(1.5, a.by[ci]) + "%" }} />
+                </div>
+              ))}
+            </div>
+            <div className="minifoot">{RARMS.map((a) => (
+              <span key={a.id} className={"tick" + (a.walk ? " walk" : "")} />
+            ))}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="legend">
+        <span><i className="sw" /> flat window (the caller as published)</span>
+        <span><i className="sw walk" /> CIGAR walk</span>
+        <span className="dim">bars in each panel, left to right: bwa aln, bwa mem, splice-aware, then the same two aligners with the walk</span>
+      </div>
+
+      <p className="caption">
+        6,000 simulated reads, 53,036 edited bases whose true genomic coordinate is known.
+        Read the <strong>junction</strong> panel: the first three bars are at zero. A
+        splice-aware aligner places those reads perfectly, with a proper gap in the CIGAR —
+        and then the old caller cuts a 100-base window at the start position, compares a read
+        that spans 29 kb against 100 bases of the first exon, and throws it away as too
+        mismatched to be editing. <strong>A better aligner on its own recovers nothing.</strong>
+      </p>
+      <p className="caption">
+        The last two bars also differ from each other: mem clips where a splice-aware aligner
+        splices, so one is strong on clipped reads and the other on junctions. Running both
+        would cover nearly everything.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- 5. one box */
+
+const STAGES = [
+  { t: "collect unmapped", note: "Take the reads ordinary alignment could not place. Those are the candidates." },
+  { t: "collapse", note: "Rewrite the reads, and six copies of the genome, into three-letter alphabets." },
+  { t: "align × 12", note: "Twelve alignment runs, one per transform pair. This is the stage whose flags forbid gaps — the flags that make the flat assumption safe." },
+  { t: "restore reads", note: "Put each original, untransformed sequence back into its aligned record." },
+  { t: "filter", note: "Drop alignments landing in simple repeats and other low-complexity junk." },
+  { t: "call the edits", note: "Cut a genome window at the start position, compare it to the read letter by letter, and classify what differs. The flat assumption lives here." },
+  { t: "sort", note: "Group the calls by read and by genome position." },
+  { t: "cluster", note: "Keep only reads with dense, one-directional runs of the same change — that density is what separates hyper-editing from a SNP — and write out each site's coordinate. The flat assumption is made a second time right here." },
+];
+
+function Rail() {
+  const [sel, setSel] = useState(5);
+  return (
+    <div className="panel">
+      <div className="strip">
+        {STAGES.map((s, i) => (
+          <button key={i} className={"stage" + (i === 5 ? " swap" : "")} aria-pressed={sel === i}
+                  onClick={() => setSel(i)}>
+            <div className="n">{i + 1}</div>
+            <div className="t">{s.t}</div>
+          </button>
+        ))}
+      </div>
+      <div className="stagenote">{STAGES[sel].note}</div>
+      <p className="note">
+        Stage 3 chooses the aligner and the flags that make stages 6 and 8 correct. Nothing
+        between them records that dependency — not a comment, not a check, not a line in the
+        documentation.
+      </p>
+    </div>
+  );
+}
+
+function Swap() {
+  return (
+    <div className="ba">
+      <div className="bacard now">
+        <h4>today</h4>
+        <ul>
+          <li><b>Stage 6</b> cuts a genome window at the start position and compares position <em>i</em> to position <em>i</em>.</li>
+          <li><b>Stage 8</b> turns an edit's offset along the read into a coordinate by adding it to the start position.</li>
+          <li>Both are correct only while the aligner is forbidden to produce gaps.</li>
+          <li>If that changes, both fail quietly.</li>
+        </ul>
+      </div>
+      <div className="bacard next">
+        <h4>ported</h4>
+        <ul>
+          <li><b>Stage 6</b> gets its pairing from alnbase's CIGAR walk, and passes the CIGAR on.</li>
+          <li><b>Stage 8</b> converts through it. On a gapless read the conversion is the identity, so the old arm is untouched — checked.</li>
+          <li>Stage 7 needs no change at all.</li>
+          <li><strong>The aligner becomes a free choice.</strong></li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------- 6. scorecard */
+
+const LEDGER = [
+  { id: "HE-1", st: "gone", what: "Read position assumed equal to genome position", where: "stage 6" },
+  { id: "HE-7", st: "gone", what: "No check for a genome window running off the end of a contig", where: "stage 6" },
+  { id: "HE-8", st: "maybe", what: "An N in the genome counted as a difference", where: "stage 6" },
+  { id: "HE-10", st: "gone", what: "Division by zero — unreachable until the walk is fixed, then immediate", where: "stage 8" },
+  { id: "HE-2", st: "stays", what: "Strand marker stripped from alternative alignment positions", where: "stage 6, tag parsing" },
+  { id: "HE-12", st: "stays", what: "Ambiguity codes in the genome not handled", where: "stage 6" },
+  { id: "HE-4", st: "stays", what: "Repeat file located by a relative path", where: "stage 5" },
+  { id: "HE-3", st: "stays", what: "Low-complexity window applied in mirror image", where: "stage 8" },
+  { id: "HE-5", st: "stays", what: "Paired records concatenated, leaving a branch unreachable", where: "stage 8" },
+  { id: "HE-6", st: "stays", what: "Position-along-read filters applied on genome-oriented indices", where: "stage 8" },
+  { id: "HE-9", st: "stays", what: "Reverse-strand change table missing entries", where: "stage 8" },
+  { id: "HE-11", st: "stays", what: "Sequence context not strand-normalised, beside statistics that are", where: "stage 8" },
+];
+
+const CLS = { gone: "dot gone", maybe: "dot maybe", stays: "dot" };
+const WORD = { gone: "removed", maybe: "removed, partly", stays: "untouched" };
+const COLOR = { gone: "var(--edit)", maybe: "var(--warn)", stays: "var(--ink-3)" };
+
+function Score() {
+  return (
+    <div className="panel">
+      <div className="dots">
+        {LEDGER.map((l) => (
+          <span key={l.id} className={CLS[l.st]} title={l.what}>{l.id.replace("HE-", "")}</span>
+        ))}
+      </div>
+      <p className="caption">
+        Twelve defects turned up in reading this pipeline's source. The port removes
+        <strong>three</strong> outright, and a fourth depending on how much of the comparison
+        moves with it. Eight survive, most of them in the clustering at the end. One of the three
+        is a surprise: the division by zero could not fire while the caller was wrong, because a
+        flat window invents a mismatch on almost every read. Fixing the walk is what reaches it.
+        <strong>Even so, the reason to do this is not the bug count.</strong> It is the last line
+        of the green card above — and the measurement two sections up.
+      </p>
+      <details>
+        <summary>All twelve</summary>
+        <table>
+          <thead>
+            <tr><th>#</th><th>what</th><th>where</th><th>after the swap</th></tr>
+          </thead>
+          <tbody>
+            {LEDGER.map((l) => (
+              <tr key={l.id}>
+                <td className="mono">{l.id}</td>
+                <td>{l.what}</td>
+                <td className="mono">{l.where}</td>
+                <td><span className="st" style={{ color: COLOR[l.st] }}>{WORD[l.st]}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------- page */
+
+function Page() {
+  return (
+    <div className="wrap">
+      <header className="top">
+        <h1>The flat read</h1>
+        <p className="lede">
+          A pipeline that finds the RNA edits no aligner will map, and the one assumption that
+          keeps it stuck. Fixing it recovers <strong>2.2×</strong> more editing than the
+          published version, and takes junction-spanning reads from none to nearly all.
+        </p>
+      </header>
+
+      <section>
+        <p className="eyebrow">the trick</p>
+        <h2>Make the edits invisible, then look for them</h2>
+        <p className="sub">
+          ADAR can convert dozens of adenosines in a single RNA duplex, and every one of them reads out
+          as a G. A read like that has far too many differences to align, so the most heavily edited
+          molecules are precisely the ones missing from the data.
+        </p>
+        <Trick />
+        <Twelve />
+      </section>
+
+      <section>
+        <p className="eyebrow">the assumption</p>
+        <h2>One ruler used for two things</h2>
+        <p className="sub">
+          The read is mapped. Now something has to say which genome base each read base sits on. This
+          pipeline assumes they line up one for one. Hand it a read where they do not.
+        </p>
+        <Flat />
+      </section>
+
+      <section>
+        <p className="eyebrow">the price</p>
+        <h2>Only perfectly flat reads allowed</h2>
+        <p className="sub">
+          The assumption does hold today: the aligner is configured so that nothing but a flat read can
+          reach the edit caller. The arithmetic really is safe. But a guarantee like that is a filter,
+          and this is what it filters out.
+        </p>
+        <Forbidden />
+        <p className="note">
+          Illustrative, not measured. Measuring the loss is the point of the planned experiment: keep
+          the pipeline intact, change only the aligner and the edit caller, and count what comes back.
+        </p>
+      </section>
+
+      <section>
+        <p className="eyebrow">where alnbase goes</p>
+        <h2>One box, and what it unlocks</h2>
+        <p className="sub">
+          The encouraging part is how contained this is. The stages after the edit caller read its text
+          output and never open the genome themselves, so a replacement that emits the same lines drops
+          straight in.
+        </p>
+        <Rail />
+        <Swap />
+      </section>
+
+      <section>
+        <p className="eyebrow">honest accounting</p>
+        <h2>What the swap does not fix</h2>
+        <Score />
+      </section>
+
+      <p className="foot">
+        Pipeline: <span className="tag">hagitpt/Hyper-editing</span>, the implementation behind Porath,
+        Carmi &amp; Levanon, <em>Nat Commun</em> 2014. The defects come from reading its source. The
+        experiment that would measure the cost has not been run yet.
+      </p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+</script>

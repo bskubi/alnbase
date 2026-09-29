@@ -1,0 +1,12 @@
+# Orchestration and reporting.
+name: workflow
+channels: [conda-forge, bioconda]
+dependencies:
+  - nextflow
+  - quarto
+  - python=3.11
+  - python-duckdb
+  - pyarrow
+  - matplotlib
+  - jupyter
+  - pandas

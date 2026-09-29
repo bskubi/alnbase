@@ -1,0 +1,58 @@
+$ alnbase query --query-file queries.toml --explain
+warning: in query 'mismatch', pattern 'N@/' column 0: '{._}' on the reference side is unreachable; the column reduces to 'N'
+mCG
+  cg and not junc
+
+  and
+  |- cg  ~~~Yo~~~@~~~CG~~~
+  `- not junc  ~~~~~~~~@GATCGATC
+
+  Fires at a position where cg matches and junc does not match.
+    cg 8 columns: at columns 3-4 the read is C or T then any base or a gap, and the reference is CG
+    junc 8 columns: at columns 0-7 the reference is GATCGATC
+  Reports the coordinates of column 3, and records what was observed at columns 3, 4.
+
+           col  0 1 2 3 4 5 6 7 
+       capture        ^ ^       
+        anchor        +         
+      cg  read  ~ ~ ~ Y o ~ ~ ~ 
+          refr  ~ ~ ~ C G ~ ~ ~ 
+not junc  read  ~ ~ ~ ~ ~ ~ ~ ~ 
+          refr  G A T C G A T C 
+
+  anchor   column 3
+  captures 3, 4
+  span     8 columns
+  compiled dnf, 1 groups
+
+mismatch
+  mismatch
+
+  Fires at a position where mismatch matches.
+    mismatch 1 column: at column 0 the read is any base and the read differs from the reference
+    Note: 'agrees with' and 'differs from' both require an unambiguous
+          A/C/G/T on each side, so neither holds at a gap, a pad, or an
+          ambiguity code.
+  Reports the coordinates of column 0, and records what was observed at column 0.
+
+               col  0 
+           capture  ^ 
+            anchor  + 
+    mismatch  read  N 
+              refr  / 
+
+  anchor   column 0
+  captures 0
+  span     1 columns
+  compiled cnf, 1 groups
+
+compiled shapes
+  mCG: dnf, 1 groups, span 8
+  mismatch: cnf, 1 groups, span 1
+
+$ alnbase query --query-file queries.toml --list-codes   (tail)
+  Any of a-z will do. Prefer f i j l o p q, the letters that are not a
+  base code in either case -- a lowercase 'a' reads as a soft-masked A.
+
+  Declared here:
+    o = {N.}

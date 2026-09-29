@@ -1,0 +1,147 @@
+== 1. order differs (BAM chr1,chr2,chr10; index chr1,chr10,chr2): resolved by name.
+      chr2's @SQ M5 agrees with the index; the unmapped record is skipped without error;
+      chrRefOnly (only in the index) is never mentioned.
+$ alnbase query --parquet  reordered.bam ref.aref out.parquet
+read 3 records, scanned 2, skipped 1 (given a null row)
+  0 of 8 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+(exit 0)
+┌──────────┬──────────┬──────────┬───────────┬───────────┬─────────┐
+│  qname   │ ref_name │ refr_pos │ read_base │ refr_base │  name   │
+│ varchar  │ varchar  │  int64   │  varchar  │  varchar  │ varchar │
+├──────────┼──────────┼──────────┼───────────┼───────────┼─────────┤
+│ on_chr2  │ chr2     │        3 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        4 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        5 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        6 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        7 │ G         │ G         │ base    │
+│ on_chr10 │ chr10    │        0 │ C         │ C         │ base    │
+│ on_chr10 │ chr10    │        1 │ C         │ C         │ base    │
+│ on_chr10 │ chr10    │        2 │ C         │ C         │ base    │
+│ unmapped │ NULL     │     NULL │ NULL      │ NULL      │ NULL    │
+└──────────┴──────────┴──────────┴───────────┴───────────┴─────────┘
+
+== 2. same names and lengths, DIFFERENT sequence (chr2 GGGGGTTTTT): the header's M5 catches it
+$ alnbase query --parquet  reordered.bam other.aref out.parquet
+Error: the BAM header's @SQ M5 checksums disagree with the reference, so a contig with the same name and length holds different sequence:
+  chr2: M5 47e6617a37a2590e0cac54cb9f628788 in the BAM header, 116c6576580715b987b33c4f6c719a2c in the reference
+Re-index the FASTA the BAM was aligned against.
+(exit 1)
+   ... but without M5 in the header nothing can tell: it passes silently,
+       and read G over reference T is reported as if it were real
+$ alnbase query --parquet  no_m5.bam other.aref out.parquet
+read 3 records, scanned 2, skipped 1 (given a null row)
+  3 of 8 compared read bases differ from the reference (37.50%; a reference C read as T is not counted)
+(exit 0)
+┌──────────┬──────────┬──────────┬───────────┬───────────┬─────────┐
+│  qname   │ ref_name │ refr_pos │ read_base │ refr_base │  name   │
+│ varchar  │ varchar  │  int64   │  varchar  │  varchar  │ varchar │
+├──────────┼──────────┼──────────┼───────────┼───────────┼─────────┤
+│ on_chr2  │ chr2     │        3 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        4 │ G         │ G         │ base    │
+│ on_chr2  │ chr2     │        5 │ G         │ T         │ base    │
+│ on_chr2  │ chr2     │        6 │ G         │ T         │ base    │
+│ on_chr2  │ chr2     │        7 │ G         │ T         │ base    │
+│ on_chr10 │ chr10    │        0 │ C         │ C         │ base    │
+│ on_chr10 │ chr10    │        1 │ C         │ C         │ base    │
+│ on_chr10 │ chr10    │        2 │ C         │ C         │ base    │
+│ unmapped │ NULL     │     NULL │ NULL      │ NULL      │ NULL    │
+└──────────┴──────────┴──────────┴───────────┴───────────┴─────────┘
+
+== 3. a BAM-only contig with no records: warning only
+$ alnbase query --parquet  extra_contig_no_records.bam ref.aref out.parquet
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+read 1 records, scanned 1, skipped 0
+  0 of 3 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+(exit 0)
+┌─────────┬──────────┬──────────┬───────────┬───────────┬─────────┐
+│  qname  │ ref_name │ refr_pos │ read_base │ refr_base │  name   │
+│ varchar │ varchar  │  int64   │  varchar  │  varchar  │ varchar │
+├─────────┼──────────┼──────────┼───────────┼───────────┼─────────┤
+│ on_chr1 │ chr1     │        0 │ A         │ A         │ base    │
+│ on_chr1 │ chr1     │        1 │ A         │ A         │ base    │
+│ on_chr1 │ chr1     │        2 │ A         │ A         │ base    │
+└─────────┴──────────┴──────────┴───────────┴───────────┴─────────┘
+
+== 4. a record on a BAM-only contig: fatal by default ...
+$ alnbase query --parquet  extra_contig_with_records.bam ref.aref out.parquet
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+Error: record on_chrUn is on contig chrUn_BAMonly, which the reference does not have, so it cannot be scanned. Pass --permissive to skip such records and count them instead, or use the reference the BAM was aligned against.
+(exit 1)
+   ... skipped and counted with --permissive (it still gets a null row)
+$ alnbase query --parquet --permissive extra_contig_with_records.bam ref.aref out.parquet
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+read 3 records, scanned 2, skipped 1 (given a null row)
+  of those, 1 were on contigs the reference does not have
+  0 of 6 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+(exit 0)
+┌───────────────┬───────────────┬──────────┬───────────┬───────────┬─────────┐
+│     qname     │   ref_name    │ refr_pos │ read_base │ refr_base │  name   │
+│    varchar    │    varchar    │  int64   │  varchar  │  varchar  │ varchar │
+├───────────────┼───────────────┼──────────┼───────────┼───────────┼─────────┤
+│ on_chr1       │ chr1          │        0 │ A         │ A         │ base    │
+│ on_chr1       │ chr1          │        1 │ A         │ A         │ base    │
+│ on_chr1       │ chr1          │        2 │ A         │ A         │ base    │
+│ on_chrUn      │ chrUn_BAMonly │     NULL │ NULL      │ NULL      │ NULL    │
+│ on_chr1_again │ chr1          │        3 │ A         │ A         │ base    │
+│ on_chr1_again │ chr1          │        4 │ A         │ A         │ base    │
+│ on_chr1_again │ chr1          │        5 │ A         │ A         │ base    │
+└───────────────┴───────────────┴──────────┴───────────┴───────────┴─────────┘
+
+   ... and in BAM-tagging mode it is written through untagged
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+read 3 records, tagged 2, skipped 1 (written untagged)
+  of those, 1 were on contigs the reference does not have
+  0 of 6 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+on_chr1	chr1	1	xb:Z:bbb
+on_chrUn	chrUn_BAMonly	1
+on_chr1_again	chr1	4	xb:Z:bbb
+   ... without --permissive, BAM mode removes its partial output (parquet mode, above, removed its files too)
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+removed the incomplete output failed.bam
+cannot access 'failed.bam': No such file or directory
+== 5. a shared name with a different length: fatal
+$ alnbase query --parquet  length_mismatch.bam ref.aref out.parquet
+Error: the BAM and the reference disagree about contig lengths, so they are different assemblies:
+  chr2: 11 in the BAM, 10 in the reference
+Re-index the FASTA the BAM was aligned against.
+(exit 1)
+   header errors are raised before any output file exists:
+cannot access 'out_*.parquet': No such file or directory
+== 6. no shared names at all (1 vs chr1): fatal, even with no mapped records
+$ alnbase query --parquet  no_shared_names.bam ref.aref out.parquet
+Error: no contig in the BAM header is present in the reference by name.
+The BAM's first contigs are ["1", "2"]; the reference's are ["chr1", "chr10"].
+These are different references, or the same contigs under different naming conventions (`chr1` vs `1`, `chr1_GL456210_random` vs `GL456210.1`).
+(exit 1)
+== 7. overlap --refr builds the same map (length mismatch fatal); --trace-records
+      skips off-reference records SILENTLY, even without --permissive
+Error: the BAM and the reference disagree about contig lengths, so they are different assemblies:
+  chr2: 11 in the BAM, 10 in the reference
+Re-index the FASTA the BAM was aligned against.
+(exit 1)
+1 of 2 BAM contigs are not in the reference; records on them will be skipped:
+  chrUn_BAMonly (500 bp)
+on_chr1  chr1:1 (1-based POS)  (5 columns)
+  base: matches ending at column 1, 2, 3
+    column 1, anchor column 1: read A, refr A, walk offset 0, refr_pos 0 (0-based)
+      base                     true
+    column 2, anchor column 2: read A, refr A, walk offset 1, refr_pos 1 (0-based)
+      base                     true
+    column 3, anchor column 3: read A, refr A, walk offset 2, refr_pos 2 (0-based)
+      base                     true
+reference concordance: 0 of 3 compared read bases differ (0.0%; a reference C read as T is not counted)
+on_chr1_again  chr1:4 (1-based POS)  (5 columns)
+  base: matches ending at column 1, 2, 3
+    column 1, anchor column 1: read A, refr A, walk offset 0, refr_pos 3 (0-based)
+      base                     true
+    column 2, anchor column 2: read A, refr A, walk offset 1, refr_pos 4 (0-based)
+      base                     true
+    column 3, anchor column 3: read A, refr A, walk offset 2, refr_pos 5 (0-based)
+      base                     true
+reference concordance: 0 of 3 compared read bases differ (0.0%; a reference C read as T is not counted)
+(exit 0)

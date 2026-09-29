@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="320" class="svgbob">
+  <style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: white;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: white;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: white;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}
+
+</style>
+  <defs>
+    <marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,0 0,4 4,2 0,0"></polygon>
+    </marker>
+    <marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,2 2,0 4,2 2,4 0,2"></polygon>
+    </marker>
+    <marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="filled"></circle>
+    </marker>
+    <marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="bg_filled"></circle>
+    </marker>
+    <marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="3" class="bg_filled"></circle>
+    </marker>
+  </defs>
+  <rect class="backdrop" x="0" y="0" width="768" height="320"></rect>
+  <text x="266" y="12" >100</text>
+  <text x="586" y="12" >129</text>
+  <line x1="276" y1="16" x2="276" y2="40" class="solid"></line>
+  <line x1="596" y1="16" x2="596" y2="40" class="solid"></line>
+  <line x1="8" y1="38" x2="272" y2="38" class="solid"></line>
+  <line x1="8" y1="42" x2="272" y2="42" class="solid"></line>
+  <line x1="280" y1="38" x2="592" y2="38" class="solid"></line>
+  <line x1="280" y1="42" x2="592" y2="42" class="solid"></line>
+  <line x1="600" y1="38" x2="672" y2="38" class="solid"></line>
+  <line x1="600" y1="42" x2="672" y2="42" class="solid"></line>
+  <text x="674" y="44" >&gt;</text>
+  <text x="690" y="44" >reference</text>
+  <text x="10" y="76" >read</text>
+  <text x="50" y="76" >1</text>
+  <text x="66" y="76" >forward</text>
+  <line x1="304" y1="72" x2="576" y2="72" class="solid"></line>
+  <polygon points="576,68 584,72 576,76" class="filled"></polygon>
+  <text x="154" y="108" >walk</text>
+  <text x="266" y="108" >top</text>
+  <text x="298" y="108" >strand</text>
+  <line x1="416" y1="104" x2="584" y2="104" class="solid"></line>
+  <polygon points="584,100 592,104 584,108" class="filled"></polygon>
+  <text x="10" y="140" >read</text>
+  <text x="50" y="140" >1</text>
+  <text x="66" y="140" >reverse</text>
+  <polygon points="312,132 304,136 312,140" class="filled"></polygon>
+  <line x1="312" y1="136" x2="584" y2="136" class="solid"></line>
+  <text x="154" y="172" >walk</text>
+  <text x="266" y="172" >bottom</text>
+  <text x="322" y="172" >strand</text>
+  <polygon points="424,164 416,168 424,172" class="filled"></polygon>
+  <line x1="424" y1="168" x2="592" y2="168" class="solid"></line>
+  <text x="618" y="172" >complemented</text>
+  <text x="10" y="204" >read</text>
+  <text x="50" y="204" >2</text>
+  <text x="66" y="204" >forward</text>
+  <line x1="304" y1="200" x2="576" y2="200" class="solid"></line>
+  <polygon points="576,196 584,200 576,204" class="filled"></polygon>
+  <text x="154" y="236" >walk</text>
+  <text x="266" y="236" >bottom</text>
+  <text x="322" y="236" >strand</text>
+  <polygon points="424,228 416,232 424,236" class="filled"></polygon>
+  <line x1="424" y1="232" x2="592" y2="232" class="solid"></line>
+  <text x="618" y="236" >complemented</text>
+  <text x="10" y="268" >read</text>
+  <text x="50" y="268" >2</text>
+  <text x="66" y="268" >reverse</text>
+  <polygon points="312,260 304,264 312,268" class="filled"></polygon>
+  <line x1="312" y1="264" x2="584" y2="264" class="solid"></line>
+  <text x="154" y="300" >walk</text>
+  <text x="266" y="300" >top</text>
+  <text x="298" y="300" >strand</text>
+  <line x1="416" y1="296" x2="584" y2="296" class="solid"></line>
+  <polygon points="584,292 592,296 584,300" class="filled"></polygon>
+  <text x="10" y="12" >reference position (0-based)</text>
+  <text x="154" y="76" >FLAG 0x40</text>
+  <text x="266" y="76" >5′</text>
+  <text x="594" y="76" >3′</text>
+  <text x="266" y="92" >off_5p = 0</text>
+  <text x="530" y="92" >off_3p = 0</text>
+  <text x="154" y="140" >FLAG 0x50</text>
+  <text x="266" y="140" >3′</text>
+  <text x="594" y="140" >5′</text>
+  <text x="266" y="156" >off_3p = 0</text>
+  <text x="530" y="156" >off_5p = 0</text>
+  <text x="154" y="204" >FLAG 0x80</text>
+  <text x="266" y="204" >5′</text>
+  <text x="594" y="204" >3′</text>
+  <text x="266" y="220" >off_5p = 0</text>
+  <text x="530" y="220" >off_3p = 0</text>
+  <text x="154" y="268" >FLAG 0x90</text>
+  <text x="266" y="268" >3′</text>
+  <text x="594" y="268" >5′</text>
+  <text x="266" y="284" >off_3p = 0</text>
+  <text x="530" y="284" >off_5p = 0</text>
+</svg>

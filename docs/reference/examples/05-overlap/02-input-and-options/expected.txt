@@ -1,0 +1,239 @@
+### accepted: @HD SO:unsorted GO:query (as written)
+$ alnbase overlap  in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+
+### accepted: @HD SO:queryname
+$ alnbase overlap  in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+
+### rejected: SO:coordinate
+$ alnbase overlap  in.bam out.bam
+exit status: 1
+stderr| Error: records are ordered by coordinate, so a template's alignments are not adjacent. Group by name first: `samtools collate -O in.bam | ...`, or `samtools sort -n`.
+
+### rejected: @HD with neither SO nor GO
+$ alnbase overlap  in.bam out.bam
+exit status: 1
+stderr| Error: the @HD line declares neither SO: nor GO:, so the record order cannot be verified. Group by name first: `samtools collate -O in.bam | ...`
+
+### rejected: no @HD line
+$ alnbase overlap  in.bam out.bam
+exit status: 1
+stderr| Error: no @HD line, so the record order cannot be verified. Group by name first: `samtools collate -O in.bam | ...`
+
+### rejected: GO:query on a @CO line does not count
+$ alnbase overlap  in.bam out.bam
+exit status: 1
+stderr| Error: records are ordered by coordinate, so a template's alignments are not adjacent. Group by name first: `samtools collate -O in.bam | ...`, or `samtools sort -n`.
+
+### NOT detected: header says SO:queryname but records are interleaved (only the header is checked)
+$ alnbase overlap --stats - in.bam out.bam
+exit status: 0
+stderr| section	key	value
+stderr| counts	templates	4
+stderr| counts	templates_touched	0
+stderr| counts	no_overlap	4
+stderr| counts	resolved	0
+stderr| counts	kept_r1	0
+stderr| counts	kept_r2	0
+stderr| unresolved	low_support	0
+stderr| unresolved	short_span	0
+stderr| unresolved	anchor_slack	0
+stderr| unresolved	past_end	0
+stderr| unresolved	high_mismatch	0
+stderr| unresolved	ambiguous_L	0
+stderr| unresolved	indel_disagreement	0
+stderr| unresolved	inconsistent_length	0
+stderr| counts	positions_compared	0
+stderr| counts	positions_match	0
+stderr| counts	positions_mismatch	0
+stderr| counts	positions_unpaired	0
+stderr| counts	positions_ambiguous	0
+stderr| counts	bases_clipped	0
+stderr| counts	bases_hard_clipped	0
+stderr| counts	quals_raised	0
+stderr| counts	quals_lowered	0
+stderr| counts	bases_set_n	0
+stderr| counts	records_dropped	0
+stderr| rate_ppm	templates_touched	0
+stderr| rate_ppm	resolved_of_templates	0
+stderr| rate_ppm	unresolved_of_templates	0
+stderr| rate_ppm	mismatch_of_compared	0
+pair_overlap	99	chr1	41	60	40M	=	61	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????????????????????????	NM:i:0	MD:Z:40	AS:i:40	MC:Z:40M	oO:i:0
+pair_b	99	chr2	41	60	40M	=	61	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????????????????????????	NM:i:0	MD:Z:40	AS:i:40	MC:Z:40M	oO:i:0
+pair_overlap	147	chr1	61	60	40M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	????????????????????????????????????????	NM:i:0	MD:Z:40	AS:i:40	MC:Z:40M	oO:i:0
+pair_b	147	chr2	61	60	40M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	????????????????????????????????????????	NM:i:0	MD:Z:40	AS:i:40	MC:Z:40M	oO:i:0
+
+=== option validation (each is refused before any record is read) ===
+### invalid: --stale-tags recompute
+$ alnbase overlap --stale-tags recompute in.bam out.bam
+exit status: 1
+stderr| Error: --stale-tags recompute needs --refr: NM and MD are defined against the reference. AS is stripped either way, because it is the aligner's own score and cannot be honestly regenerated.
+
+### invalid: --tag-prefix x
+$ alnbase overlap --tag-prefix x in.bam out.bam
+exit status: 1
+stderr| Error: --tag-prefix x collides with Bismark's XM, XR and XG tags, which carry the methylation call string. Use a lower-case prefix such as the default 'o', or pass --no-tag.
+
+### invalid: --tag-prefix X
+$ alnbase overlap --tag-prefix X in.bam out.bam
+exit status: 1
+stderr| Error: --tag-prefix x collides with Bismark's XM, XR and XG tags, which carry the methylation call string. Use a lower-case prefix such as the default 'o', or pass --no-tag.
+
+### invalid: --tag-prefix ov
+$ alnbase overlap --tag-prefix ov in.bam out.bam
+exit status: 1
+stderr| Error: --tag-prefix must be a single letter, not "ov"
+
+### invalid: --tag-prefix 1
+$ alnbase overlap --tag-prefix 1 in.bam out.bam
+exit status: 1
+stderr| Error: --tag-prefix must be a single letter, not "1"
+
+### invalid: --length-tag XM
+$ alnbase overlap --length-tag XM in.bam out.bam
+exit status: 1
+stderr| Error: --length-tag XM is Bismark's methylation call string. Choose another two-letter tag; the default XL is free.
+
+### invalid: --length-tag nm
+$ alnbase overlap --length-tag nm in.bam out.bam
+exit status: 1
+stderr| Error: --length-tag NM is the edit distance. Choose another two-letter tag; the default XL is free.
+
+### invalid: --length-tag X
+$ alnbase overlap --length-tag X in.bam out.bam
+exit status: 1
+stderr| Error: --length-tag must be two characters, a letter then a letter or digit, not "X"
+
+### invalid: --length-tag 1L
+$ alnbase overlap --length-tag 1L in.bam out.bam
+exit status: 1
+stderr| Error: --length-tag must be two characters, a letter then a letter or digit, not "1L"
+
+### invalid: --length-tag oL
+$ alnbase overlap --length-tag oL in.bam out.bam
+exit status: 1
+stderr| Error: --length-tag oL shares its first letter with --tag-prefix o, so it could collide with the diagnostic tags. Choose one or the other.
+
+### invalid: --qual-cap 94
+$ alnbase overlap --qual-cap 94 in.bam out.bam
+exit status: 1
+stderr| Error: --qual-cap above 93 is not representable in SAM
+
+### invalid: --min-support 0
+$ alnbase overlap --min-support 0 in.bam out.bam
+exit status: 1
+stderr| Error: --min-support 0 would let a fragment length be believed on no evidence at all
+
+### invalid: --min-overlap 0
+$ alnbase overlap --min-overlap 0 in.bam out.bam
+exit status: 1
+stderr| Error: --min-overlap 0 would try to resolve a zero-length overlap
+
+### invalid: --min-span-frac 1.5
+$ alnbase overlap --min-span-frac 1.5 in.bam out.bam
+exit status: 1
+stderr| Error: --min-span-frac is a fraction, so it must be in [0, 1]
+
+### invalid: --max-mismatch-frac=-0.1
+$ alnbase overlap --max-mismatch-frac=-0.1 in.bam out.bam
+exit status: 1
+stderr| Error: --max-mismatch-frac is a fraction, so it must be in [0, 1]
+
+### invalid: --keep r3
+$ alnbase overlap --keep r3 in.bam out.bam
+exit status: 2
+stderr| error: invalid value 'r3' for '--keep <KEEP>'
+stderr|   [possible values: r1, r2, score]
+stderr| 
+stderr| For more information, try '--help'.
+
+### invalid: --qual-cap 300
+$ alnbase overlap --qual-cap 300 in.bam out.bam
+exit status: 2
+stderr| error: invalid value '300' for '--qual-cap <N>': 300 is not in 0..=255
+stderr| 
+stderr| For more information, try '--help'.
+
+### allowed: --tag-prefix x with --no-tag
+$ alnbase overlap --tag-prefix x --no-tag in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M
+
+### allowed: --length-tag oL with --no-tag
+$ alnbase overlap --length-tag oL --no-tag in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M
+
+### renamed tags: --tag-prefix q --length-tag ZF
+$ alnbase overlap --tag-prefix q --length-tag ZF in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	ZF:i:60	qO:i:20	qN:i:20	qS:f:1	qX:i:0	qK:A:1	qv:i:20
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	ZF:i:60	qO:i:20	qN:i:20	qS:f:1	qX:i:0	qK:A:1	qv:i:40
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	ZF:i:60	qO:i:20	qN:i:20	qS:f:1	qX:i:0	qK:A:1	qv:i:20
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	ZF:i:60	qO:i:20	qN:i:20	qS:f:1	qX:i:0	qK:A:1	qv:i:40
+
+### QUAL '*' on pair_overlap stays '*' (output piped through cat -v to show the bytes)
+pair_overlap	99	chr1	41	60	40M	*
+pair_overlap	147	chr1	81	60	20S20M	*
+
+### --compression-level sets the output compression (output sizes in bytes)
+level 0: 970
+level 3: 535
+level 9: 511
+
+### --no-tag on an already-tagged file leaves the old tags in place
+pair_overlap	99	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_overlap	147	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+pair_b	99	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+pair_b	147	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+
+### second pass over the first pass's output (default options)
+section	key	value
+counts	templates	2
+counts	templates_touched	0
+counts	no_overlap	2
+counts	resolved	0
+counts	kept_r1	0
+counts	kept_r2	0
+unresolved	low_support	0
+unresolved	short_span	0
+unresolved	anchor_slack	0
+unresolved	past_end	0
+unresolved	high_mismatch	0
+unresolved	ambiguous_L	0
+unresolved	indel_disagreement	0
+unresolved	inconsistent_length	0
+counts	positions_compared	0
+counts	positions_match	0
+counts	positions_mismatch	0
+counts	positions_unpaired	0
+counts	positions_ambiguous	0
+counts	bases_clipped	0
+counts	bases_hard_clipped	0
+counts	quals_raised	0
+counts	quals_lowered	0
+counts	bases_set_n	0
+counts	records_dropped	0
+rate_ppm	templates_touched	0
+rate_ppm	resolved_of_templates	0
+rate_ppm	unresolved_of_templates	0
+rate_ppm	mismatch_of_compared	0
+pair_overlap	99	chr1	41	60	40M	=	81	60	TGTCGAGCGACGGAATTAGATCAGTTAAATGGCAGAAAAC	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	oO:i:0
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	TCAGTTAAATGGCAGAAAACTGGCAGGGCTTTTAGTCGTG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	oO:i:0
+pair_b	99	chr2	41	60	40M	=	81	60	TCAGGGATATAGAATCCTAAATCAGAAATGGAACAAAGCA	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:0	MD:Z:40	AS:i:40	MC:Z:20S20M	oO:i:0
+pair_b	147	chr2	81	60	20S20M	=	41	-60	ATCAGAAATGGAACAAAGCACCCTTGGTGTATCTCTTCTC	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	oO:i:0

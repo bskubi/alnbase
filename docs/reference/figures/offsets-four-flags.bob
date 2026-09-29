@@ -1,0 +1,19 @@
+ "reference position (0-based)"  100                                     129
+                                  |                                       |
+ =================================+=======================================+=========> reference
+
+ read 1 forward    "FLAG 0x40"   "5′" ----------------------------------> "3′"
+                                 "off_5p = 0"                     "off_3p = 0"
+                   walk          top strand         --------------------->
+
+ read 1 reverse    "FLAG 0x50"   "3′" <---------------------------------- "5′"
+                                 "off_3p = 0"                     "off_5p = 0"
+                   walk          bottom strand      <---------------------   complemented
+
+ read 2 forward    "FLAG 0x80"   "5′" ----------------------------------> "3′"
+                                 "off_5p = 0"                     "off_3p = 0"
+                   walk          bottom strand      <---------------------   complemented
+
+ read 2 reverse    "FLAG 0x90"   "3′" <---------------------------------- "5′"
+                                 "off_3p = 0"                     "off_5p = 0"
+                   walk          top strand         --------------------->

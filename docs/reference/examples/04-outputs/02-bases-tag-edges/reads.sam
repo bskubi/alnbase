@@ -1,0 +1,11 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:20
+@SQ	SN:chrUn	LN:100
+@CO	fwd: flag 0, covers chr1 1-14. CG C at SEQ 3 (converted, T) and SEQ 8 (protected, C). Last base is SEQ 13.
+@CO	rev: flag 16, same bases. OB: CG G at SEQ 4 and 9; read shows G at both (protected).
+@CO	offref: flag 0 on chrUn, which ref.fa lacks. Stops the run unless --permissive; then written untagged.
+@CO	unmapped: flag 4. Written unchanged.
+fwd	0	chr1	1	60	14M	*	0	0	TTTTGTTTCGTTTT	IIIIIIIIIIIIII
+rev	16	chr1	1	60	14M	*	0	0	TTTCGTTTCGTTTT	IIIIIIIIIIIIII
+offref	0	chrUn	1	60	14M	*	0	0	TTTTGTTTCGTTTT	IIIIIIIIIIIIII
+unmapped	4	*	0	0	*	*	0	0	ACGT	IIII

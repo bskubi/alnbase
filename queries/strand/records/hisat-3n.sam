@@ -1,0 +1,12 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/hisat-3n.toml
+@CO	queries/strand/hisat-3n.toml -- YZ, the 3N index the read hit.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
++:forward/plus-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	YZ:A:+
++:reverse/plus-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	YZ:A:+
+-:reverse/minus-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	YZ:A:-
+-:forward/minus-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	YZ:A:-

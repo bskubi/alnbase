@@ -1,0 +1,17 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/astair.toml
+@CO	queries/strand/astair.toml -- asTair's own table of six FLAG integers, plus the unknown arm
+@CO	that makes it total. FLAG 65 is what bwa gave the not-proper pair in
+@CO	validation/demos/astair-strand; without the arm the run aborts on it.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
++:forward/99	99	chr1	101	60	4M	=	301	200	ACGT	IIII
++:reverse/147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII
+-:reverse/83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII
+-:forward/163	163	chr1	101	60	4M	=	301	200	ACGT	IIII
++:forward/0	0	chr1	101	60	4M	*	0	0	ACGT	IIII
+-:reverse/16	16	chr1	101	60	4M	*	0	0	ACGT	IIII
+unknown/65	65	chr1	101	60	4M	=	241	141	ACGT	IIII

@@ -1,0 +1,46 @@
+== flat.toml
+┌─────────────┬─────────────┐
+│ column_name │ column_type │
+│   varchar   │   varchar   │
+├─────────────┼─────────────┤
+│ name        │ VARCHAR     │
+│ off_5p      │ BIGINT      │
+│ off_3p      │ BIGINT      │
+│ refr_pos    │ BIGINT      │
+│ qual        │ UTINYINT    │
+│ read_base   │ VARCHAR     │
+│ refr_base   │ VARCHAR     │
+└─────────────┴─────────────┘
+
+== list.toml
+┌──────────────────┬─────────────┐
+│   column_name    │ column_type │
+│     varchar      │   varchar   │
+├──────────────────┼─────────────┤
+│ name             │ VARCHAR     │
+│ off_5p           │ BIGINT      │
+│ off_3p           │ BIGINT      │
+│ refr_pos         │ BIGINT      │
+│ qual             │ UTINYINT    │
+│ capture_col      │ INTEGER[]   │
+│ capture_read     │ VARCHAR[]   │
+│ capture_refr     │ VARCHAR[]   │
+│ capture_qual     │ UTINYINT[]  │
+│ capture_off_5p   │ BIGINT[]    │
+│ capture_off_3p   │ BIGINT[]    │
+│ capture_refr_pos │ BIGINT[]    │
+└──────────────────┴─────────────┘
+  12 rows              2 columns
+
+┌─────────┬─────────┬─────────┬───────────┬───────────┬───────────┬─────────┬────────────┐
+│  qname  │  name   │   col   │    rd     │    rf     │   off5    │   pos   │     q      │
+│ varchar │ varchar │ int32[] │ varchar[] │ varchar[] │  int64[]  │ int64[] │  uint8[]   │
+├─────────┼─────────┼─────────┼───────────┼───────────┼───────────┼─────────┼────────────┤
+│ r1      │ CG      │ [0]     │ [T]       │ [C]       │ [3]       │ [3]     │ [40]       │
+│ r1      │ CN_next │ [0, 1]  │ [T, G]    │ [C, G]    │ [3, 4]    │ [3, 4]  │ [40, 40]   │
+│ r1      │ CN_next │ [0, 1]  │ [T, A]    │ [C, A]    │ [9, 10]   │ [9, 10] │ [40, 40]   │
+│ r_del   │ CG      │ [0]     │ [T]       │ [C]       │ [3]       │ [3]     │ [40]       │
+│ r_del   │ CN_next │ [0, 1]  │ [T, .]    │ [C, G]    │ [3, NULL] │ [3, 4]  │ [40, NULL] │
+│ r_del   │ CN_next │ [0, 1]  │ [T, A]    │ [C, A]    │ [8, 9]    │ [9, 10] │ [40, 40]   │
+└─────────┴─────────┴─────────┴───────────┴───────────┴───────────┴─────────┴────────────┘
+

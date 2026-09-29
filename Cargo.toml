@@ -1,0 +1,45 @@
+[package]
+name = "alnbase"
+version = "0.1.26"
+edition = "2024"
+# Edition 2024 needs 1.85; an older toolchain should say so rather than fail
+# somewhere inside a dependency.
+rust-version = "1.85"
+description = "Query aligned read/reference columns and record the answers as BAM tags or parquet rows"
+readme = "README.md"
+keywords = ["bioinformatics", "bam", "methylation", "bisulfite", "alignment"]
+categories = ["science", "command-line-utilities"]
+# TODO: choose before publishing. Both are a decision for the project, not a
+# default worth guessing at.
+# license = "MIT OR Apache-2.0"
+# repository = "https://github.com/.../alnbase"
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0.104"
+itertools = "0.13"
+memmap2 = "0.9.11"
+# MD5 of each contig, stored in the index and compared with @SQ M5.
+md-5 = "0.10"
+rust-htslib = { version = "1.0.1", features = ["libdeflate", "curl", "s3", "gcs"], default-features = false }
+clap = { version = "4", features = ["derive"] }
+arrow = "59.2.0"
+parquet = "59.2.0"
+bytemuck = { version = "1.25.2", features = ["derive"] }
+mimalloc = { version = "0.1", default-features = false }
+serde = { version = "1", features = ["derive"] }
+# The run manifest beside a hit table, and in its footer.
+serde_json = "1"
+# preserve_order: without it the toml crate hands tables over sorted, and queries
+# lose the order the file declares them in.
+toml = { version = "1", default-features = false, features = ["std", "serde", "parse", "preserve_order"] }
+indexmap = { version = "2", features = ["serde"] }
+
+# A release build carries no debug info. Profiling wants it, and wants the
+# same optimisation, so that is its own profile: `cargo build --profile
+# profiling`. Keeping it on `release` made every shipped binary 122 MB.
+[profile.profiling]
+inherits = "release"
+debug = 1
+

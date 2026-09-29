@@ -1,0 +1,29 @@
+## 1. -F CB:Z,mapq,is_duplicate --partition-by CB:Z --only-hits
+warning: partitioning by CB rather than qname: a fragment's alignments can land in different files, so mate-overlap resolution cannot see both sides of one fragment within a file
+read 5 records, scanned 5, skipped 0
+  0 of 100 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+[('AAA', 1), ('CCC', 1)]
+┌─────────┬─────────┬──────────┬───────┬───────┐
+│   CB    │   ctx   │ refr_pos │ meth  │ calls │
+│ varchar │ varchar │  int64   │ int64 │ int64 │
+├─────────┼─────────┼──────────┼───────┼───────┤
+│ AAA     │ CG      │        3 │     2 │     2 │
+│ AAA     │ CG      │       13 │     1 │     2 │
+│ AAA     │ CHG     │        7 │     1 │     2 │
+│ CCC     │ CG      │        3 │     0 │     1 │
+│ CCC     │ CG      │       13 │     0 │     1 │
+│ CCC     │ CHG     │        7 │     0 │     1 │
+└─────────┴─────────┴──────────┴───────┴───────┘
+
+## 2. the same contexts from captures
+read 5 records, scanned 5, skipped 0
+  0 of 100 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+┌─────────┬──────────┬─────────┬──────────────┬─────────┐
+│  qname  │ refr_pos │ read_c  │ capture_refr │   ctx   │
+│ varchar │  int64   │ varchar │  varchar[]   │ varchar │
+├─────────┼──────────┼─────────┼──────────────┼─────────┤
+│ a2      │        3 │ C       │ [C, G, T]    │ CG      │
+│ a2      │        7 │ C       │ [C, A, G]    │ CHG     │
+│ a2      │       13 │ C       │ [C, G, T]    │ CG      │
+└─────────┴──────────┴─────────┴──────────────┴─────────┘
+

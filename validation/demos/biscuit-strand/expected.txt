@@ -1,0 +1,70 @@
+
+== The four pairs, each named for the strand its read 1 came from
+OT    fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT (both runs)
+CTOT  fragment chr1 1-based 351-550: read 1 from CTOT, read 2 from OT (non-directional only)
+OB    fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB (both runs)
+CTOB  fragment chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB (non-directional only)
+
+== BISCUIT, paired-end, -b 1 (directional) and -b 0 (non-directional, the default)
+
+== What BISCUIT wrote for each record, and what the rule makes of it
+
+-- -b 1: the OT and OB pairs, which is all a directional library holds
+pair  really is origin FLAG  YD  rule: conv   rule: sequenced POS    mismatches
+OB    read 1    OB     81    r   - (want -)   reverse (want reverse) 741    0
+OB    read 2    CTOB   161   r   - (want -)   forward (want forward) 601    0
+OT    read 1    OT     97    f   + (want +)   forward (want forward) 101    0
+OT    read 2    CTOT   145   f   + (want +)   reverse (want reverse) 241    0
+YD:A:f records came from CTOT and OT
+YD:A:r records came from CTOB and OB
+records whose conversion strand the rule gets wrong: 0 of 4
+records whose sequenced direction the rule gets wrong: 0 of 4
+records whose 0x10 bit contradicts how SEQ was actually stored: 0
+records not stored reference-forward: 0
+
+-- -b 0 (the default): all four pairs
+pair  really is origin FLAG  YD  rule: conv   rule: sequenced POS    mismatches
+CTOB  read 1    CTOB   97    r   - (want -)   forward (want forward) 851    0
+CTOB  read 2    OB     145   r   - (want -)   reverse (want reverse) 991    0
+CTOT  read 1    CTOT   81    f   + (want +)   reverse (want reverse) 491    0
+CTOT  read 2    OT     161   f   + (want +)   forward (want forward) 351    0
+OB    read 1    OB     81    r   - (want -)   reverse (want reverse) 741    0
+OB    read 2    CTOB   161   r   - (want -)   forward (want forward) 601    0
+OT    read 1    OT     97    f   + (want +)   forward (want forward) 101    0
+OT    read 2    CTOT   145   f   + (want +)   reverse (want reverse) 241    0
+YD:A:f records came from CTOT and OT
+YD:A:r records came from CTOB and OB
+records whose conversion strand the rule gets wrong: 0 of 8
+records whose sequenced direction the rule gets wrong: 0 of 8
+records whose 0x10 bit contradicts how SEQ was actually stored: 0
+records not stored reference-forward: 0
+
+== alnbase, reading the rule and nothing else
+-- dir
+read 4 records, scanned 4, skipped 0
+  0 of 240 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- nd
+read 8 records, scanned 8, skipped 0
+  0 of 480 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+
+-- -b 1: 29 CG hits over 4 records
+pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+OB    81    -      null        True          7    G
+OB    161   -      null        False         7    G
+OT    97    +      null        False         9    C
+OT    145   +      null        True          6    C
+hits whose anchor is not the informative base for the strand alnbase walked: 0
+records given a strand of origin by a rule that names only the conversion strand: 0
+
+-- -b 0: 56 CG hits over 8 records
+pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+CTOB  97    -      null        False         5    G
+CTOB  145   -      null        True          7    G
+CTOT  81    +      null        True          8    C
+CTOT  161   +      null        False         7    C
+OB    81    -      null        True          7    G
+OB    161   -      null        False         7    G
+OT    97    +      null        False         9    C
+OT    145   +      null        True          6    C
+hits whose anchor is not the informative base for the strand alnbase walked: 0
+records given a strand of origin by a rule that names only the conversion strand: 0

@@ -1,0 +1,8 @@
+# run 1, file 1: a second bases tag, XE, marking the last two read bases (N~_ fires where the pad starts at column 1 or 2).
+[query.nearend]
+read = "N~_"
+refr = "~~~"
+
+[tag.XE.bases]
+fill = "-"
+e = "nearend"

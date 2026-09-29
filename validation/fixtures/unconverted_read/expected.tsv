@@ -1,0 +1,13 @@
+qname	strand	refr_pos	name	read_base	qual
+conv	+	1	CG_unmet	T	40
+conv	+	4	CG_unmet	T	40
+conv	+	7	CG_unmet	T	40
+conv	+	10	CG_unmet	T	40
+conv	+	13	CG_unmet	T	40
+conv	+	16	CG_unmet	T	40
+unconv	+	1	CG_met	C	40
+unconv	+	4	CG_met	C	40
+unconv	+	7	CG_met	C	40
+unconv	+	10	CG_met	C	40
+unconv	+	13	CG_met	C	40
+unconv	+	16	CG_met	C	40

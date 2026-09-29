@@ -1,0 +1,17 @@
+# CG calls as ALLCools' CGN context counts them: a reference C followed by a reference
+# G, read C methylated and read T unmethylated. alnbase orients each read along its
+# conversion strand, so this covers the C on both strands.
+
+[pat.C_then_G]
+read = "C~"
+refr = "CG"
+
+[pat.T_then_G]
+read = "T~"
+refr = "CG"
+
+[query.CG_methylated]
+where = "C_then_G"
+
+[query.CG_unmethylated]
+where = "T_then_G"

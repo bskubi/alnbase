@@ -1,0 +1,46 @@
+# Bismark 0.25.1 -- XR:Z and XG:Z, four-way from the two tags together.
+#
+# Read 2026-09-17 from Bismark 0.25.1 (XR at bismark:8611,9059; XG at :8615,9064).
+#
+# XR is the conversion the read itself shows and XG the converted genome index that won,
+# so XR is CT for the two converted originals (OT, OB) and GA for their complements
+# (CTOT, CTOB), while XG is CT for the two top-strand indexes (OT, CTOT). Both tags are
+# per-record and per-mate, which is what lets this file cover single-end and paired-end
+# with one table. Confirmed against real Bismark BAMs, both layouts:
+#
+#    99 XR:Z:CT XG:Z:CT  OT       0 XR:Z:CT XG:Z:CT  OT
+#   147 XR:Z:GA XG:Z:CT  CTOT     0 XR:Z:GA XG:Z:CT  CTOT
+#    83 XR:Z:CT XG:Z:GA  OB      16 XR:Z:CT XG:Z:GA  OB
+#   163 XR:Z:GA XG:Z:GA  CTOB    16 XR:Z:GA XG:Z:GA  CTOB
+#
+# The single-end column is why the tags have to be read: there 0x10 is set from the genome
+# conversion rather than from SEQ's orientation (bismark:8518-8546, SEQ reference-forward
+# at :8578-8582), so it equals XG == "GA" and says nothing about which end the sequencer
+# started at. That applies to every single-end run, including --pbat and --non_directional.
+#
+# --non_directional paired-end is covered as well, checked 2026-09-17 against a real
+# --non_directional BAM (validation/demos/bismark-nondirectional-pe): four pairs, one per
+# strand of origin, all eight records called as the strand they were sequenced from.
+# Bismark swaps 0x40 and 0x80 on CTOT and CTOB pairs so browsers do not call them
+# discordant (:8818-8867), and the run confirms it: on those two pairs every record's mate
+# bit names the other mate. The tags do not move with it -- XR_tag_1 is printed beside
+# flag_1 on the same line (:9192-9214) -- so the table above holds per record. Anything
+# that reads 0x40 to decide which strand a mate came from has those four records backwards.
+# Where --strandID is in use, its YS:Z gives OT/CTOT/OB/CTOB directly and is the rule to
+# prefer.
+#
+# --pbat is covered too, and this is the file to use for it in both layouts, checked
+# 2026-09-18 against real --pbat output (validation/demos/pbat-strand): 402 paired-end and
+# 201 single-end records, every one called as the strand it was built from. Do not reason
+# from the library here. Under --pbat every pair is CTOT or CTOB, so the 0x40/0x80 swap above
+# applies to all of them and the paired-end BAM arrives in the directional arrangement --
+# directional.toml is also right on all 402 records, and a rule written for a PBAT library
+# would be wrong on all 402, naming the opposite conversion strand. Single-end, this file is
+# the only one that is right: 0x10 carried the genome conversion on 201 of 201 records,
+# contradicting how SEQ was really stored, so no rule over the FLAG can name those records.
+
+[strand.origin]
+OT   = 'XR == "CT" and XG == "CT"'
+CTOT = 'XR == "GA" and XG == "CT"'
+OB   = 'XR == "CT" and XG == "GA"'
+CTOB = 'XR == "GA" and XG == "GA"'

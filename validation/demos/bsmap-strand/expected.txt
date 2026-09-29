@@ -1,0 +1,78 @@
+
+== The four pairs, each named for the strand its read 1 came from
+OT    fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT (both runs)
+CTOT  fragment chr1 1-based 351-550: read 1 from CTOT, read 2 from OT (non-directional only)
+OB    fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB (both runs)
+CTOB  fragment chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB (non-directional only)
+
+== BSMAP, paired-end, -n 0 (the default) and -n 1 (all four strands)
+
+== What BSMAP wrote for each record, and what the rule makes of it
+
+-- -n 0, the default: the OT and OB pairs, which is all a directional library holds
+pair  really is origin FLAG  ZS  rule says        POS    mismatches
+OB    read 1    OB     83    -+  OB (want OB)     741    0
+OB    read 2    CTOB   163   --  CTOB (want CTOB) 601    0
+OT    read 1    OT     99    ++  OT (want OT)     101    0
+OT    read 2    CTOT   147   +-  CTOT (want CTOT) 241    0
+distinct ZS values emitted: ++ +- -+ --
+records whose strand of origin the rule gets wrong: 0 of 4
+records whose 0x10 bit contradicts how SEQ was actually stored: 0
+records where 0x10 is not set exactly when ZS's two characters differ: 0
+records not stored reference-forward: 0
+
+-- -n 1: all four pairs
+pair  really is origin FLAG  ZS  rule says        POS    mismatches
+CTOB  read 1    CTOB   99    --  CTOB (want CTOB) 851    0
+CTOB  read 2    OB     147   -+  OB (want OB)     991    0
+CTOT  read 1    CTOT   81    -+  OB (want CTOT)   491    0
+CTOT  read 2    OT     161   ++  OT (want OT)     351    0
+OB    read 1    OB     83    -+  OB (want OB)     741    0
+OB    read 2    CTOB   163   --  CTOB (want CTOB) 601    0
+OT    read 1    OT     99    ++  OT (want OT)     101    0
+OT    read 2    CTOT   147   +-  CTOT (want CTOT) 241    0
+distinct ZS values emitted: ++ +- -+ --
+records whose strand of origin the rule gets wrong: 1 of 8
+records whose 0x10 bit contradicts how SEQ was actually stored: 0
+records where 0x10 is not set exactly when ZS's two characters differ: 0
+records not stored reference-forward: 0
+
+== How often BSMAP names the wrong conversion strand
+	aligned reads: 456 (100.0%), unique reads: 456 (100.0%), non-unique reads: 0 (0.0%)
+OT   reads aligned 114, strand of origin wrong  0
+CTOT reads aligned 114, strand of origin wrong  5
+OB   reads aligned 114, strand of origin wrong  0
+CTOB reads aligned 114, strand of origin wrong  5
+what the wrong ones were called: CTOB as OT (5), CTOT as OB (5)
+reads placed at the wrong position: 0
+copy-strand reads where 'the wrong-chain hit fits in 5 mismatches' predicts what BSMAP did: 226 of 228
+
+== alnbase, reading the rule and nothing else
+-- dir
+read 4 records, scanned 4, skipped 0
+  0 of 240 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- nd
+read 8 records, scanned 8, skipped 0
+  5 of 480 compared read bases differ from the reference (1.04%; a reference C read as T is not counted)
+
+-- -n 0: 29 CG hits over 4 records
+pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+OB    83    -      OB          True          7    G
+OB    163   -      CTOB        False         7    G
+OT    99    +      OT          False         9    C
+OT    147   +      CTOT        True          6    C
+hits whose anchor is not the informative base for the strand alnbase walked: 0
+hits with no strand of origin: 0; hits whose strand of origin is neither the pair's nor its mate's: 0
+
+-- -n 1: 56 CG hits over 8 records
+pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+CTOB  99    -      CTOB        False         5    G
+CTOB  147   -      OB          True          7    G
+CTOT  81    -      OB          True          8    G
+CTOT  161   +      OT          False         7    C
+OB    83    -      OB          True          7    G
+OB    163   -      CTOB        False         7    G
+OT    99    +      OT          False         9    C
+OT    147   +      CTOT        True          6    C
+hits whose anchor is not the informative base for the strand alnbase walked: 0
+hits with no strand of origin: 0; hits whose strand of origin is neither the pair's nor its mate's: 8

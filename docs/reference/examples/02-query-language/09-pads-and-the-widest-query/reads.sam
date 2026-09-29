@@ -1,0 +1,7 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:44
+@CO	One forward read aligned to 0-based 12..31 (POS 13, 20M). Reference CGs:
+@CO	  7-8   wholly before the read, 4-5 bases out
+@CO	  11-12 straddling the read's first base (C before it, G = first read base)
+@CO	  35-36 wholly after the read, 4-5 bases out
+read1	0	chr1	13	60	20M	*	0	0	GTTTTTTTTTTTTTTTTTTT	IIIIIIIIIIIIIIIIIIII

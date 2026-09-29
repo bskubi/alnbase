@@ -1,0 +1,19 @@
+# premethyst bam-extract (Perl, run from a GitHub master checkout, fa5a47b) and the aligner
+# whose XB tags it reads by default: BSBolt, GitHub master ea4870e (= 1.6.0), built from
+# source by build_bsbolt.sh. Bismark (for -B input) is in bismark.yaml.
+name: premethyst
+channels: [conda-forge, bioconda]
+dependencies:
+  - python=3.8
+  - pip
+  - perl
+  - samtools=1.24
+  - c-compiler
+  - make
+  - autoconf
+  - automake
+  - zlib
+  - git
+  - pysam
+  - numpy
+  - tqdm

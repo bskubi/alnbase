@@ -1,0 +1,41 @@
+setup	anchor	found	total	rate
+collapsed, no list	6	0	400	0.0000
+collapsed, no list	8	0	400	0.0000
+collapsed, no list	10	0	400	0.0000
+collapsed, no list	12	0	400	0.0000
+collapsed, no list	14	299	400	0.7475
+collapsed, no list	16	400	400	1.0000
+collapsed, no list	20	400	400	1.0000
+collapsed, no list	30	400	400	1.0000
+collapsed, canonical list	6	0	400	0.0000
+collapsed, canonical list	8	0	400	0.0000
+collapsed, canonical list	10	0	400	0.0000
+collapsed, canonical list	12	0	400	0.0000
+collapsed, canonical list	14	210	400	0.5250
+collapsed, canonical list	16	305	400	0.7625
+collapsed, canonical list	20	295	400	0.7375
+collapsed, canonical list	30	400	400	1.0000
+motif protected, no list	6	0	400	0.0000
+motif protected, no list	8	0	400	0.0000
+motif protected, no list	10	0	400	0.0000
+motif protected, no list	12	296	400	0.7400
+motif protected, no list	14	400	400	1.0000
+motif protected, no list	16	400	400	1.0000
+motif protected, no list	20	400	400	1.0000
+motif protected, no list	30	400	400	1.0000
+motif protected, canonical list	6	0	400	0.0000
+motif protected, canonical list	8	0	400	0.0000
+motif protected, canonical list	10	0	400	0.0000
+motif protected, canonical list	12	296	400	0.7400
+motif protected, canonical list	14	311	400	0.7775
+motif protected, canonical list	16	305	400	0.7625
+motif protected, canonical list	20	295	400	0.7375
+motif protected, canonical list	30	400	400	1.0000
+skipping pair in the list	6	400	400	1.0000
+skipping pair in the list	8	400	400	1.0000
+skipping pair in the list	10	400	400	1.0000
+skipping pair in the list	12	400	400	1.0000
+skipping pair in the list	14	400	400	1.0000
+skipping pair in the list	16	400	400	1.0000
+skipping pair in the list	20	400	400	1.0000
+skipping pair in the list	30	400	400	1.0000

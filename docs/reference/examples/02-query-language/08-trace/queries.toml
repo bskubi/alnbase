@@ -1,0 +1,11 @@
+[pat.cg_0del]
+read = "C~~"
+refr = "CG~"
+[pat.cg_1del]
+read = "C.~"
+refr = "C~G"
+[query.CG_skip1]
+where = "cg_0del or cg_1del"
+[query.CHH]
+read = "C~~"
+refr = "CHH"

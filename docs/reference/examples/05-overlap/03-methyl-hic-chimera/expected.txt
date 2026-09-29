@@ -1,0 +1,72 @@
+### defaults
+$ alnbase overlap --stats - in.bam out.bam
+exit status: 0
+stderr| section	key	value
+stderr| counts	templates	4
+stderr| counts	templates_touched	4
+stderr| counts	no_overlap	0
+stderr| counts	resolved	4
+stderr| counts	kept_r1	2
+stderr| counts	kept_r2	2
+stderr| unresolved	low_support	0
+stderr| unresolved	short_span	0
+stderr| unresolved	anchor_slack	0
+stderr| unresolved	past_end	0
+stderr| unresolved	high_mismatch	0
+stderr| unresolved	ambiguous_L	0
+stderr| unresolved	indel_disagreement	0
+stderr| unresolved	inconsistent_length	0
+stderr| counts	positions_compared	80
+stderr| counts	positions_match	80
+stderr| counts	positions_mismatch	0
+stderr| counts	positions_unpaired	0
+stderr| counts	positions_ambiguous	0
+stderr| counts	bases_clipped	70
+stderr| counts	bases_hard_clipped	0
+stderr| counts	quals_raised	160
+stderr| counts	quals_lowered	0
+stderr| counts	bases_set_n	0
+stderr| counts	records_dropped	1
+stderr| rate_ppm	templates_touched	1000000
+stderr| rate_ppm	resolved_of_templates	1000000
+stderr| rate_ppm	unresolved_of_templates	0
+stderr| rate_ppm	mismatch_of_compared	0
+stderr| overlap_len	15	2
+stderr| overlap_len	20	1
+stderr| overlap_len	30	1
+stderr| fragment_len	60	1
+stderr| fragment_len	100	3
+hic_sup_overlap	97	chr1	41	60	60M20S	chr2	106	0	TGTCGAGCGACGGAATTAGATTAGTTAAATGGTAGAAAATTGGTAGGGTTTTTAGTCGTGTATTTTCGTCGCGTGCGAGT	????????????????????????????????????????????????????????????????????????????????	NM:i:5	MD:Z:21C10C6C3C4C11	AS:i:55	SA:Z:chr2,101,+,60S5M15S,40,1;	MC:Z:35M	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2
+hic_sup_overlap	2145	chr2	101	40	60H5M15S	=	106	40	TATTTTCGTCGCGTGCGAGT	?????IIIIIIIIIIIIIII	SA:Z:chr1,41,+,60M20S,60,5;	MC:Z:35M	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2	ov:i:30
+hic_sup_overlap	145	chr2	106	60	35M	chr1	41	0	TCGTCGCGTGCGAGTTTCGCGTTTTTTATATATTT	IIIIIIIIIIIIIII????????????????????	NM:i:7	MD:Z:0C2C12C5C2C7C0C0	AS:i:28	MC:Z:60M20S	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2	ov:i:15
+hic_junction_overlap	97	chr1	41	60	60M20S	chr2	121	0	TGTCGAGCGACGGAATTAGATTAGTTAAATGGTAGAAAATTGGTAGGGTTTTTAGTCGTGTATTTTCGTCGCGTGCGAGT	??????????????????????????????????????????????????IIIIIIIIII????????????????????	NM:i:5	MD:Z:21C10C6C3C4C11	AS:i:55	SA:Z:chr2,101,+,60S20M,40,0;	MC:Z:30S20M	XL:i:100	oO:i:30	oN:i:30	oS:f:1	oX:i:0	oK:A:1	ov:i:10
+hic_junction_overlap	2145	chr2	101	40	60H20M	=	121	40	TATTTTCGTCGCGTGCGAGT	IIIIIIIIIIIIIIIIIIII	NM:i:3	MD:Z:0C4C2C11	AS:i:17	SA:Z:chr1,41,+,60M20S,60,0;	MC:Z:30S20M	XL:i:100	oO:i:30	oN:i:30	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+hic_junction_overlap	145	chr2	121	60	30S20M	chr1	41	0	TTTAGTCGTGTATTTTCGTCGCGTGCGAGTTTCGCGTTTTTTATATATTT	??????????IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:60M20S	XL:i:100	oO:i:30	oN:i:30	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+hic_inverted	65	chr1	41	60	60M20S	chr2	101	0	TGTCGAGCGACGGAATTAGATTAGTTAAATGGTAGAAAATTGGTAGGGTTTTTAGTCGTGGGATATATAGAAGACGCGGA	????????????????????????????????????????????????????????????????????????????????	NM:i:5	MD:Z:21C10C6C3C4C11	AS:i:55	SA:Z:chr2,136,-,15S5M60S,40,0;	MC:Z:35M	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2
+hic_inverted	2129	chr2	136	40	15S5M60H	=	101	-40	TCCGCGTCTTCTATATATCC	IIIIIIIIIIIIIII?????	SA:Z:chr1,41,+,60M20S,60,5;	MC:Z:35M	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2	ov:i:30
+hic_inverted	129	chr2	101	60	35M	chr1	41	0	CATTTCCGCCGCGTACGAATTCCGCGTCTTCTATA	????????????????????IIIIIIIIIIIIIII	NM:i:2	MD:Z:14G3G16	AS:i:33	MC:Z:60M20S	XL:i:100	oO:i:15	oN:i:15	oS:f:1	oX:i:0	oK:A:2	ov:i:15
+colinear_control	99	chr1	141	60	40M	=	181	60	TAAGGTTTAGTTGTAACGCGGAGTTGGTGTGTTATTTATT	????????????????????IIIIIIIIIIIIIIIIIIII	NM:i:7	MD:Z:5C1C2C2C9C11C0C3	AS:i:33	MC:Z:20S20M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:20
+colinear_control	147	chr1	181	60	20S20M	=	141	-60	GAGTTGGTGTGTTATTTATTTATGGTAGATAATTAATACG	IIIIIIIIIIIIIIIIIIII????????????????????	MC:Z:40M	XL:i:60	oO:i:20	oN:i:20	oS:f:1	oX:i:0	oK:A:1	ov:i:40
+
+### samtools mpileup -A -B -Q 13 depth (column 4), per template, input vs alnbase output
+### (mpileup's default overlap detection is on; -x turns it off)
+hic_sup_overlap        chr2:101-125      in      1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_sup_overlap        chr2:101-125      in  -x  1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_sup_overlap        chr2:101-125      out     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_sup_overlap        chr2:101-125      out -x  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_junction_overlap   chr1:86-100       in      1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 
+hic_junction_overlap   chr1:86-100       in  -x  1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 
+hic_junction_overlap   chr1:86-100       out     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_junction_overlap   chr1:86-100       out -x  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_junction_overlap   chr2:101-125      in      2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_junction_overlap   chr2:101-125      in  -x  2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_junction_overlap   chr2:101-125      out     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_junction_overlap   chr2:101-125      out -x  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_inverted           chr2:116-140      in      1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_inverted           chr2:116-140      in  -x  1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+hic_inverted           chr2:116-140      out     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+hic_inverted           chr2:116-140      out -x  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+colinear_control       chr1:156-185      in      1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+colinear_control       chr1:156-185      in  -x  1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 
+colinear_control       chr1:156-185      out     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+colinear_control       chr1:156-185      out -x  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 

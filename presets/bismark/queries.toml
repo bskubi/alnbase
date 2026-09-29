@@ -1,0 +1,554 @@
+# Generate an alnbase query file that reproduces Bismark's XM methylation call.
+# 
+#     python generate.py > queries.toml
+# 
+# Run alnbase with `--insertions emit` (Bismark sees inserted bases; see rule 3).
+# 
+# Bismark (v0.25.1) makes its call at alignment time (`bismark`,
+# `extract_corresponding_genomic_sequence_single_end` and `methylation_call`;
+# docs/design/research/methylation-tools.md §1.2). In alnbase's walk every read is
+# oriented along its conversion strand, so a cytosine call is always "reference C,
+# read C (methylated) or T (unconverted)", and its context is the columns after it.
+# 
+# Bismark's context rules, and how each is written here:
+# 
+#  1. The context is the next two characters of the read-projected reference: the
+#     reference bases the read aligns to, in read order, plus two reference bases
+#     past the end of the alignment. alnbase supplies the bases past the end as pad
+#     columns, so a context column may be a read base or a pad (alias `o`).
+#  2. A deleted reference base is skipped, not used as context. alnbase shows it as a
+#     deletion column (`.` on the read side). So each context position may be
+#     preceded by 0..MAX_DELETION deletion columns, and every combination is a
+#     separate pattern in the query. Longer deletions are not covered.
+#  3. An inserted (or soft-clipped) read base contributes an unknown character `X`.
+#     With `--insertions emit` alnbase shows it as a column with a gap on the
+#     reference side, which matches neither G nor H below, so the call becomes U/u.
+#     (Soft clips produce no alnbase columns; Bismark aligns end-to-end by default.)
+#  4. Next character G: CG (Z/z). N or X: unknown (U/u). Otherwise the character
+#     after it decides: G is CHG (X/x), N or X is unknown (U/u), anything else is
+#     CHH (H/h). Here "anything else" is H (A, C or T); an IUPAC ambiguity code in the
+#     reference is treated as unknown, where Bismark would use it as H.
+# 
+# All patterns in a query must have the same width, so shorter variants are padded
+# with trailing `~` columns, which match anything.
+
+[alias]
+o = "{N_}"   # a read base or a pad past the read end: not a deletion
+
+# ----------------------------------------------------------------------
+# cytosines read as C (methylated)
+# ----------------------------------------------------------------------
+[pat.CG_C_0]   # deletions before each context column: 0
+read = "Co~~~~~~~~~"
+refr = "CG~~~~~~~~~"
+[pat.CG_C_1]   # deletions before each context column: 1
+read = "C.o~~~~~~~~"
+refr = "C~G~~~~~~~~"
+[pat.CG_C_2]   # deletions before each context column: 2
+read = "C..o~~~~~~~"
+refr = "C~~G~~~~~~~"
+[pat.CG_C_3]   # deletions before each context column: 3
+read = "C...o~~~~~~"
+refr = "C~~~G~~~~~~"
+[pat.CG_C_4]   # deletions before each context column: 4
+read = "C....o~~~~~"
+refr = "C~~~~G~~~~~"
+[pat.CHG_C_0]   # deletions before each context column: 0, 0
+read = "Coo~~~~~~~~"
+refr = "CHG~~~~~~~~"
+[pat.CHG_C_1]   # deletions before each context column: 0, 1
+read = "Co.o~~~~~~~"
+refr = "CH~G~~~~~~~"
+[pat.CHG_C_2]   # deletions before each context column: 0, 2
+read = "Co..o~~~~~~"
+refr = "CH~~G~~~~~~"
+[pat.CHG_C_3]   # deletions before each context column: 0, 3
+read = "Co...o~~~~~"
+refr = "CH~~~G~~~~~"
+[pat.CHG_C_4]   # deletions before each context column: 0, 4
+read = "Co....o~~~~"
+refr = "CH~~~~G~~~~"
+[pat.CHG_C_5]   # deletions before each context column: 1, 0
+read = "C.oo~~~~~~~"
+refr = "C~HG~~~~~~~"
+[pat.CHG_C_6]   # deletions before each context column: 1, 1
+read = "C.o.o~~~~~~"
+refr = "C~H~G~~~~~~"
+[pat.CHG_C_7]   # deletions before each context column: 1, 2
+read = "C.o..o~~~~~"
+refr = "C~H~~G~~~~~"
+[pat.CHG_C_8]   # deletions before each context column: 1, 3
+read = "C.o...o~~~~"
+refr = "C~H~~~G~~~~"
+[pat.CHG_C_9]   # deletions before each context column: 1, 4
+read = "C.o....o~~~"
+refr = "C~H~~~~G~~~"
+[pat.CHG_C_10]   # deletions before each context column: 2, 0
+read = "C..oo~~~~~~"
+refr = "C~~HG~~~~~~"
+[pat.CHG_C_11]   # deletions before each context column: 2, 1
+read = "C..o.o~~~~~"
+refr = "C~~H~G~~~~~"
+[pat.CHG_C_12]   # deletions before each context column: 2, 2
+read = "C..o..o~~~~"
+refr = "C~~H~~G~~~~"
+[pat.CHG_C_13]   # deletions before each context column: 2, 3
+read = "C..o...o~~~"
+refr = "C~~H~~~G~~~"
+[pat.CHG_C_14]   # deletions before each context column: 2, 4
+read = "C..o....o~~"
+refr = "C~~H~~~~G~~"
+[pat.CHG_C_15]   # deletions before each context column: 3, 0
+read = "C...oo~~~~~"
+refr = "C~~~HG~~~~~"
+[pat.CHG_C_16]   # deletions before each context column: 3, 1
+read = "C...o.o~~~~"
+refr = "C~~~H~G~~~~"
+[pat.CHG_C_17]   # deletions before each context column: 3, 2
+read = "C...o..o~~~"
+refr = "C~~~H~~G~~~"
+[pat.CHG_C_18]   # deletions before each context column: 3, 3
+read = "C...o...o~~"
+refr = "C~~~H~~~G~~"
+[pat.CHG_C_19]   # deletions before each context column: 3, 4
+read = "C...o....o~"
+refr = "C~~~H~~~~G~"
+[pat.CHG_C_20]   # deletions before each context column: 4, 0
+read = "C....oo~~~~"
+refr = "C~~~~HG~~~~"
+[pat.CHG_C_21]   # deletions before each context column: 4, 1
+read = "C....o.o~~~"
+refr = "C~~~~H~G~~~"
+[pat.CHG_C_22]   # deletions before each context column: 4, 2
+read = "C....o..o~~"
+refr = "C~~~~H~~G~~"
+[pat.CHG_C_23]   # deletions before each context column: 4, 3
+read = "C....o...o~"
+refr = "C~~~~H~~~G~"
+[pat.CHG_C_24]   # deletions before each context column: 4, 4
+read = "C....o....o"
+refr = "C~~~~H~~~~G"
+[pat.CHH_C_0]   # deletions before each context column: 0, 0
+read = "Coo~~~~~~~~"
+refr = "CHH~~~~~~~~"
+[pat.CHH_C_1]   # deletions before each context column: 0, 1
+read = "Co.o~~~~~~~"
+refr = "CH~H~~~~~~~"
+[pat.CHH_C_2]   # deletions before each context column: 0, 2
+read = "Co..o~~~~~~"
+refr = "CH~~H~~~~~~"
+[pat.CHH_C_3]   # deletions before each context column: 0, 3
+read = "Co...o~~~~~"
+refr = "CH~~~H~~~~~"
+[pat.CHH_C_4]   # deletions before each context column: 0, 4
+read = "Co....o~~~~"
+refr = "CH~~~~H~~~~"
+[pat.CHH_C_5]   # deletions before each context column: 1, 0
+read = "C.oo~~~~~~~"
+refr = "C~HH~~~~~~~"
+[pat.CHH_C_6]   # deletions before each context column: 1, 1
+read = "C.o.o~~~~~~"
+refr = "C~H~H~~~~~~"
+[pat.CHH_C_7]   # deletions before each context column: 1, 2
+read = "C.o..o~~~~~"
+refr = "C~H~~H~~~~~"
+[pat.CHH_C_8]   # deletions before each context column: 1, 3
+read = "C.o...o~~~~"
+refr = "C~H~~~H~~~~"
+[pat.CHH_C_9]   # deletions before each context column: 1, 4
+read = "C.o....o~~~"
+refr = "C~H~~~~H~~~"
+[pat.CHH_C_10]   # deletions before each context column: 2, 0
+read = "C..oo~~~~~~"
+refr = "C~~HH~~~~~~"
+[pat.CHH_C_11]   # deletions before each context column: 2, 1
+read = "C..o.o~~~~~"
+refr = "C~~H~H~~~~~"
+[pat.CHH_C_12]   # deletions before each context column: 2, 2
+read = "C..o..o~~~~"
+refr = "C~~H~~H~~~~"
+[pat.CHH_C_13]   # deletions before each context column: 2, 3
+read = "C..o...o~~~"
+refr = "C~~H~~~H~~~"
+[pat.CHH_C_14]   # deletions before each context column: 2, 4
+read = "C..o....o~~"
+refr = "C~~H~~~~H~~"
+[pat.CHH_C_15]   # deletions before each context column: 3, 0
+read = "C...oo~~~~~"
+refr = "C~~~HH~~~~~"
+[pat.CHH_C_16]   # deletions before each context column: 3, 1
+read = "C...o.o~~~~"
+refr = "C~~~H~H~~~~"
+[pat.CHH_C_17]   # deletions before each context column: 3, 2
+read = "C...o..o~~~"
+refr = "C~~~H~~H~~~"
+[pat.CHH_C_18]   # deletions before each context column: 3, 3
+read = "C...o...o~~"
+refr = "C~~~H~~~H~~"
+[pat.CHH_C_19]   # deletions before each context column: 3, 4
+read = "C...o....o~"
+refr = "C~~~H~~~~H~"
+[pat.CHH_C_20]   # deletions before each context column: 4, 0
+read = "C....oo~~~~"
+refr = "C~~~~HH~~~~"
+[pat.CHH_C_21]   # deletions before each context column: 4, 1
+read = "C....o.o~~~"
+refr = "C~~~~H~H~~~"
+[pat.CHH_C_22]   # deletions before each context column: 4, 2
+read = "C....o..o~~"
+refr = "C~~~~H~~H~~"
+[pat.CHH_C_23]   # deletions before each context column: 4, 3
+read = "C....o...o~"
+refr = "C~~~~H~~~H~"
+[pat.CHH_C_24]   # deletions before each context column: 4, 4
+read = "C....o....o"
+refr = "C~~~~H~~~~H"
+[pat.any_C_0]   # deletions before each context column: 0, 0
+read = "Coo~~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_1]   # deletions before each context column: 0, 1
+read = "Co.o~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_2]   # deletions before each context column: 0, 2
+read = "Co..o~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_3]   # deletions before each context column: 0, 3
+read = "Co...o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_4]   # deletions before each context column: 0, 4
+read = "Co....o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_5]   # deletions before each context column: 1, 0
+read = "C.oo~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_6]   # deletions before each context column: 1, 1
+read = "C.o.o~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_7]   # deletions before each context column: 1, 2
+read = "C.o..o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_8]   # deletions before each context column: 1, 3
+read = "C.o...o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_9]   # deletions before each context column: 1, 4
+read = "C.o....o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_10]   # deletions before each context column: 2, 0
+read = "C..oo~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_11]   # deletions before each context column: 2, 1
+read = "C..o.o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_12]   # deletions before each context column: 2, 2
+read = "C..o..o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_13]   # deletions before each context column: 2, 3
+read = "C..o...o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_14]   # deletions before each context column: 2, 4
+read = "C..o....o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_15]   # deletions before each context column: 3, 0
+read = "C...oo~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_16]   # deletions before each context column: 3, 1
+read = "C...o.o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_17]   # deletions before each context column: 3, 2
+read = "C...o..o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_18]   # deletions before each context column: 3, 3
+read = "C...o...o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_19]   # deletions before each context column: 3, 4
+read = "C...o....o~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_20]   # deletions before each context column: 4, 0
+read = "C....oo~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_21]   # deletions before each context column: 4, 1
+read = "C....o.o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_22]   # deletions before each context column: 4, 2
+read = "C....o..o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_23]   # deletions before each context column: 4, 3
+read = "C....o...o~"
+refr = "C~~~~~~~~~~"
+[pat.any_C_24]   # deletions before each context column: 4, 4
+read = "C....o....o"
+refr = "C~~~~~~~~~~"
+[query.Z]   # CG, methylated
+where = "CG_C_0 or CG_C_1 or CG_C_2 or CG_C_3 or CG_C_4"
+[query.X]   # CHG, methylated
+where = "CHG_C_0 or CHG_C_1 or CHG_C_2 or CHG_C_3 or CHG_C_4 or CHG_C_5 or CHG_C_6 or CHG_C_7 or CHG_C_8 or CHG_C_9 or CHG_C_10 or CHG_C_11 or CHG_C_12 or CHG_C_13 or CHG_C_14 or CHG_C_15 or CHG_C_16 or CHG_C_17 or CHG_C_18 or CHG_C_19 or CHG_C_20 or CHG_C_21 or CHG_C_22 or CHG_C_23 or CHG_C_24"
+[query.H]   # CHH, methylated
+where = "CHH_C_0 or CHH_C_1 or CHH_C_2 or CHH_C_3 or CHH_C_4 or CHH_C_5 or CHH_C_6 or CHH_C_7 or CHH_C_8 or CHH_C_9 or CHH_C_10 or CHH_C_11 or CHH_C_12 or CHH_C_13 or CHH_C_14 or CHH_C_15 or CHH_C_16 or CHH_C_17 or CHH_C_18 or CHH_C_19 or CHH_C_20 or CHH_C_21 or CHH_C_22 or CHH_C_23 or CHH_C_24"
+[query.U]   # context unknown (N or an inserted base), methylated
+where = "(any_C_0 or any_C_1 or any_C_2 or any_C_3 or any_C_4 or any_C_5 or any_C_6 or any_C_7 or any_C_8 or any_C_9 or any_C_10 or any_C_11 or any_C_12 or any_C_13 or any_C_14 or any_C_15 or any_C_16 or any_C_17 or any_C_18 or any_C_19 or any_C_20 or any_C_21 or any_C_22 or any_C_23 or any_C_24) and not (CG_C_0 or CG_C_1 or CG_C_2 or CG_C_3 or CG_C_4 or CHG_C_0 or CHG_C_1 or CHG_C_2 or CHG_C_3 or CHG_C_4 or CHG_C_5 or CHG_C_6 or CHG_C_7 or CHG_C_8 or CHG_C_9 or CHG_C_10 or CHG_C_11 or CHG_C_12 or CHG_C_13 or CHG_C_14 or CHG_C_15 or CHG_C_16 or CHG_C_17 or CHG_C_18 or CHG_C_19 or CHG_C_20 or CHG_C_21 or CHG_C_22 or CHG_C_23 or CHG_C_24 or CHH_C_0 or CHH_C_1 or CHH_C_2 or CHH_C_3 or CHH_C_4 or CHH_C_5 or CHH_C_6 or CHH_C_7 or CHH_C_8 or CHH_C_9 or CHH_C_10 or CHH_C_11 or CHH_C_12 or CHH_C_13 or CHH_C_14 or CHH_C_15 or CHH_C_16 or CHH_C_17 or CHH_C_18 or CHH_C_19 or CHH_C_20 or CHH_C_21 or CHH_C_22 or CHH_C_23 or CHH_C_24)"
+
+# ----------------------------------------------------------------------
+# cytosines read as T (unconverted)
+# ----------------------------------------------------------------------
+[pat.CG_T_0]   # deletions before each context column: 0
+read = "To~~~~~~~~~"
+refr = "CG~~~~~~~~~"
+[pat.CG_T_1]   # deletions before each context column: 1
+read = "T.o~~~~~~~~"
+refr = "C~G~~~~~~~~"
+[pat.CG_T_2]   # deletions before each context column: 2
+read = "T..o~~~~~~~"
+refr = "C~~G~~~~~~~"
+[pat.CG_T_3]   # deletions before each context column: 3
+read = "T...o~~~~~~"
+refr = "C~~~G~~~~~~"
+[pat.CG_T_4]   # deletions before each context column: 4
+read = "T....o~~~~~"
+refr = "C~~~~G~~~~~"
+[pat.CHG_T_0]   # deletions before each context column: 0, 0
+read = "Too~~~~~~~~"
+refr = "CHG~~~~~~~~"
+[pat.CHG_T_1]   # deletions before each context column: 0, 1
+read = "To.o~~~~~~~"
+refr = "CH~G~~~~~~~"
+[pat.CHG_T_2]   # deletions before each context column: 0, 2
+read = "To..o~~~~~~"
+refr = "CH~~G~~~~~~"
+[pat.CHG_T_3]   # deletions before each context column: 0, 3
+read = "To...o~~~~~"
+refr = "CH~~~G~~~~~"
+[pat.CHG_T_4]   # deletions before each context column: 0, 4
+read = "To....o~~~~"
+refr = "CH~~~~G~~~~"
+[pat.CHG_T_5]   # deletions before each context column: 1, 0
+read = "T.oo~~~~~~~"
+refr = "C~HG~~~~~~~"
+[pat.CHG_T_6]   # deletions before each context column: 1, 1
+read = "T.o.o~~~~~~"
+refr = "C~H~G~~~~~~"
+[pat.CHG_T_7]   # deletions before each context column: 1, 2
+read = "T.o..o~~~~~"
+refr = "C~H~~G~~~~~"
+[pat.CHG_T_8]   # deletions before each context column: 1, 3
+read = "T.o...o~~~~"
+refr = "C~H~~~G~~~~"
+[pat.CHG_T_9]   # deletions before each context column: 1, 4
+read = "T.o....o~~~"
+refr = "C~H~~~~G~~~"
+[pat.CHG_T_10]   # deletions before each context column: 2, 0
+read = "T..oo~~~~~~"
+refr = "C~~HG~~~~~~"
+[pat.CHG_T_11]   # deletions before each context column: 2, 1
+read = "T..o.o~~~~~"
+refr = "C~~H~G~~~~~"
+[pat.CHG_T_12]   # deletions before each context column: 2, 2
+read = "T..o..o~~~~"
+refr = "C~~H~~G~~~~"
+[pat.CHG_T_13]   # deletions before each context column: 2, 3
+read = "T..o...o~~~"
+refr = "C~~H~~~G~~~"
+[pat.CHG_T_14]   # deletions before each context column: 2, 4
+read = "T..o....o~~"
+refr = "C~~H~~~~G~~"
+[pat.CHG_T_15]   # deletions before each context column: 3, 0
+read = "T...oo~~~~~"
+refr = "C~~~HG~~~~~"
+[pat.CHG_T_16]   # deletions before each context column: 3, 1
+read = "T...o.o~~~~"
+refr = "C~~~H~G~~~~"
+[pat.CHG_T_17]   # deletions before each context column: 3, 2
+read = "T...o..o~~~"
+refr = "C~~~H~~G~~~"
+[pat.CHG_T_18]   # deletions before each context column: 3, 3
+read = "T...o...o~~"
+refr = "C~~~H~~~G~~"
+[pat.CHG_T_19]   # deletions before each context column: 3, 4
+read = "T...o....o~"
+refr = "C~~~H~~~~G~"
+[pat.CHG_T_20]   # deletions before each context column: 4, 0
+read = "T....oo~~~~"
+refr = "C~~~~HG~~~~"
+[pat.CHG_T_21]   # deletions before each context column: 4, 1
+read = "T....o.o~~~"
+refr = "C~~~~H~G~~~"
+[pat.CHG_T_22]   # deletions before each context column: 4, 2
+read = "T....o..o~~"
+refr = "C~~~~H~~G~~"
+[pat.CHG_T_23]   # deletions before each context column: 4, 3
+read = "T....o...o~"
+refr = "C~~~~H~~~G~"
+[pat.CHG_T_24]   # deletions before each context column: 4, 4
+read = "T....o....o"
+refr = "C~~~~H~~~~G"
+[pat.CHH_T_0]   # deletions before each context column: 0, 0
+read = "Too~~~~~~~~"
+refr = "CHH~~~~~~~~"
+[pat.CHH_T_1]   # deletions before each context column: 0, 1
+read = "To.o~~~~~~~"
+refr = "CH~H~~~~~~~"
+[pat.CHH_T_2]   # deletions before each context column: 0, 2
+read = "To..o~~~~~~"
+refr = "CH~~H~~~~~~"
+[pat.CHH_T_3]   # deletions before each context column: 0, 3
+read = "To...o~~~~~"
+refr = "CH~~~H~~~~~"
+[pat.CHH_T_4]   # deletions before each context column: 0, 4
+read = "To....o~~~~"
+refr = "CH~~~~H~~~~"
+[pat.CHH_T_5]   # deletions before each context column: 1, 0
+read = "T.oo~~~~~~~"
+refr = "C~HH~~~~~~~"
+[pat.CHH_T_6]   # deletions before each context column: 1, 1
+read = "T.o.o~~~~~~"
+refr = "C~H~H~~~~~~"
+[pat.CHH_T_7]   # deletions before each context column: 1, 2
+read = "T.o..o~~~~~"
+refr = "C~H~~H~~~~~"
+[pat.CHH_T_8]   # deletions before each context column: 1, 3
+read = "T.o...o~~~~"
+refr = "C~H~~~H~~~~"
+[pat.CHH_T_9]   # deletions before each context column: 1, 4
+read = "T.o....o~~~"
+refr = "C~H~~~~H~~~"
+[pat.CHH_T_10]   # deletions before each context column: 2, 0
+read = "T..oo~~~~~~"
+refr = "C~~HH~~~~~~"
+[pat.CHH_T_11]   # deletions before each context column: 2, 1
+read = "T..o.o~~~~~"
+refr = "C~~H~H~~~~~"
+[pat.CHH_T_12]   # deletions before each context column: 2, 2
+read = "T..o..o~~~~"
+refr = "C~~H~~H~~~~"
+[pat.CHH_T_13]   # deletions before each context column: 2, 3
+read = "T..o...o~~~"
+refr = "C~~H~~~H~~~"
+[pat.CHH_T_14]   # deletions before each context column: 2, 4
+read = "T..o....o~~"
+refr = "C~~H~~~~H~~"
+[pat.CHH_T_15]   # deletions before each context column: 3, 0
+read = "T...oo~~~~~"
+refr = "C~~~HH~~~~~"
+[pat.CHH_T_16]   # deletions before each context column: 3, 1
+read = "T...o.o~~~~"
+refr = "C~~~H~H~~~~"
+[pat.CHH_T_17]   # deletions before each context column: 3, 2
+read = "T...o..o~~~"
+refr = "C~~~H~~H~~~"
+[pat.CHH_T_18]   # deletions before each context column: 3, 3
+read = "T...o...o~~"
+refr = "C~~~H~~~H~~"
+[pat.CHH_T_19]   # deletions before each context column: 3, 4
+read = "T...o....o~"
+refr = "C~~~H~~~~H~"
+[pat.CHH_T_20]   # deletions before each context column: 4, 0
+read = "T....oo~~~~"
+refr = "C~~~~HH~~~~"
+[pat.CHH_T_21]   # deletions before each context column: 4, 1
+read = "T....o.o~~~"
+refr = "C~~~~H~H~~~"
+[pat.CHH_T_22]   # deletions before each context column: 4, 2
+read = "T....o..o~~"
+refr = "C~~~~H~~H~~"
+[pat.CHH_T_23]   # deletions before each context column: 4, 3
+read = "T....o...o~"
+refr = "C~~~~H~~~H~"
+[pat.CHH_T_24]   # deletions before each context column: 4, 4
+read = "T....o....o"
+refr = "C~~~~H~~~~H"
+[pat.any_T_0]   # deletions before each context column: 0, 0
+read = "Too~~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_1]   # deletions before each context column: 0, 1
+read = "To.o~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_2]   # deletions before each context column: 0, 2
+read = "To..o~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_3]   # deletions before each context column: 0, 3
+read = "To...o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_4]   # deletions before each context column: 0, 4
+read = "To....o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_5]   # deletions before each context column: 1, 0
+read = "T.oo~~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_6]   # deletions before each context column: 1, 1
+read = "T.o.o~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_7]   # deletions before each context column: 1, 2
+read = "T.o..o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_8]   # deletions before each context column: 1, 3
+read = "T.o...o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_9]   # deletions before each context column: 1, 4
+read = "T.o....o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_10]   # deletions before each context column: 2, 0
+read = "T..oo~~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_11]   # deletions before each context column: 2, 1
+read = "T..o.o~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_12]   # deletions before each context column: 2, 2
+read = "T..o..o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_13]   # deletions before each context column: 2, 3
+read = "T..o...o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_14]   # deletions before each context column: 2, 4
+read = "T..o....o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_15]   # deletions before each context column: 3, 0
+read = "T...oo~~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_16]   # deletions before each context column: 3, 1
+read = "T...o.o~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_17]   # deletions before each context column: 3, 2
+read = "T...o..o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_18]   # deletions before each context column: 3, 3
+read = "T...o...o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_19]   # deletions before each context column: 3, 4
+read = "T...o....o~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_20]   # deletions before each context column: 4, 0
+read = "T....oo~~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_21]   # deletions before each context column: 4, 1
+read = "T....o.o~~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_22]   # deletions before each context column: 4, 2
+read = "T....o..o~~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_23]   # deletions before each context column: 4, 3
+read = "T....o...o~"
+refr = "C~~~~~~~~~~"
+[pat.any_T_24]   # deletions before each context column: 4, 4
+read = "T....o....o"
+refr = "C~~~~~~~~~~"
+[query.z]   # CG, unconverted
+where = "CG_T_0 or CG_T_1 or CG_T_2 or CG_T_3 or CG_T_4"
+[query.x]   # CHG, unconverted
+where = "CHG_T_0 or CHG_T_1 or CHG_T_2 or CHG_T_3 or CHG_T_4 or CHG_T_5 or CHG_T_6 or CHG_T_7 or CHG_T_8 or CHG_T_9 or CHG_T_10 or CHG_T_11 or CHG_T_12 or CHG_T_13 or CHG_T_14 or CHG_T_15 or CHG_T_16 or CHG_T_17 or CHG_T_18 or CHG_T_19 or CHG_T_20 or CHG_T_21 or CHG_T_22 or CHG_T_23 or CHG_T_24"
+[query.h]   # CHH, unconverted
+where = "CHH_T_0 or CHH_T_1 or CHH_T_2 or CHH_T_3 or CHH_T_4 or CHH_T_5 or CHH_T_6 or CHH_T_7 or CHH_T_8 or CHH_T_9 or CHH_T_10 or CHH_T_11 or CHH_T_12 or CHH_T_13 or CHH_T_14 or CHH_T_15 or CHH_T_16 or CHH_T_17 or CHH_T_18 or CHH_T_19 or CHH_T_20 or CHH_T_21 or CHH_T_22 or CHH_T_23 or CHH_T_24"
+[query.u]   # context unknown (N or an inserted base), unconverted
+where = "(any_T_0 or any_T_1 or any_T_2 or any_T_3 or any_T_4 or any_T_5 or any_T_6 or any_T_7 or any_T_8 or any_T_9 or any_T_10 or any_T_11 or any_T_12 or any_T_13 or any_T_14 or any_T_15 or any_T_16 or any_T_17 or any_T_18 or any_T_19 or any_T_20 or any_T_21 or any_T_22 or any_T_23 or any_T_24) and not (CG_T_0 or CG_T_1 or CG_T_2 or CG_T_3 or CG_T_4 or CHG_T_0 or CHG_T_1 or CHG_T_2 or CHG_T_3 or CHG_T_4 or CHG_T_5 or CHG_T_6 or CHG_T_7 or CHG_T_8 or CHG_T_9 or CHG_T_10 or CHG_T_11 or CHG_T_12 or CHG_T_13 or CHG_T_14 or CHG_T_15 or CHG_T_16 or CHG_T_17 or CHG_T_18 or CHG_T_19 or CHG_T_20 or CHG_T_21 or CHG_T_22 or CHG_T_23 or CHG_T_24 or CHH_T_0 or CHH_T_1 or CHH_T_2 or CHH_T_3 or CHH_T_4 or CHH_T_5 or CHH_T_6 or CHH_T_7 or CHH_T_8 or CHH_T_9 or CHH_T_10 or CHH_T_11 or CHH_T_12 or CHH_T_13 or CHH_T_14 or CHH_T_15 or CHH_T_16 or CHH_T_17 or CHH_T_18 or CHH_T_19 or CHH_T_20 or CHH_T_21 or CHH_T_22 or CHH_T_23 or CHH_T_24)"
+
+# ----------------------------------------------------------------------
+# the tag: Bismark's letters, '.' where no call is made
+# ----------------------------------------------------------------------
+[tag.xm.bases]
+fill = "."
+Z = "Z"
+z = "z"
+X = "X"
+x = "x"
+H = "H"
+h = "h"
+U = "U"
+u = "u"

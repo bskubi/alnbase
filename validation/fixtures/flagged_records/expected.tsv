@@ -1,0 +1,6 @@
+qname	strand	refr_pos	name	read_base	qual
+dup	+	9	CG_met	C	40
+plain	+	9	CG_met	C	40
+qcfail	+	9	CG_met	C	40
+sec	+	9	CG_met	C	40
+supp	+	9	CG_met	C	40

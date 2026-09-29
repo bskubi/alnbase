@@ -1,0 +1,151 @@
+# Recorded from ./run.sh against HISAT-3N 2.2.1-3n-0.0.3 built from commit
+# f5dda37bd1340f74ab91deace470aebc66e87a2d, 2026-09-17. Line-wrapped as printed.
+
+
+== The four pairs, each named for the strand its read 1 came from
+OT    fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT
+CTOT  fragment chr1 1-based 351-550: read 1 from CTOT, read 2 from OT
+OB    fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB
+CTOB  fragment chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB
+written three times: `part`, CG methylated and CH converted; `full`, nothing converted; `tie`, one conversion and one G>A substitution in every read
+
+== HISAT-3N, paired-end: the three fixtures
+
+== What HISAT-3N wrote for each record, and what the rule makes of it
+
+-- partly converted reads, where the conversion counts decide
+pair  really is origin FLAG  YZ  Yf  rule says                POS    mism
+CTOB  read 1    CTOB   99    -   12  -:forward (want -:forward) 851    0
+CTOB  read 2    OB     147   -   12  -:reverse (want -:reverse) 991    0
+CTOT  read 1    CTOT   83    +   5   +:reverse (want +:reverse) 491    0
+CTOT  read 2    OT     163   +   9   +:forward (want +:forward) 351    0
+OB    read 1    OB     83    -   8   -:reverse (want -:reverse) 741    0
+OB    read 2    CTOB   163   -   7   -:forward (want -:forward) 601    0
+OT    read 1    OT     99    +   10  +:forward (want +:forward) 101    0
+OT    read 2    CTOT   147   +   13  +:reverse (want +:reverse) 241    0
+records: 8, of which unmapped: 0
+mapped records the rule gets wrong (conversion strand or sequenced direction): 0 of 8
+   of those, wrong because YZ names the other conversion strand: 0
+   of those, carrying Yf:i:0, the marker that no conversion was seen: 0
+mapped records whose 0x10 bit contradicts how SEQ was actually stored: 0
+mapped records not stored reference-forward: 0
+pairs with both mates mapped whose two YZ values differ: 0
+
+-- fully methylated reads, where the counts are zero and zero
+pair  really is origin FLAG  YZ  Yf  rule says                POS    mism
+CTOB  read 1    CTOB   99    +   0   +:forward (want -:forward) 851    0
+CTOB  read 2    OB     147   +   0   +:reverse (want -:reverse) 991    0
+CTOT  read 1    CTOT   83    -   0   -:reverse (want +:reverse) 491    0
+CTOT  read 2    OT     163   -   0   -:forward (want +:forward) 351    0
+OB    read 1    OB     83    -   0   -:reverse (want -:reverse) 741    0
+OB    read 2    CTOB   163   -   0   -:forward (want -:forward) 601    0
+OT    read 1    OT     99    +   0   +:forward (want +:forward) 101    0
+OT    read 2    CTOT   147   +   0   +:reverse (want +:reverse) 241    0
+records: 8, of which unmapped: 0
+mapped records the rule gets wrong (conversion strand or sequenced direction): 4 of 8
+   of those, wrong because YZ names the other conversion strand: 4
+   of those, carrying Yf:i:0, the marker that no conversion was seen: 4
+mapped records whose 0x10 bit contradicts how SEQ was actually stored: 0
+mapped records not stored reference-forward: 0
+pairs with both mates mapped whose two YZ values differ: 0
+
+-- one conversion of each kind, where the counts are one and one
+pair  really is origin FLAG  YZ  Yf  rule says                POS    mism
+CTOB  read 1    CTOB   99    +   1   +:forward (want -:forward) 851    0
+CTOB  read 2    OB     147   +   1   +:reverse (want -:reverse) 991    0
+CTOT  read 1    CTOT   83    -   1   -:reverse (want +:reverse) 491    0
+CTOT  read 2    OT     163   -   1   -:forward (want +:forward) 351    0
+OB    read 1    OB     83    -   1   -:reverse (want -:reverse) 741    0
+OB    read 2    CTOB   163   -   1   -:forward (want -:forward) 601    0
+OT    read 1    OT     99    +   1   +:forward (want +:forward) 101    0
+OT    read 2    CTOT   147   +   1   +:reverse (want +:reverse) 241    0
+records: 8, of which unmapped: 0
+mapped records the rule gets wrong (conversion strand or sequenced direction): 4 of 8
+   of those, wrong because YZ names the other conversion strand: 4
+   of those, carrying Yf:i:0, the marker that no conversion was seen: 0
+mapped records whose 0x10 bit contradicts how SEQ was actually stored: 0
+mapped records not stored reference-forward: 0
+pairs with both mates mapped whose two YZ values differ: 0
+
+fully methylated reads, default mode vs --directional-mapping: records whose YZ differs: 0 of 8
+
+== How much evidence the inference needs
+state  from  reads  mapped  conversion wrong of those, Yf:i:0 misplaced clipped  median MAPQ
+part   OT    114    114     0                0                0         0        60
+part   CTOT  114    114     0                0                0         0        60
+part   OB    114    114     0                0                0         0        60
+part   CTOB  114    114     0                0                0         0        60
+one    OT    114    114     0                0                0         0        60
+one    CTOT  114    114     0                0                0         0        60
+one    OB    114    114     0                0                0         0        60
+one    CTOB  114    114     0                0                0         0        60
+full   OT    114    114     0                0                0         0        60
+full   CTOT  114    114     114              114              0         0        60
+full   OB    114    114     0                0                0         0        60
+full   CTOB  114    114     114              114              0         0        60
+tie    OT    114    114     0                0                0         0        60
+tie    CTOT  114    114     114              0                0         0        60
+tie    OB    114    114     0                0                0         0        60
+tie    CTOB  114    114     114              0                0         0        60
+
+state  mapped   wrong    wrong records carrying Yf:i:0
+part   456      0        0
+one    456      0        0
+full   456      228      228
+tie    456      228      0
+
+== alnbase, reading the rule and nothing else
+-- part
+read 8 records, scanned 8, skipped 0
+  0 of 480 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- full
+read 8 records, scanned 8, skipped 0
+  0 of 480 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- tie
+read 8 records, scanned 8, skipped 0
+  8 of 480 compared read bases differ from the reference (1.67%; a reference C read as T is not counted)
+-- tie, the 4 records the rule got right
+read 4 records, scanned 4, skipped 0
+  4 of 240 compared read bases differ from the reference (1.67%; a reference C read as T is not counted)
+-- tie, the 4 records the rule got wrong
+read 4 records, scanned 4, skipped 0
+  4 of 240 compared read bases differ from the reference (1.67%; a reference C read as T is not counted)
+
+-- partly converted reads: 56 CG hits over 8 records
+   pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+   CTOB  99    -      null        False         5    G
+   CTOB  147   -      null        True          7    G
+   CTOT  83    +      null        True          8    C
+   CTOT  163   +      null        False         7    C
+   OB    83    -      null        True          7    G
+   OB    163   -      null        False         7    G
+   OT    99    +      null        False         9    C
+   OT    147   +      null        True          6    C
+   hits whose anchor is not the informative base for the strand walked: 0
+   hits walked along the conversion strand the read did NOT come from: 0 of 56
+
+-- fully methylated reads: 56 CG hits over 8 records
+   pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+   CTOB  99    +      null        False         5    C
+   CTOB  147   +      null        True          7    C
+   CTOT  83    -      null        True          8    G
+   CTOT  163   -      null        False         7    G
+   OB    83    -      null        True          7    G
+   OB    163   -      null        False         7    G
+   OT    99    +      null        False         9    C
+   OT    147   +      null        True          6    C
+   hits whose anchor is not the informative base for the strand walked: 0
+   hits walked along the conversion strand the read did NOT come from: 27 of 56
+
+-- one conversion of each kind: 56 CG hits over 8 records
+   pair  FLAG  strand conv_strand read_reverse  hits reference base under each anchor
+   CTOB  99    +      null        False         5    C
+   CTOB  147   +      null        True          7    C
+   CTOT  83    -      null        True          8    G
+   CTOT  163   -      null        False         7    G
+   OB    83    -      null        True          7    G
+   OB    163   -      null        False         7    G
+   OT    99    +      null        False         9    C
+   OT    147   +      null        True          6    C
+   hits whose anchor is not the informative base for the strand walked: 0
+   hits walked along the conversion strand the read did NOT come from: 27 of 56

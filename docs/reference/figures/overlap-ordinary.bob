@@ -1,0 +1,29 @@
+ "(a) Ordinary overlapping mates: pair_overlap, a 60 bp fragment chr1:41-100 read 40 + 40"
+
+                  "41"      "51"      "61"      "71"      "81"      "91"     "100"
+                   |         |         |         |         |         |        |
+ "chr1"      ------+---------+---------+---------+---------+---------+--------+------------
+
+ "input"
+             "40M  POS 41  PNEXT 61  TLEN 60  MC 40M"
+ "R1 +"            *-====================================->
+
+             "40M  POS 61  PNEXT 41  TLEN -60  MC 40M"
+ "R2 -"                                <-====================================-*
+
+                                       ####################
+             "chr1:61-80, 20 bases, L = 60"
+
+ "output: equal scores, so R1 keeps the overlap and R2 gives up its 3' 20 bases"
+
+             "40M  POS 41  PNEXT 81  TLEN 60  MC 20S20M   (Q30+Q30 -> Q40 over 61-80)"
+ "R1 +"            *-====================================->
+
+             "20S20M  POS 81  PNEXT 41  TLEN -60  MC 40M"
+ "R2 -"                                <~~~~~~~~~~~~~~~~~~~==================-*
+
+
+ *-====->  "a read, 5' end to 3' end: aligned (M)"
+ *~~~~~~>  "soft clip (S)"
+ *------>  "hard clip (H): not in SEQ"
+ ########  "bases observed by both reads"

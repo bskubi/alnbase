@@ -1,0 +1,4 @@
+# Records the reference symbol under every read base.
+[query.base]
+read = "N"
+refr = "~"

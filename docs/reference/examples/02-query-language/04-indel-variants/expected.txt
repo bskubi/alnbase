@@ -1,0 +1,16 @@
+read 8 records, scanned 8, skipped 0
+  0 of 93 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+┌─────────────┬───────────────────────┬────────┬──────────┬───────────┬───────────┐
+│    qname    │         name          │ off_5p │ refr_pos │ read_base │ refr_base │
+│   varchar   │        varchar        │ int64  │  int64   │  varchar  │  varchar  │
+├─────────────┼───────────────────────┼────────┼──────────┼───────────┼───────────┤
+│ skip1       │ CG_skipping_deletions │      4 │        4 │ C         │ C         │
+│ skip2       │ CG_skipping_deletions │      4 │       12 │ C         │ C         │
+│ plain       │ CG_genomic            │      4 │       21 │ C         │ C         │
+│ plain       │ CG_skipping_deletions │      4 │       21 │ C         │ C         │
+│ hp_del_at_1 │ A4_one_deleted        │      3 │       29 │ .         │ A         │
+│ hp_del_at_2 │ A4_one_deleted        │      4 │       29 │ A         │ A         │
+│ hp_del_at_3 │ A4_one_deleted        │      4 │       29 │ A         │ A         │
+│ hp_del_at_4 │ A4_one_deleted        │      4 │       29 │ A         │ A         │
+└─────────────┴───────────────────────┴────────┴──────────┴───────────┴───────────┘
+

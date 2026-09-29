@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="480" class="svgbob">
+  <style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: white;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: white;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: white;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}
+
+</style>
+  <defs>
+    <marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,0 0,4 4,2 0,0"></polygon>
+    </marker>
+    <marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,2 2,0 4,2 2,4 0,2"></polygon>
+    </marker>
+    <marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="filled"></circle>
+    </marker>
+    <marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="bg_filled"></circle>
+    </marker>
+    <marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="3" class="bg_filled"></circle>
+    </marker>
+  </defs>
+  <rect class="backdrop" x="0" y="0" width="840" height="480"></rect>
+  <line x1="236" y1="152" x2="236" y2="152" class="solid end_marked_circle"></line>
+  <line x1="240" y1="152" x2="248" y2="152" class="solid"></line>
+  <line x1="248" y1="150" x2="472" y2="150" class="solid"></line>
+  <line x1="248" y1="154" x2="472" y2="154" class="solid"></line>
+  <line x1="472" y1="152" x2="544" y2="152" class="broken"></line>
+  <polygon points="544,148 552,152 544,156" class="filled"></polygon>
+  <polygon points="160,196 152,200 160,204" class="filled"></polygon>
+  <line x1="160" y1="200" x2="232" y2="200" class="broken"></line>
+  <line x1="232" y1="198" x2="456" y2="198" class="solid"></line>
+  <line x1="232" y1="202" x2="456" y2="202" class="solid"></line>
+  <line x1="456" y1="200" x2="468" y2="200" class="solid end_marked_circle"></line>
+  <line x1="464" y1="200" x2="468" y2="200" class="solid"></line>
+  <rect x="232" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="240" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="248" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="256" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="264" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="272" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="280" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="288" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="296" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="304" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="312" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="320" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="328" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="336" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="344" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="352" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="360" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="368" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="376" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="384" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="392" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="400" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="408" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="416" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="424" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="432" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="440" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="448" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="456" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="464" y="228" width="8" height="8" class="solid filled" rx="0"></rect>
+  <line x1="236" y1="328" x2="236" y2="328" class="solid end_marked_circle"></line>
+  <line x1="240" y1="328" x2="248" y2="328" class="solid"></line>
+  <line x1="248" y1="326" x2="472" y2="326" class="solid"></line>
+  <line x1="248" y1="330" x2="472" y2="330" class="solid"></line>
+  <line x1="472" y1="328" x2="544" y2="328" class="broken"></line>
+  <polygon points="544,324 552,328 544,332" class="filled"></polygon>
+  <line x1="12" y1="408" x2="12" y2="408" class="solid end_marked_circle"></line>
+  <line x1="16" y1="408" x2="24" y2="408" class="solid"></line>
+  <line x1="24" y1="406" x2="56" y2="406" class="solid"></line>
+  <line x1="24" y1="410" x2="56" y2="410" class="solid"></line>
+  <line x1="56" y1="408" x2="64" y2="408" class="solid"></line>
+  <polygon points="64,404 72,408 64,412" class="filled"></polygon>
+  <line x1="12" y1="424" x2="12" y2="424" class="solid end_marked_circle"></line>
+  <line x1="16" y1="424" x2="64" y2="424" class="broken"></line>
+  <polygon points="64,420 72,424 64,428" class="filled"></polygon>
+  <line x1="12" y1="440" x2="12" y2="440" class="solid end_marked_circle"></line>
+  <line x1="16" y1="440" x2="64" y2="440" class="solid"></line>
+  <polygon points="64,436 72,440 64,444" class="filled"></polygon>
+  <line x1="12" y1="448" x2="12" y2="452" class="solid"></line>
+  <rect x="8" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="16" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="24" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="32" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="40" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="48" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="56" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <rect x="64" y="452" width="8" height="8" class="solid filled" rx="0"></rect>
+  <text x="10" y="12" >(d) Dovetailing mates: read_through, a 30 bp molecule chr1:161-190 read 40 + 40</text>
+  <text x="146" y="44" >151</text>
+  <text x="226" y="44" >161</text>
+  <text x="306" y="44" >171</text>
+  <text x="386" y="44" >181</text>
+  <text x="458" y="44" >190</text>
+  <text x="538" y="44" >200</text>
+  <text x="10" y="76" >chr1</text>
+  <text x="10" y="108" >input: each read runs 10 bases of adapter past the other read&#39;s 5&#39; end, soft-clipped</text>
+  <text x="106" y="140" >30M10S  POS 161  FLAG 99   TLEN 30</text>
+  <text x="10" y="156" >R1 +</text>
+  <text x="106" y="188" >10S30M  POS 161  FLAG 147  TLEN -30</text>
+  <text x="10" y="204" >R2 -</text>
+  <text x="106" y="252" >chr1:161-190, the whole molecule: L = 30 &lt; 40</text>
+  <text x="10" y="284" >output: R1 keeps the overlap, so R2 gives up every aligned base</text>
+  <text x="106" y="316" >30M10S  POS 161  FLAG 73 (0x8 set; 0x20, 0x2 cleared)  PNEXT 161  TLEN 0  MC *</text>
+  <text x="10" y="332" >R1 +</text>
+  <text x="106" y="364" >R2 -&gt; unmapped: FLAG 133 (0x4 set; 0x10, 0x2 cleared), RNAME/POS chr1:161 from R1,</text>
+  <text x="106" y="380" >MAPQ 0, CIGAR *, TLEN 0, MC 30M10S, SEQ and QUAL reversed back to sequencing orientation</text>
+  <text x="90" y="412" >a read, 5&#39; end to 3&#39; end: aligned (M)</text>
+  <text x="90" y="428" >soft clip (S)</text>
+  <text x="90" y="444" >hard clip (H): not in SEQ</text>
+  <text x="90" y="460" >bases observed by both reads</text>
+  <g>
+    <line x1="156" y1="48" x2="156" y2="72" class="solid"></line>
+    <line x1="236" y1="48" x2="236" y2="72" class="solid"></line>
+    <line x1="316" y1="48" x2="316" y2="72" class="solid"></line>
+    <line x1="396" y1="48" x2="396" y2="72" class="solid"></line>
+    <line x1="468" y1="48" x2="468" y2="72" class="solid"></line>
+    <line x1="548" y1="48" x2="548" y2="72" class="solid"></line>
+    <line x1="104" y1="72" x2="832" y2="72" class="solid"></line>
+  </g>
+</svg>

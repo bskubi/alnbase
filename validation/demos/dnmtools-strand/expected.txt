@@ -1,0 +1,66 @@
+
+== The four pairs, each named for the strand its read 1 came from
+OT    fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT
+CTOT  fragment chr1 1-based 351-550: read 1 from CTOT, read 2 from OT
+OB    fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB
+CTOB  fragment chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB
+
+== abismal, paired-end: default (directional) and -R (random PBAT)
+dir.sam:6
+rand.sam:8
+
+== What abismal wrote, and what each rule makes of it
+
+-- default mode: CV is the mate number and nothing else
+pair  record from  flag  pos  CV  want   shipped   corrected SEQ stored
+CTOT  read 1 CTOT  83    491  T   +      +         -         as sequenced
+CTOT  read 2 OT    163   351  A   +      -         -         as sequenced
+OB    read 1 OB    83    741  T   -      +         -         as sequenced
+OB    read 2 CTOB  163   601  A   -      -         -         as sequenced
+OT    read 1 OT    99    101  T   +      +         +         as sequenced
+OT    read 2 CTOT  147   241  A   +      -         +         as sequenced
+   conversion strand wrong, shipped rule (CV alone):   3 of 6
+   conversion strand wrong, corrected rule (CV ^ 0x10): 2 of 6
+   reverse records whose SEQ is NOT reference-forward:  3 of 6
+
+-- -R: CV varies with the read, and the shipped rule halves
+pair  record from  flag  pos  CV  want   shipped   corrected SEQ stored
+CTOB  read 1 CTOB  99    851  A   -      -         -         as sequenced
+CTOB  read 2 OB    147   991  T   -      +         -         as sequenced
+CTOT  read 1 CTOT  83    491  A   +      -         +         as sequenced
+CTOT  read 2 OT    163   351  T   +      +         +         as sequenced
+OB    read 1 OB    83    741  T   -      +         -         as sequenced
+OB    read 2 CTOB  163   601  A   -      -         -         as sequenced
+OT    read 1 OT    99    101  T   +      +         +         as sequenced
+OT    read 2 CTOT  147   241  A   +      -         +         as sequenced
+   conversion strand wrong, shipped rule (CV alone):   4 of 8
+   conversion strand wrong, corrected rule (CV ^ 0x10): 0 of 8
+   reverse records whose SEQ is NOT reference-forward:  4 of 8
+
+== Repairing SEQ: reverse-complement the reverse records, as SAM requires
+
+== alnbase on the raw BAM and on the repaired one, with each rule
+-- raw BAM, shipped rule
+read 8 records, scanned 8, skipped 0
+  155 of 480 compared read bases differ from the reference (32.29%; a reference C read as T is not counted)
+-- raw BAM, corrected rule
+read 8 records, scanned 8, skipped 0
+  159 of 480 compared read bases differ from the reference (33.12%; a reference C read as T is not counted)
+-- fixed BAM, shipped rule
+read 8 records, scanned 8, skipped 0
+  38 of 480 compared read bases differ from the reference (7.92%; a reference C read as T is not counted)
+-- fixed BAM, corrected rule
+read 8 records, scanned 8, skipped 0
+  0 of 480 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+
+== Where the hits land
+raw    BAM, shipped   rule:  28 CG hits over 4 records,   0 walked along the wrong conversion strand, 28 of the 56 right ones found
+raw    BAM, corrected rule:  35 CG hits over 8 records,   0 walked along the wrong conversion strand, 35 of the 56 right ones found
+fixed  BAM, shipped   rule:  57 CG hits over 8 records,  29 walked along the wrong conversion strand, 28 of the 56 right ones found
+fixed  BAM, corrected rule:  56 CG hits over 8 records,   0 walked along the wrong conversion strand, 56 of the 56 right ones found
+
+== dnmtools format, for the record
+CTOB	80	851	60M80N60M	NM:i:0	CV:A:T
+CTOT	128	351	60M80N60M	NM:i:0	CV:A:T
+OB	144	601	60M80N60M	NM:i:0	CV:A:T
+OT	64	101	60M80N60M	NM:i:0	CV:A:T

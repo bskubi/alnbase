@@ -1,0 +1,15 @@
+# MethylDackel is built from source at a pinned commit (see build_methyldackel.sh):
+# the bioconda 0.6.1 release predates two fixes on master, 3c77bda (2023-07-05):
+#   c1ad8af  overlap computation used read A's positions for read B
+#   f3f16b5  absolute end trimming wrote one past the end of SEQ/QUAL
+# The source build still reports "0.6.1"; the commit is what identifies it.
+name: methyldackel
+channels: [conda-forge, bioconda]
+dependencies:
+  - c-compiler
+  - make
+  - htslib=1.24
+  - libbigwig
+  - libcurl
+  - zlib
+  - samtools=1.24

@@ -1,0 +1,4 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:40
+@CO	A mapped record with SEQ '*' and QUAL '*'. It has no read bases, so it is skipped and counted, not walked.
+seq_star	0	chr1	21	60	8M	*	0	0	*	*

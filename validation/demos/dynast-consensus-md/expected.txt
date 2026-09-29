@@ -1,0 +1,40 @@
+reference chr1 = ACGTACGTACGTACGTACGT
+
+--- deletion immediately followed by a mismatch
+  input        0 5M1D14M    MD 5^C0G13      NM 2
+  input        0 5M1D14M    MD 5^C0G13      NM 2
+  dynast       0 5M1D14M    MD 5^CG13       NM 1
+  samtools     0 5M1D14M    MD 5^C0G13      NM 2
+  -> MD WRONG, NM WRONG
+
+--- mismatch immediately followed by a 2 bp deletion
+  input        0 5M2D13M    MD 4A0^CG13     NM 3
+  input        0 5M2D13M    MD 4A0^CG13     NM 3
+  dynast       0 5M2D13M    MD 4A0^C0G13    NM 1
+  samtools     0 5M2D13M    MD 4A0^CG13     NM 3
+  -> MD WRONG, NM WRONG
+
+--- isolated deletion (control)
+  input        0 5M1D14M    MD 5^C14        NM 1
+  input        0 5M1D14M    MD 5^C14        NM 1
+  dynast       0 5M1D14M    MD 5^C14        NM 0
+  samtools     0 5M1D14M    MD 5^C14        NM 1
+  -> NM WRONG
+
+--- isolated mismatch (control)
+  input        0 20M        MD 4A15         NM 1
+  input        0 20M        MD 4A15         NM 1
+  dynast       0 20M        MD 4A15         NM 1
+  samtools     0 20M        MD 4A15         NM 1
+  -> agrees
+
+--- two non-overlapping reads in one UMI family
+  input        0 5M         MD 5            NM 0
+  input       12 8M         MD 8            NM 0
+  dynast       0 5M7N8M     MD 13           NM 0
+  samtools     0 5M7N8M     MD 13           NM 0
+  -> agrees
+
+  Read a covers ref 0-4, read b covers ref 12-19, and nothing covers the
+  7 bp between them. dynast emits that gap as an N operator -- a spliced
+  alignment. blocks = [(0, 5), (12, 20)]

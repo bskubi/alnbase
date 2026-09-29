@@ -1,0 +1,12 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/merantk.toml
+@CO	queries/strand/merantk.toml -- YG/YR. All four occur: YG carries the fragment's strand and YR the mate, so read 2 of a pair, and every record of a -r single-end run, is a CTOT or CTOB.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
+OT/C2T-C2T	0	chr1	101	60	4M	*	0	0	ACGT	IIII	YG:Z:C2T	YR:Z:C2T
+OB/G2A-C2T	16	chr1	101	60	4M	*	0	0	ACGT	IIII	YG:Z:G2A	YR:Z:C2T
+CTOT/C2T-G2A	16	chr1	101	60	4M	*	0	0	ACGT	IIII	YG:Z:C2T	YR:Z:G2A
+CTOB/G2A-G2A	0	chr1	101	60	4M	*	0	0	ACGT	IIII	YG:Z:G2A	YR:Z:G2A

@@ -1,0 +1,25 @@
+read length 60, T at offsets [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59]
+qual.bam: T->C at offset 11 (Phred 10) and offset 15 (Phred 5)
+ends.bam: all 15 T's mutated; 3 of them at offsets [3, 55, 59], inside the --minDist 5 end zones
+=== 1. What is --minQual measured in? ===
+One T->C at Phred 10, one at Phred 5, both far from the read ends.
+
+--minQual    TC     nT     implied Phred cutoff
+30           2      15     q > -3
+33           2      15     q > 0
+34           2      15     q > 1
+40           1      14     q > 7
+44           0      13     q > 11
+76           0      0      q > 43
+
+The comparison is 'phred + 33 > minQual', so the shipped value 40 is a
+Phred cutoff of 8, and any value of 33 or less disables the filter.
+
+=== 2. Numerator and denominator do not share filters ===
+Every T in the read is mutated, so the true per-T rate is 1.000.
+nT (trials) = 15   TC (mutations) = 12   reported rate = 0.800
+
+nT counts every T that passes the base-quality filter. TC additionally
+requires the T to be more than --minDist bases from either end of the
+aligned block, so the T's in the two end zones are trials that can never
+become mutations. The rate is biased low by about 2*minDist/readlength.

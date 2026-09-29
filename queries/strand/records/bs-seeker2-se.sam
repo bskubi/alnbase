@@ -1,0 +1,14 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/bs-seeker2-se.toml
+@CO	queries/strand/bs-seeker2-se.toml -- XO, single-end only. The FLAGs are the ones
+@CO	BS-Seeker2 writes, inverted on the two RC classes, seen in
+@CO	validation/demos/bs-seeker2-strand.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
+OT/+FW	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XO:Z:+FW
+CTOT/+RC	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XO:Z:+RC
+OB/-FW	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XO:Z:-FW
+CTOB/-RC	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XO:Z:-RC

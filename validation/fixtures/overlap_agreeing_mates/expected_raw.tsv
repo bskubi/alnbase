@@ -1,0 +1,5 @@
+qname	strand	refr_pos	name	read_base	qual	off_5p	off_3p
+ovl	+	4	CG_met	C	30	4	15
+ovl	+	14	CG_met	C	30	14	5
+ovl	+	14	CG_met	C	30	15	4
+ovl	+	24	CG_met	C	30	5	14

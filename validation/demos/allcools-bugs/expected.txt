@@ -1,0 +1,44 @@
+
+== AC-1: mpileup read-start marker counted as a base (bam-to-allc)
+-- promised: one read gives coverage 1. samtools mpileup writes '^' plus chr(MAPQ+33) before
+-- promised: the base of a read that starts at the column; ALLCools counts '.'/'T' (C column)
+-- promised: and ','/'a' (G column) without removing that MAPQ character.
+samtools 1.24
+q12_C_unmeth (control:'-') mpileup ^-T   ALLC: chrT 6 + CGA 0 1
+q13_C_unmeth ('.'=meth) mpileup ^.T   ALLC: chrT 6 + CGA 1 2
+q51_C_meth ('T'=unmeth) mpileup ^T.   ALLC: chrT 6 + CGA 1 2
+q11_G_meth (','=meth)  mpileup ^,,   ALLC: chrT 7 - CGT 2 2
+q64_G_meth ('a'=unmeth) mpileup ^a,   ALLC: chrT 7 - CGT 1 2
+expected: coverage 1 in every row; counts 0/1, 0/1, 1/1, 1/1, 1/1
+-- alnbase, CG calls per read:
+┌──────────────┬───────┬───────┐
+│    qname     │   m   │  cov  │
+│   varchar    │ int64 │ int64 │
+├──────────────┼───────┼───────┤
+│ q11_G_meth   │     1 │     1 │
+│ q12_C_unmeth │     0 │     1 │
+│ q13_C_unmeth │     0 │     1 │
+│ q51_C_meth   │     1 │     1 │
+│ q64_G_meth   │     1 │     1 │
+└──────────────┴───────┴───────┘
+
+
+== AC-4: IUPAC code in a bottom-strand context (bam-to-allc)
+-- promised: a row per covered C on either strand, context from the reference: chrU and chrV
+-- promised: should each give a '+' row at 6 and a '-' row at 8.
+-- ALLCools ALLC:
+chrU 6 + CRG 0 1 1
+chrV 6 + CAG 0 1 1
+chrV 8 - CTG 1 1 1
+
+== AC-10: extract-allc --strandness merge
+-- input ALLC (bam-to-allc):
+chrW 6 + CGA 1 1 1
+chrW 7 - CGT 1 1 1
+chrW 21 - CGT 1 1 1
+chrX 6 + CGA 1 1 1
+-- promised: help: 'merge: This will only merge the count on adjacent CpG in +/- strands'.
+-- promised: Every CG keeps one row, on '+' at its C: chrW 6 (2/2), chrW 20 (1/1), chrX 6 (1/1).
+-- ALLCools extract-allc --strandness merge:
+chrW 6 + CGA 2 2 1
+chrW 21 - CGT 1 1 1

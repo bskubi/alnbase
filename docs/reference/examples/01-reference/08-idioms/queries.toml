@@ -1,0 +1,49 @@
+# Idioms for reference symbols that are not a plain A/C/G/T.
+# fwd: forward read; rev: same, reverse strand (both sides complemented,
+# so reference R is observed as Y, S stays S, N stays N).
+#
+# Matching is "observation is a subset of the code", so `~@N` alone is also
+# true over plain bases. Exclude the narrower sets with `not`.
+
+[pat.n]
+read = "~"
+refr = "N"
+[pat.a]
+read = "~"
+refr = "A"
+[pat.c]
+read = "~"
+refr = "C"
+[pat.g]
+read = "~"
+refr = "G"
+[pat.t]
+read = "~"
+refr = "T"
+[pat.b]
+read = "~"
+refr = "B"
+[pat.d]
+read = "~"
+refr = "D"
+[pat.h]
+read = "~"
+refr = "H"
+[pat.v]
+read = "~"
+refr = "V"
+
+# any IUPAC ambiguity code (two or more bases), strand-independent
+[query.refr_ambiguous]
+where = "n and not a and not c and not g and not t"
+
+# the reference is exactly N (not R, S, ...)
+[query.refr_exactly_N]
+where = "n and not b and not d and not h and not v"
+
+# reference context around a read C, reported as captures: whatever the
+# neighbours are, they are recorded.
+[query.C_with_context]
+read = "~C~"
+refr = "~~~"
+mark = "^+^"

@@ -1,0 +1,22 @@
+[alias]
+f = "{_:}"             # the flank: a pad, or a clip beside a soft-clipped end
+
+[query.walk_first]     # first aligned base the walk emits, clipped or not
+read = "fN"
+refr = "~~"
+mark = ".+"
+[query.walk_last]      # last aligned base the walk emits, clipped or not
+read = "Nf"
+refr = "~~"
+mark = "+."
+[query.unclipped_first] # first aligned base, only where that end is not soft-clipped
+read = "_N"
+refr = "~~"
+mark = ".+"
+[query.clipped_first]  # first aligned base, only where that end is soft-clipped
+read = ":N"
+refr = "~~"
+mark = ".+"
+[query.CG_past_end]    # C is the last read base, G only in the reference
+read = "C_"
+refr = "CG"

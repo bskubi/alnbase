@@ -1,0 +1,57 @@
+
+== A directional library: read 1 from the original strand, read 2 from its copy
+probe_OT  fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT
+probe_OB  fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB
+plus a sweep of 200 pairs, 60 bp from each end of a 200 bp fragment every 10 bases
+
+== Bismark, directional (the default), paired-end and single-end
+reads_1_bismark_bt2_PE_report.txt:Mapping efficiency:	100.0% 
+se_bismark_bt2_SE_report.txt:Mapping efficiency:	100.0%
+
+== Three answers per record: the fixture's, the FLAG's, and the tags'
+
+-- paired-end: 402 records
+   read      really is FLAG  XR/XG truth  directional bismark   POS    mism
+   probe_OB  read 1    83    CT/GA OB     OB          OB        741    0
+   probe_OB  read 2    163   GA/GA CTOB   CTOB        CTOB      601    0
+   probe_OT  read 1    99    CT/CT OT     OT          OT        101    0
+   probe_OT  read 2    147   GA/CT CTOT   CTOT        CTOT      241    0
+   directional.toml calls a strand the read was not built from: 0 of 402
+   bismark.toml calls a strand the read was not built from:     0 of 402
+   records the two rules disagree about: 0
+   records whose 0x10 contradicts how SEQ was actually stored: 0
+   records not stored reference-forward: 0
+
+-- single-end: 202 records
+   read      really is FLAG  XR/XG truth  directional bismark   POS    mism
+   probe_OB  read 1    16    CT/GA OB     OB          OB        741    0
+   probe_OT  read 1    0     CT/CT OT     OT          OT        101    0
+   directional.toml calls a strand the read was not built from: 0 of 202
+   bismark.toml calls a strand the read was not built from:     0 of 202
+   records the two rules disagree about: 0
+   records whose 0x10 contradicts how SEQ was actually stored: 0
+   records not stored reference-forward: 0
+
+== alnbase, reading each rule and nothing else
+-- pe, directional.toml
+read 402 records, scanned 402, skipped 0
+  0 of 24120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- pe, bismark.toml
+read 402 records, scanned 402, skipped 0
+  0 of 24120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- se, directional.toml
+read 202 records, scanned 202, skipped 0
+  0 of 12120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- se, bismark.toml
+read 202 records, scanned 202, skipped 0
+  0 of 12120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+
+-- pe
+   directional.toml   2601 CG hits over  402 records; anchors on the wrong base of the CG for the strand named: 0
+   bismark.toml       2601 CG hits over  402 records; anchors on the wrong base of the CG for the strand named: 0
+   hits where the two rules disagree: 0 (of 2601 and 2601)
+
+-- se
+   directional.toml   1320 CG hits over  202 records; anchors on the wrong base of the CG for the strand named: 0
+   bismark.toml       1320 CG hits over  202 records; anchors on the wrong base of the CG for the strand named: 0
+   hits where the two rules disagree: 0 (of 1320 and 1320)

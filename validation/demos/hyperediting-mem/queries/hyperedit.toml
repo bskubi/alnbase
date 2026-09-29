@@ -1,0 +1,81 @@
+# Every mismatch between a read and the reference, as twelve ordered pairs.
+#
+# The hyper-editing pipeline's edit caller needs one thing from the alignment:
+# for each base of the read, the reference base it actually sits on. Matches
+# are implicit -- a position with no hit here read the same base as the
+# reference -- so only the twelve differing pairs need naming, and each hit row
+# carries both bases, which is what tells an A->G apart from a G->A.
+#
+# Keeping the pairs separate rather than writing a single `/` relational query
+# is deliberate: the relational codes report that the two sides differ, and the
+# caller has to know *which* difference, because the pipeline picks the more
+# frequent of the two directions of the expected edit type and calls the rest
+# mismatches.
+#
+# Nothing here mentions clipping, insertions or junctions. A soft-clipped or
+# inserted read base has no reference base to differ from, so it matches none
+# of these patterns and produces no hit, which is the correct answer: it is not
+# evidence for or against editing. The original caller had no way to say that.
+
+[query.a2c]
+read = "C"
+refr = "A"
+
+[query.a2g]
+read = "G"
+refr = "A"
+
+[query.a2t]
+read = "T"
+refr = "A"
+
+[query.c2a]
+read = "A"
+refr = "C"
+
+[query.c2g]
+read = "G"
+refr = "C"
+
+[query.c2t]
+read = "T"
+refr = "C"
+
+[query.g2a]
+read = "A"
+refr = "G"
+
+[query.g2c]
+read = "C"
+refr = "G"
+
+[query.g2t]
+read = "T"
+refr = "G"
+
+[query.t2a]
+read = "A"
+refr = "T"
+
+[query.t2c]
+read = "C"
+refr = "T"
+
+[query.t2g]
+read = "G"
+refr = "T"
+
+[tag.XE.bases]
+fill = "."
+a = "a2c"
+b = "a2g"
+c = "a2t"
+d = "c2a"
+e = "c2g"
+f = "c2t"
+g = "g2a"
+h = "g2c"
+i = "g2t"
+j = "t2a"
+k = "t2c"
+l = "t2g"

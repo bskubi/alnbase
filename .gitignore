@@ -1,0 +1,34 @@
+/target
+*.bam
+*.aref
+*.fa
+*.fa.fai
+
+# Reference-doc examples ship their tiny inputs; their run outputs are regenerated.
+!docs/reference/examples/**/*.fa
+
+# So do the hand-written fixtures: a case is only reproducible with its reference.
+!validation/fixtures/*/ref.fa
+
+# The toy dataset ships whole. It is 48 bases and 29 hits, it is what every
+# tutorial runs against, and a tutorial you have to build the inputs for first
+# is not one anybody follows. `make_toy.py` regenerates it byte for byte.
+!python/examples/toy/toy.fa
+!python/examples/toy/toy.fa.fai
+docs/reference/examples/**/*.parquet
+docs/reference/examples/**/*.manifest.json
+docs/reference/examples/**/*.arrow
+
+__pycache__/
+*.pyc
+
+# Editable installs of python/, and the log amethyst-facet's logger drops in the
+# working directory when its writers are exercised from here.
+*.egg-info/
+amethyst_facet.log
+
+# Generated API documentation, and the local virtualenv that renders it.
+# Rebuild with ./make-docs.sh; the hand-written guides in docs/ are committed.
+/site
+.venv/
+

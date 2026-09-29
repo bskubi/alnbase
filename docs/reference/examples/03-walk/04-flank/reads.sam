@@ -1,0 +1,11 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:40
+@CO	0-based    0         1         2         3
+@CO	           0123456789012345678901234567890123456789
+@CO	chr1       ACGTTGCAAGGCCTTAGCATGCAATCGGATCCTAGGCTAA
+@CO	contig_start: 4M at 0 -> leading pads have refr_pos -2,-1 and refr_base '_' (PAD).
+@CO	contig_end: 4M at 36, flag 16 -> leading pads (walk runs down from the end) have refr_pos 41,40 and refr '_'.
+@CO	mid: 4M at 20 -> pads carry the real reference bases on both sides.
+contig_start	0	chr1	1	60	4M	*	0	0	ACGT	+,-.
+contig_end	16	chr1	37	60	4M	*	0	0	CTAA	+,-.
+mid	0	chr1	21	60	4M	*	0	0	GCAA	+,-.

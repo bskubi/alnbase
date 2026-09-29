@@ -1,0 +1,23 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:40
+@CO	0-based    0         1         2         3
+@CO	           0123456789012345678901234567890123456789
+@CO	chr1       ACGTTGCAAGGCCTTAGCATGCAATCGGATCCTAGGCTAA
+@CO	Every record: 8M at 0-based 20..27, SEQ GCAATCGG (= reference), QUAL rising 10..17 left to right in SEQ.
+@CO	Only FLAG differs. Walk strand = top iff is_last_in_template(0x80) == is_reverse(0x10).
+@CO	f0: unpaired forward -> top
+@CO	f16: unpaired reverse -> bottom
+@CO	f65: R1 forward -> top (OT)
+@CO	f81: R1 reverse -> bottom (OB)
+@CO	f129: R2 forward -> bottom (CTOB); sequenced 5' end is the LEFTMOST base
+@CO	f145: R2 reverse -> top (CTOT); sequenced 5' end is the RIGHTMOST base
+@CO	f256: secondary: walked like any record
+@CO	f2048: supplementary: walked like any record
+f0	0	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f16	16	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f65	65	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f81	81	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f129	129	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f145	145	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f256	256	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012
+f2048	2048	chr1	21	60	8M	*	0	0	GCAATCGG	+,-./012

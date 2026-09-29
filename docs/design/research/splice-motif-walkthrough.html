@@ -1,0 +1,604 @@
+<title>Junctions in Three Letters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f7f7f5; --panel: #ffffff;
+  --ink: #1c1b19; --ink-2: #57544e; --ink-3: #8b877f;
+  --line: #e0ddd6; --line-2: #cbc7be;
+  --edit: #1a8a5a; --edit-bg: #dff3e8;
+  --bad: #c0392b; --bad-bg: #fbe4e1;
+  --warn: #b8730e; --warn-bg: #fbeed6;
+  --inert: #9a958c; --inert-bg: #eceae5;
+  --accent: #2f5fd0; --accent-bg: #e3ebfb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161a; --panel: #1d1f24;
+    --ink: #eceae6; --ink-2: #b2aea6; --ink-3: #7e7a72;
+    --line: #2e3138; --line-2: #3f434c;
+    --edit: #4fd39a; --edit-bg: #12372a;
+    --bad: #ff7a6b; --bad-bg: #3d1e1a;
+    --warn: #e8b055; --warn-bg: #3a2c12;
+    --inert: #6d6963; --inert-bg: #26282d;
+    --accent: #7ba3f5; --accent-bg: #1b2740;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161a; --panel: #1d1f24;
+  --ink: #eceae6; --ink-2: #b2aea6; --ink-3: #7e7a72;
+  --line: #2e3138; --line-2: #3f434c;
+  --edit: #4fd39a; --edit-bg: #12372a;
+  --bad: #ff7a6b; --bad-bg: #3d1e1a;
+  --warn: #e8b055; --warn-bg: #3a2c12;
+  --inert: #6d6963; --inert-bg: #26282d;
+  --accent: #7ba3f5; --accent-bg: #1b2740;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 16px 96px; }
+h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 12px; font-weight: 700; }
+h2 { font-size: clamp(20px, 3.6vw, 27px); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 6px; font-weight: 650; }
+p { margin: 0 0 10px; color: var(--ink-2); }
+.lede { font-size: clamp(17px, 2.4vw, 19px); color: var(--ink-2); max-width: 46em; }
+header.top { padding: 56px 0 36px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+section { padding: 40px 0 8px; }
+.eyebrow { font-family: 'Roboto Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; }
+.sub { max-width: 44em; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 18px 0; }
+.caption { font-size: 15px; color: var(--ink-2); margin: 14px 0 0; max-width: 44em; }
+.caption strong { color: var(--ink); font-weight: 600; }
+.note { font-size: 12.5px; color: var(--ink-3); font-style: italic; margin-top: 10px; max-width: 44em; }
+.mono { font-family: 'Roboto Mono', monospace; }
+.tag { display: inline-block; font-family: 'Roboto Mono', monospace; font-size: 11.5px;
+  padding: 1px 6px; border-radius: 4px; background: var(--inert-bg); color: var(--ink-2); }
+.scroller { overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; }
+
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+button.seg { font: inherit; font-size: 13px; font-weight: 550; padding: 7px 13px;
+  border-radius: 999px; cursor: pointer; background: var(--panel); color: var(--ink-2);
+  border: 1px solid var(--line-2); transition: all .15s; }
+button.seg:hover { border-color: var(--ink-3); color: var(--ink); }
+button.seg[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* motif */
+.motifrow { display: grid; gap: 14px; }
+@media (min-width: 640px) { .motifrow { grid-template-columns: 1fr 1fr; } }
+.mcard { border: 1px solid var(--line); border-radius: 10px; padding: 14px; text-align: center; }
+.mcard h4 { margin: 0 0 10px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.di { font-family: 'Roboto Mono', monospace; font-size: 30px; font-weight: 700; letter-spacing: .1em; }
+.di .keep { color: var(--ink-2); }
+.di .lost { color: var(--bad); }
+.di .arrow { color: var(--ink-3); font-size: 18px; margin: 0 12px; vertical-align: 3px; }
+.verdict2 { margin-top: 9px; font-size: 12.5px; font-weight: 650; }
+.verdict2.ok { color: var(--edit); }
+.verdict2.no { color: var(--bad); }
+
+.tgrid { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; }
+.tgrid th { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+  font-weight: 700; text-align: center; padding: 6px 4px; }
+.tgrid td { text-align: center; padding: 5px 4px; border-top: 1px solid var(--line); }
+.tgrid td.name { text-align: left; font-family: 'Roboto Mono', monospace; font-size: 12.5px; color: var(--ink-2); }
+.pill { display: inline-block; font-family: 'Roboto Mono', monospace; font-size: 12px; font-weight: 700;
+  padding: 3px 9px; border-radius: 5px; }
+.pill.ok { background: var(--edit-bg); color: var(--edit); }
+.pill.no { background: var(--bad-bg); color: var(--bad); }
+
+/* degeneracy */
+.seqstrip { font-family: 'Roboto Mono', monospace; font-size: 13px; letter-spacing: .5px;
+  line-height: 1.9; word-break: break-all; }
+.seqstrip .hit { background: var(--warn-bg); color: var(--warn); font-weight: 700; border-radius: 2px; }
+.slab { font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ink-3); margin: 12px 0 3px; }
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+.ro { border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px; }
+.ro .k { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.ro .v { font-family: 'Roboto Mono', monospace; font-size: 19px; font-weight: 600; margin-top: 3px; }
+.ro.alarm { border-color: var(--warn); background: var(--warn-bg); }
+.ro.alarm .v, .ro.alarm .k { color: var(--warn); }
+
+/* chart */
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: 4px; }
+
+/* anchor slider */
+.sliderow { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+input[type=range] { flex: 1; min-width: 200px; accent-color: var(--accent); }
+
+.ba { display: grid; gap: 12px; }
+@media (min-width: 640px) { .ba { grid-template-columns: 1fr 1fr; } }
+.bacard { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--panel); }
+.bacard.next { border-color: var(--edit); }
+.bacard h4 { margin: 0 0 8px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.bacard.next h4 { color: var(--edit); }
+.bacard ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--ink-2); }
+.bacard li { margin-bottom: 5px; }
+
+.callout { border-left: 3px solid var(--warn); background: var(--warn-bg); border-radius: 0 8px 8px 0;
+  padding: 12px 15px; margin: 18px 0; font-size: 14.5px; color: var(--ink-2); }
+.callout b { color: var(--ink); }
+.foot { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+/* ------------------------------------------------- 1. the collapse */
+
+const TRANSFORMS = [
+  { id: "a2g", from: "A", to: "G" },
+  { id: "t2c", from: "T", to: "C" },
+  { id: "a2c", from: "A", to: "C" },
+  { id: "t2g", from: "T", to: "G" },
+  { id: "g2c", from: "G", to: "C" },
+  { id: "a2t", from: "A", to: "T" },
+];
+
+const apply = (t, s) => s.split("").map((c) => (c === t.from ? t.to : c)).join("");
+
+function Motif({ label, orig, now }) {
+  const survives = orig === now;
+  return (
+    <div className="mcard">
+      <h4>{label}</h4>
+      <div className="di">
+        <span className="keep">{orig}</span>
+        <span className="arrow">&rarr;</span>
+        {now.split("").map((c, i) => (
+          <span key={i} className={c === orig[i] ? "keep" : "lost"}>{c}</span>
+        ))}
+      </div>
+      <div className={"verdict2 " + (survives ? "ok" : "no")}>
+        {survives ? "survives" : "gone"}
+      </div>
+    </div>
+  );
+}
+
+function Collapse() {
+  const [ti, setTi] = useState(0);
+  const t = TRANSFORMS[ti];
+  return (
+    <div className="panel">
+      <div className="btnrow">
+        {TRANSFORMS.map((x, i) => (
+          <button key={x.id} className="seg" aria-pressed={ti === i} onClick={() => setTi(i)}>
+            <span className="mono">{x.id}</span> &nbsp;{x.from}&rarr;{x.to}
+          </button>
+        ))}
+      </div>
+      <div className="motifrow">
+        <Motif label="donor, start of the intron" orig="GT" now={apply(t, "GT")} />
+        <Motif label="acceptor, end of the intron" orig="AG" now={apply(t, "AG")} />
+      </div>
+
+      <table className="tgrid">
+        <thead>
+          <tr><th style={{ textAlign: "left" }}>transform</th><th>donor GT</th><th>acceptor AG</th><th>intron findable by motif</th></tr>
+        </thead>
+        <tbody>
+          {TRANSFORMS.map((x) => {
+            const d = apply(x, "GT"), a = apply(x, "AG");
+            return (
+              <tr key={x.id}>
+                <td className="name">{x.id}</td>
+                <td><span className={"pill " + (d === "GT" ? "ok" : "no")}>{d}</span></td>
+                <td><span className={"pill " + (a === "AG" ? "ok" : "no")}>{a}</span></td>
+                <td><span className="pill no">no</span></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <p className="caption">
+        Nearly every human intron starts <span className="tag">GT</span> and ends
+        <span className="tag"> AG</span>, and a splice-aware aligner uses that to decide whether
+        a gap in an alignment is a real intron. <strong>No three-letter transform leaves both
+        intact</strong> — and one of them, g2c, destroys both at once.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------- 2. why the collapsed motif is useless */
+
+const STRIP = "CTGAGTTACAGGCATGAGCCACCGCGCCTGGCCTAAGATTTTTAAGTTTTAGTAGAGACGGG";
+
+function mark(seq, di) {
+  const out = [];
+  let i = 0;
+  while (i < seq.length) {
+    if (seq.slice(i, i + 2) === di) {
+      out.push(<span key={i} className="hit">{di}</span>);
+      i += 2;
+    } else {
+      out.push(<span key={i}>{seq[i]}</span>);
+      i += 1;
+    }
+  }
+  return out;
+}
+
+function Degeneracy() {
+  const collapsed = STRIP.replace(/A/g, "G");
+  const nOrig = (STRIP.match(/AG/g) || []).length;
+  const nColl = (collapsed.match(/GG/g) || []).length;
+  return (
+    <div className="panel">
+      <div className="scroller">
+        <div className="slab">looking for the acceptor AG in the real genome</div>
+        <div className="seqstrip">{mark(STRIP, "AG")}</div>
+        <div className="slab">looking for its a2g image GG in the collapsed genome</div>
+        <div className="seqstrip">{mark(collapsed, "GG")}</div>
+      </div>
+
+      <div className="readouts">
+        <div className="ro">
+          <div className="k">in this window</div>
+          <div className="v">{nOrig} &rarr; {nColl}</div>
+        </div>
+        <div className="ro">
+          <div className="k">acceptor, whole of chr21</div>
+          <div className="v">1 per 14.6 bp</div>
+        </div>
+        <div className="ro alarm">
+          <div className="k">its image in a2g space</div>
+          <div className="v">1 per 3.6 bp</div>
+        </div>
+        <div className="ro alarm">
+          <div className="k">candidate sites</div>
+          <div className="v">4.0&times;</div>
+        </div>
+      </div>
+
+      <p className="caption">
+        The obvious patch is to tell the aligner that in a2g space the acceptor reads
+        <span className="tag"> GG</span> instead. It does not help. The collapse is many-to-one:
+        <span className="tag"> GG</span> in the index could have been <span className="mono">AG</span>,
+        <span className="mono"> GA</span>, <span className="mono">GG</span> or <span className="mono">AA</span>.
+        <strong> A motif that matches one position in four is not a motif, it is the background.</strong>
+      </p>
+      <p className="note">
+        Counts over the 38 Mb of unambiguous sequence in hg38 chr21. The a2g genome is half G:
+        A 29.5% + G 20.5% become G 49.9%.
+      </p>
+    </div>
+  );
+}
+
+/* --------------------------------------------- 3. how much it actually costs */
+
+const ANCHORS = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 25, 30, 40];
+const SERIES = [
+  { id: "collapsed", label: "three-letter genome, no annotation", color: "var(--bad)",
+    y: [0, 0, 0, 0, 0, 0, 15.7, 69.5, 81.3, 83.7, 85.5, 100, 100, 100, 100] },
+  { id: "restored", label: "same genome with GT..AG written back in", color: "var(--warn)",
+    y: [0, 0, 0, 0, 0, 68.3, 82.2, 84.2, 81.3, 83.7, 85.5, 100, 100, 100, 100] },
+  { id: "annot", label: "three-letter genome, junctions supplied", color: "var(--edit)",
+    y: [83.8, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] },
+];
+
+function AnchorCurve() {
+  const W = 620, H = 260, L = 46, R = 14, T = 14, B = 34;
+  const x = (i) => L + (i / (ANCHORS.length - 1)) * (W - L - R);
+  const y = (v) => T + (1 - v / 100) * (H - T - B);
+  const path = (ys) => ys.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const bandLo = x(ANCHORS.indexOf(12)) - 10;
+  const bandHi = x(ANCHORS.indexOf(14)) + 10;
+
+  return (
+    <div className="panel">
+      <div className="scroller">
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ minWidth: 520, display: "block" }}
+             role="img" aria-label="Junction recovery against anchor length">
+          <rect x={bandLo} y={T} width={bandHi - bandLo} height={H - T - B}
+                fill="var(--warn-bg)" opacity="0.75" />
+          <text x={(bandLo + bandHi) / 2} y={T + 13} textAnchor="middle" fontSize="10.5"
+                fill="var(--warn)" fontFamily="Inter" fontWeight="650">the motif matters here</text>
+          {[0, 25, 50, 75, 100].map((v) => (
+            <g key={v}>
+              <line x1={L} y1={y(v)} x2={W - R} y2={y(v)} stroke="var(--line)" strokeWidth="1" />
+              <text x={L - 8} y={y(v) + 3.5} textAnchor="end" fontSize="10"
+                    fill="var(--ink-3)" fontFamily="Roboto Mono">{v}</text>
+            </g>
+          ))}
+          {ANCHORS.map((a, i) => (
+            <text key={a} x={x(i)} y={H - B + 15} textAnchor="middle" fontSize="9.5"
+                  fill="var(--ink-3)" fontFamily="Roboto Mono">{a}</text>
+          ))}
+          <text x={(L + W - R) / 2} y={H - 3} textAnchor="middle" fontSize="10.5"
+                fill="var(--ink-3)" fontFamily="Inter">bases of the read on the short side of the junction</text>
+          {SERIES.map((s) => (
+            <g key={s.id}>
+              <path d={path(s.y)} fill="none" stroke={s.color} strokeWidth="2.2"
+                    strokeLinejoin="round" strokeLinecap="round" />
+              {s.y.map((v, i) => (
+                <circle key={i} cx={x(i)} cy={y(v)} r="2.6" fill={s.color} />
+              ))}
+            </g>
+          ))}
+        </svg>
+      </div>
+      <div className="legend">
+        {SERIES.map((s) => (
+          <span key={s.id}><i style={{ background: s.color }} />{s.label}</span>
+        ))}
+      </div>
+      <p className="caption">
+        Same reads, same alphabet, same repeat content. The only difference between the red and
+        amber lines is four bases per intron written back into the reference, so the gap between
+        them is the motif and nothing else. <strong>It is a three-base band.</strong> Below a
+        twelve-base anchor no junction is found either way; above fifteen the motif contributes
+        nothing. In between, it is the whole difference.
+      </p>
+      <p className="caption">
+        The green line is what matters in practice. <strong>Supplying the junctions beats the
+        motif everywhere</strong>, and recovers reads that overlap by as little as six bases —
+        which no amount of motif ever would.
+      </p>
+      <p className="note">
+        9,000 simulated junction-spanning reads, three-letter transformed, aligned with HISAT2. A
+        junction counts as found only when the gap in the CIGAR is exactly the length of the real
+        intron.
+      </p>
+    </div>
+  );
+}
+
+/* ---------------------------------------------- 4. the specificity cost */
+
+function Spurious() {
+  return (
+    <div className="panel">
+      <div className="readouts">
+        <div className="ro alarm">
+          <div className="k">gaps placed at a wrong intron</div>
+          <div className="v">499</div>
+          <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 4 }}>no annotation</div>
+        </div>
+        <div className="ro" style={{ borderColor: "var(--edit)", background: "var(--edit-bg)" }}>
+          <div className="k" style={{ color: "var(--edit)" }}>with junctions supplied</div>
+          <div className="v" style={{ color: "var(--edit)" }}>0</div>
+          <div style={{ fontSize: 12, color: "var(--edit)", marginTop: 4 }}>out of the same 9,000 reads</div>
+        </div>
+      </div>
+      <p className="caption">
+        This is the part that should worry a hyper-editing pipeline more than the missed reads. A
+        junction placed in the wrong spot does not produce a gap in the output — it produces a
+        read aligned to the wrong sequence, and therefore <strong>a burst of mismatches that look
+        exactly like dense editing.</strong> The method's entire signal is dense mismatch
+        clusters. Supplying the junctions removes every one of these.
+      </p>
+    </div>
+  );
+}
+
+/* ---------------------------------------- 5. how many reads are in the zone */
+
+function DangerZone() {
+  const [pos, setPos] = useState(12);        // bases of the read left of the junction
+  const LEN = 100;
+  const anchor = Math.min(pos, LEN - pos);
+  const zone = anchor < 15;
+  const W = 620, H = 92;
+  const jx = 310;
+  const scale = 2.4;                          // px per base
+  const left = jx - pos * scale;
+
+  return (
+    <div className="panel">
+      <div className="scroller">
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ minWidth: 520, display: "block" }}
+             role="img" aria-label="A read overlapping an exon junction">
+          <rect x="10" y="50" width={jx - 10} height="20" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+          <rect x={jx} y="50" width={W - 10 - jx} height="20" rx="3" fill="var(--inert-bg)" stroke="var(--line-2)" />
+          <text x={jx / 2} y="64" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">exon</text>
+          <text x={(jx + W - 10) / 2} y="64" textAnchor="middle" fontSize="10" fill="var(--ink-3)" fontFamily="Inter">exon</text>
+          <line x1={jx} y1="42" x2={jx} y2="78" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="3 3" />
+          <text x={jx} y="88" textAnchor="middle" fontSize="9.5" fill="var(--ink-3)" fontFamily="Inter">junction</text>
+          <rect x={left} y="22" width={LEN * scale} height="14" rx="3"
+                fill={zone ? "var(--bad-bg)" : "var(--edit-bg)"}
+                stroke={zone ? "var(--bad)" : "var(--edit)"} />
+          <line x1={pos < LEN - pos ? left : jx} y1="18"
+                x2={pos < LEN - pos ? jx : left + LEN * scale} y2="18"
+                stroke={zone ? "var(--bad)" : "var(--edit)"} strokeWidth="2" />
+          <text x={jx} y="12" textAnchor="middle" fontSize="10"
+                fill={zone ? "var(--bad)" : "var(--edit)"} fontFamily="Roboto Mono" fontWeight="700">
+            anchor {anchor} bp
+          </text>
+        </svg>
+      </div>
+      <div className="sliderow">
+        <span style={{ fontSize: 13, color: "var(--ink-3)" }}>slide the read</span>
+        <input type="range" min="1" max="99" value={pos}
+               onChange={(e) => setPos(Number(e.target.value))} />
+      </div>
+      <div className="readouts">
+        <div className={zone ? "ro alarm" : "ro"}>
+          <div className="k">this read</div>
+          <div className="v">{zone ? "needs the annotation" : "fine either way"}</div>
+        </div>
+        <div className="ro alarm">
+          <div className="k">reads with an anchor under 15</div>
+          <div className="v">28%</div>
+        </div>
+      </div>
+      <p className="caption">
+        A junction-spanning read can sit anywhere across the boundary, so for a 100 bp read the
+        short side is roughly uniform from 1 to 50. <strong>Twenty-eight per cent of
+        junction-spanning reads land in the range where de novo splicing fails</strong> and the
+        annotation is doing all the work. They are not an edge case.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------------- 6. why supplying them is legal */
+
+const OSEQ = "TTGCAGATCCAGTAAGCTTAC";
+
+function Coordinates() {
+  const collapsed = OSEQ.replace(/A/g, "G");
+  const cell = 19;
+  const row = (seq, lab, dim) => (
+    <div style={{ marginBottom: 8 }}>
+      <div className="slab">{lab}</div>
+      <div style={{ display: "flex", gap: 1 }}>
+        {seq.split("").map((c, i) => (
+          <div key={i} style={{
+            width: cell, minWidth: cell, height: 24, display: "flex",
+            alignItems: "center", justifyContent: "center", borderRadius: 3,
+            fontFamily: "'Roboto Mono', monospace", fontSize: 13,
+            background: dim && c !== OSEQ[i] ? "var(--accent-bg)" : "var(--inert-bg)",
+            color: dim && c !== OSEQ[i] ? "var(--accent)" : "var(--ink-3)",
+            fontWeight: dim && c !== OSEQ[i] ? 700 : 500,
+          }}>{c}</div>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <div className="panel">
+      <div className="scroller">
+        <div style={{ minWidth: OSEQ.length * (cell + 1) }}>
+          <div style={{ display: "flex", gap: 1, marginBottom: 2 }}>
+            {OSEQ.split("").map((_, i) => (
+              <div key={i} style={{
+                width: cell, minWidth: cell, textAlign: "center",
+                fontFamily: "'Roboto Mono', monospace", fontSize: 9, color: "var(--ink-3)",
+              }}>{i % 5 === 0 ? i : "·"}</div>
+            ))}
+          </div>
+          {row(OSEQ, "reference", false)}
+          {row(collapsed, "after a2g", true)}
+        </div>
+      </div>
+      <p className="caption">
+        The transform substitutes one base for another and does nothing else — no insertions, no
+        deletions, no reordering. <strong>Every coordinate is identical in all seven
+        genomes.</strong> That is what makes handing the aligner a junction list legitimate rather
+        than a fudge: you are supplying coordinates, and coordinates are the one thing the
+        collapse preserves exactly.
+      </p>
+    </div>
+  );
+}
+
+function Fix() {
+  return (
+    <div className="ba">
+      <div className="bacard">
+        <h4>annotation from GENCODE</h4>
+        <ul>
+          <li>Works immediately, no extra compute.</li>
+          <li>Blind to novel junctions, unannotated isoforms and back-splices.</li>
+          <li>Ties the result to whichever annotation build you used.</li>
+        </ul>
+      </div>
+      <div className="bacard next">
+        <h4>junctions from the sample itself</h4>
+        <ul>
+          <li>First pass: align the whole library to the <em>untransformed</em> genome, splice-aware, and keep the junctions it finds.</li>
+          <li>The hyper-edited reads fail that pass by construction — but they do not need to. You only want the catalogue, and the ordinary 95% of the library defines it.</li>
+          <li>Novel and tissue-specific junctions included, in the actual sample.</li>
+          <li>The pipeline already aligns everything once at this stage.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------- page */
+
+function Page() {
+  return (
+    <div className="wrap">
+      <header className="top">
+        <h1>Junctions in three letters</h1>
+        <p className="lede">
+          To find RNA edits that no aligner will map, the hyper-editing pipeline collapses reads
+          and genome to three letters. Splice sites do not survive the collapse. Here is what that
+          costs, measured — and it is not what it looks like.
+        </p>
+      </header>
+
+      <section>
+        <p className="eyebrow">the motif</p>
+        <h2>Both signposts, gone</h2>
+        <p className="sub">
+          Pick a transform and watch what happens to the two dinucleotides that mark an intron.
+        </p>
+        <Collapse />
+      </section>
+
+      <section>
+        <p className="eyebrow">the obvious patch, and why it fails</p>
+        <h2>A motif that matches everywhere</h2>
+        <Degeneracy />
+      </section>
+
+      <section>
+        <p className="eyebrow">the measurement</p>
+        <h2>Where it actually hurts</h2>
+        <p className="sub">
+          The tempting conclusion is that a three-letter genome cannot find its own junctions at
+          all. That is wrong, and measuring it says something more useful.
+        </p>
+        <div className="callout">
+          <b>What we guessed:</b> no motif, no junctions.
+          <b> What the run says:</b> a well-anchored junction is found without the motif perfectly
+          well — a 40-base anchor across a 29 kb intron is worth far more to the aligner than the
+          non-canonical penalty costs it. The motif only decides the marginal cases.
+        </div>
+        <AnchorCurve />
+      </section>
+
+      <section>
+        <p className="eyebrow">the part that is worse</p>
+        <h2>Junctions in the wrong place</h2>
+        <Spurious />
+      </section>
+
+      <section>
+        <p className="eyebrow">how often it comes up</p>
+        <h2>Short anchors are not rare</h2>
+        <DangerZone />
+      </section>
+
+      <section>
+        <p className="eyebrow">the fix</p>
+        <h2>Give it the junctions</h2>
+        <p className="sub">
+          Two ways, and one of them is nearly free because the pipeline is already doing the work.
+        </p>
+        <Fix />
+        <Coordinates />
+      </section>
+
+      <p className="foot">
+        Pipeline: <span className="tag">hagitpt/Hyper-editing</span>, behind Porath, Carmi &amp;
+        Levanon, <em>Nat Commun</em> 2014. Aligner: HISAT2 2.2.1. Motif frequencies: hg38 analysis
+        set, chr21. The anchor sweep and the counterfactual reference are in
+        <span className="tag">validation/demos/hyperediting-mem</span>.
+      </p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+</script>

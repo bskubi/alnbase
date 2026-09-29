@@ -1,0 +1,14 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/directional.toml
+@CO	queries/strand/directional.toml -- the library's own design, no tag read.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
+OT/pe-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII
+CTOT/pe-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII
+OB/pe-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII
+CTOB/pe-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII
+OT/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII
+OB/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII

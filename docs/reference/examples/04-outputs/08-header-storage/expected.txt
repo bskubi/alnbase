@@ -1,0 +1,117 @@
+read 1 records, tagged 1, skipped 0
+  0 of 14 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+read 1 records, tagged 1, skipped 0
+  0 of 14 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+## 1. header of run2.bam (CL cut)
+@HD^IVN:1.6^ISO:unsorted
+@SQ^ISN:chr1^ILN:20
+@CO^Ione read with CG calls at SEQ 3 (converted) and 8 (protected); last base SEQ 13.
+@PG^IID:alnbase^IPN:alnbase^IVN:0.1.20^ICL:alnbase query --query-file run1_call
+@PG^IID:alnbase.1^IPN:alnbase^IPP:alnbase^IVN:0.1.20^ICL:alnbase query --overwri
+@CO^Ialnbase:v1:file^IPG:alnbase^Ifile:0^Ilines:13^Ipath:run1_calls.toml
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:0^I# run 1, file 0.\tThis comment has a TAB, a backslash \\ and ends
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:1^I[query.TG]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:2^Iread = "T~"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:3^Irefr = "CG"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:4^I
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:5^I[query.CG]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:6^Iread = "C~"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:7^Irefr = "CG"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:8^I
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:9^I[tag.XM.bases]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:10^Ifill = "."
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:11^Iz = "TG"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:0^Iline:12^IZ = "CG"
+@CO^Ialnbase:v1:file^IPG:alnbase^Ifile:1^Ilines:9^Ipath:run1_end.toml
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:0^I# run 1, file 1: a second bases tag, XE, marking the last two rea
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:1^I[query.nearend]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:2^Iread = "N~_"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:3^Irefr = "~~~"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:4^I
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:5^I[tag.XE.bases]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:6^Ifill = "-"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:7^Ie = "nearend"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:1^Iline:8^I
+@CO^Ialnbase:v1:file^IPG:alnbase^Ifile:2^Ilines:21^Ipath:../../../../../queries/strand/directional.toml
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:0^I# Directional library, conformant FLAG, no strand tag.
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:1^I#
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:2^I# For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with -
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:3^I# methylpy's own output BAM, Bismark 0.25.1 directional paired-en
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:4^I# single-end -- any input where the library is directional and FL
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:5^I# says. Read 2026-09-17; evidence in docs/design/research/strand-
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:6^I#
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:7^I# This is alnbase's historical `--library directional` rule, writ
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:8^I# picks the converted original or its complement, and 0x10 picks 
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:9^I# read has is_last_in_template false, so it is treated as read 1,
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:10^I#
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:11^I# It is a rule about the library, not about the aligner, so it i
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:12^I# for when an aligner writes no usable tag. If the library was n
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:13^I# will silently call CTOT reads as OT; use the aligner's own fil
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:14^I
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:15^I[strand.origin]
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:16^IOT   = "not is_reverse and not is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:17^ICTOT = "is_reverse and is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:18^IOB   = "is_reverse and not is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:19^ICTOB = "not is_reverse and is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase^Ifile:2^Iline:20^I
+@CO^Ialnbase:v1:file^IPG:alnbase.1^Ifile:0^Ilines:9^Ipath:run2_calls.toml
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:0^I# run 2 redefines XM only, with fill "_" and CG calls only.
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:1^I[query.CGonly]
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:2^Iread = "C~"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:3^Irefr = "CG"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:4^I
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:5^I[tag.XM.bases]
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:6^Ifill = "_"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:7^IM = "CGonly"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:0^Iline:8^I
+@CO^Ialnbase:v1:file^IPG:alnbase.1^Ifile:1^Ilines:21^Ipath:../../../../../queries/strand/directional.toml
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:0^I# Directional library, conformant FLAG, no strand tag.
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:1^I#
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:2^I# For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:3^I# methylpy's own output BAM, Bismark 0.25.1 directional paired-
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:4^I# single-end -- any input where the library is directional and 
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:5^I# says. Read 2026-09-17; evidence in docs/design/research/stran
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:6^I#
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:7^I# This is alnbase's historical `--library directional` rule, wr
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:8^I# picks the converted original or its complement, and 0x10 pick
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:9^I# read has is_last_in_template false, so it is treated as read 
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:10^I#
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:11^I# It is a rule about the library, not about the aligner, so it
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:12^I# for when an aligner writes no usable tag. If the library was
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:13^I# will silently call CTOT reads as OT; use the aligner's own f
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:14^I
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:15^I[strand.origin]
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:16^IOT   = "not is_reverse and not is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:17^ICTOT = "is_reverse and is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:18^IOB   = "is_reverse and not is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:19^ICTOB = "not is_reverse and is_last_in_template"
+@CO^Ialnbase:v1:line^IPG:alnbase.1^Ifile:1^Iline:20^I
+## 2. records
+r	XE:Z:------------ee	XM:Z:________M_____
+## 3. dump-query
+latest run: byte-identical
+Error: @PG alnbase stored 3 files; choose one with --file (0: run1_calls.toml, 1: run1_end.toml, 2: ../../../../../queries/strand/directional.toml)
+exit=1
+run 1 file 0: byte-identical
+run 1 file 1: byte-identical
+Error: @PG alnbase stored 3 file(s); there is no file 3
+exit=1
+Error: no query file is stored under @PG nope; stored under: alnbase, alnbase.1
+exit=1
+## 4. extract picks each tag's most recent definition
+Error: several bases tags are defined (XM, XE); choose one with --tag
+exit=1
+extracting tag XM with the query file stored under @PG alnbase.1 (run2_calls.toml, ../../../../../queries/strand/directional.toml)
+read 1 records, extracted from 1, skipped 0
+exit=0
+extracting tag XE with the query file stored under @PG alnbase (run1_calls.toml, run1_end.toml, ../../../../../queries/strand/directional.toml)
+read 1 records, extracted from 1, skipped 0
+exit=0
+[('XE', 'nearend', 12, 12, None), ('XE', 'nearend', 13, 13, None), ('XM', 'CGonly', 8, 8, 'C')]
+## 5. header comments survive samtools view / sort
+after samtools sort: byte-identical
+## 6. a lost @CO line is detected
+Error: @PG alnbase.1, run2_calls.toml: 8 of its 9 lines are in the header
+exit=1
+Error: @PG alnbase.1, run2_calls.toml: 8 of its 9 lines are in the header
+exit=1

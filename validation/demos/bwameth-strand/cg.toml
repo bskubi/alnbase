@@ -1,0 +1,9 @@
+# A cytosine in CG context, read as C. The anchor is the cytosine, so the position each hit
+# reports is the informative reference base: the C of a forward-strand CG on a '+' record and
+# the G of that same CG on a '-' one, because alnbase walks each read along the conversion
+# strand its rule declared. That makes the hit positions a check on the conversion strand
+# rather than a methylation measurement -- every CG cytosine in these reads is methylated.
+
+[query.CG]
+read = "C~"
+refr = "CG"

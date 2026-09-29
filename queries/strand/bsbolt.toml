@@ -1,0 +1,32 @@
+# BSBolt 1.6.0 -- YS:Z, four-way from the tag alone.
+#
+# Read 2026-09-17 from BSBolt GitHub master ea4870e (bwamem.c:985-1008; the WC value at
+# bs_sorter.cpp:79).
+#
+# YS names the reference contig the read aligned to (W Watson, C Crick) and then the
+# conversion the read itself shows, which together give the strand of origin.
+#
+# Reading the tag is not a convenience here, it is a correctness fix. BSBolt overwrites
+# is_rev with "aligned to the Crick contig" (bwamem.c:850,866) while SEQ is still
+# reverse-complemented by the read's true orientation (:938-963), so FLAG 0x10 is inverted
+# on every *_G2A record -- read 2 of every pair in a directional library. Any rule that
+# reads 0x10 on this input, including alnbase's own historical one, calls those records on
+# the wrong strand and counts off_5p from the wrong end
+# (validation/demos/premethyst-bugs/README.md). Deriving both from YS avoids the bit
+# entirely, so BSBolt BAMs need no FLAG repair before alnbase reads them.
+#
+# Valid for -UN (non-directional) unchanged. Note 0x20 is also never set on a Watson
+# record (:854,868); nothing here depends on it.
+#
+# Checked 2026-09-17 against real BSBolt BAMs (validation/demos/bsbolt-strand), both
+# layouts: two pairs directional and four under -UN, every record called as the strand it
+# was sequenced from, and SEQ reference-forward throughout. The inverted bit was counted
+# rather than assumed -- 0x10 contradicts how SEQ was really stored on every *_G2A record
+# and no other, 2 of 2 directional and 4 of 4 under -UN.
+
+[strand.origin]
+OT      = 'YS == "W_C2T"'
+CTOT    = 'YS == "W_G2A"'
+OB      = 'YS == "C_C2T"'
+CTOB    = 'YS == "C_G2A"'
+unknown = 'YS == "WC"'          # unmapped records

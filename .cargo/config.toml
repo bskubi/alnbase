@@ -1,0 +1,13 @@
+# alnbase is a binary crate, so every module in it is private and a plain
+# `cargo doc` produces almost empty pages. `--document-private-items` is what
+# makes the documentation exist at all, and forgetting it looks like the docs
+# being broken rather than like a missing flag -- hence an alias, so the
+# working command is the short one.
+#
+#     cargo docs        build them
+#     cargo docs --open build them and open the crate root
+#
+# The crate root (src/main.rs) is the orientation page: the model, one record's
+# path through the program, and which module owns which decision.
+[alias]
+docs = "doc --no-deps --document-private-items"

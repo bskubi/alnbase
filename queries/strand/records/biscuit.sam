@@ -1,0 +1,13 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/biscuit.toml
+@CO	queries/strand/biscuit.toml -- YD gives the conversion strand, 0x10 the sequenced direction. The origin stays unknown: OT and CTOB both hit the f contig.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
++:forward/f-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	YD:A:f
++:reverse/f-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	YD:A:f
+-:reverse/r-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	YD:A:r
+-:forward/r-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	YD:A:r
+unknown/u	0	chr1	101	60	4M	*	0	0	ACGT	IIII	YD:A:u

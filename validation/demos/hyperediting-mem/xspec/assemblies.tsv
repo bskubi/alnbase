@@ -1,0 +1,40 @@
+# Assemblies for the cross-species re-test. One row per reference.
+#
+# species  label  era  fasta_url  gtf_url
+#
+# `era` is the column the experiment turns on: `old` is the assembly the 2014
+# paper had, `new` is the best available today. Every species contributes one
+# of each, so the reference axis is a paired comparison within species.
+#
+# Sources are UCSC throughout, and deliberately not NCBI: NCBI's *_genomic.fna.gz
+# is soft-masked with WindowMasker rather than RepeatMasker, and for opossum and
+# fly it ships no RepeatMasker product at all. Mixing a WindowMasker FASTA with a
+# RepeatMasker annotation is a silent inconsistency in a study whose signal is
+# about repeats.
+#
+# Note which URL the 2026 opossum lives at. UCSC's named `monDom5` browser and
+# Ensembl's ASM229v1 are both still the 2006 genome; mMonDom1.pri is reachable
+# only through GenArk or NCBI Datasets. Taking the obvious path re-runs the 2014
+# experiment on the 2014 reference without announcing it.
+#
+# Chromosome naming differs by source and is checked at prep time rather than
+# assumed: GenArk assemblies name sequences by RefSeq accession (NC_077227.1),
+# goldenPath assemblies use chr1..chrX. A GTF whose names do not intersect its
+# FASTA's is a hard error, not a warning -- it would otherwise produce an empty
+# junction list and a silently degraded HISAT2 arm.
+#
+#species	label	era	fasta_url	gtf_url
+opossum	monDom5	old	https://hgdownload.soe.ucsc.edu/goldenPath/monDom5/bigZips/monDom5.fa.gz	https://hgdownload.soe.ucsc.edu/goldenPath/monDom5/bigZips/genes/monDom5.ensGene.gtf.gz
+opossum	mMonDom1	new	https://hgdownload.soe.ucsc.edu/hubs/GCF/027/887/165/GCF_027887165.2/GCF_027887165.2.fa.gz	https://hgdownload.soe.ucsc.edu/hubs/GCF/027/887/165/GCF_027887165.2/genes/GCF_027887165.2_mMonDom1.pri.ncbiRefSeq.gtf.gz
+# Rows below are the rest of the panel, not run by the pilot. Uncomment to extend.
+# Rat is the largest assembly improvement of any species here (contig N50 52 kb
+# -> 64 Mb, 1,224x) and therefore the largest predicted effect after opossum.
+#rat	rn5	old	https://hgdownload.soe.ucsc.edu/goldenPath/rn5/bigZips/rn5.fa.gz	https://hgdownload.soe.ucsc.edu/goldenPath/rn5/bigZips/genes/rn5.ensGene.gtf.gz
+#rat	GRCr8	new	https://hgdownload.soe.ucsc.edu/hubs/GCF/036/323/735/GCF_036323735.1/GCF_036323735.1.fa.gz	https://hgdownload.soe.ucsc.edu/hubs/GCF/036/323/735/GCF_036323735.1/genes/GCF_036323735.1_GRCr8.ncbiRefSeq.gtf.gz
+#mouse	mm9	old	https://hgdownload.soe.ucsc.edu/goldenPath/mm9/bigZips/chromFa.tar.gz	https://hgdownload.soe.ucsc.edu/goldenPath/mm9/bigZips/genes/mm9.ensGene.gtf.gz
+#mouse	mm39	new	https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/mm39.fa.gz	https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/genes/mm39.ncbiRefSeq.gtf.gz
+# Fly is the negative control: dm6's contig N50 is byte-identical to dm3's, so
+# the assembly axis is null for it by construction. If the other species move
+# and fly does not, the movement is assembly-driven. Both arms cost ~40 min.
+#fly	dm3	old	https://hgdownload.soe.ucsc.edu/goldenPath/dm3/bigZips/chromFa.tar.gz	https://hgdownload.soe.ucsc.edu/goldenPath/dm3/bigZips/genes/dm3.ensGene.gtf.gz
+#fly	dm6	new	https://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.fa.gz	https://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/genes/dm6.ncbiRefSeq.gtf.gz

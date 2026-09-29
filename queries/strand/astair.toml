@@ -1,0 +1,66 @@
+# asTair (TAPS) -- no tag at all; whole-FLAG equality, as asTair's own caller does it.
+#
+# Read 2026-09-17 from asTair Bitbucket master, https://bitbucket.org/bsblabludwig/astair/,
+# commit b7df2790a06d66d298eb4d862af569e16e6a93d9 (the FLAG table at caller.py:235-267; the
+# tags it ignores at filter.py:105, summary.py:156-163). There is no asTair repository on
+# GitHub; an earlier version of this comment said there was. That master is version 3.3.3,
+# ahead of PyPI's 3.3.2, and its last commit deprecates the tool in favour of rastair
+# (https://bitbucket.org/bsblabludwig/rastair), which is not covered by any file here.
+#
+# asTair writes no conversion tag and reads none: its caller takes the strand from a
+# literal table of FLAG integers, 99/147 and 0 for the top strand, 83/163 and 16 for the
+# bottom. This file is that table, written out, so that an alnbase run can mirror asTair's
+# own extraction exactly.
+#
+# Checked 2026-09-18 against real asTair output (validation/demos/astair-strand), on a TAPS
+# fixture of 205 pairs aligned with bwa mem. Mirroring the table reproduces asTair's own
+# .mods file: 261 positions in common, none disagreeing, mod 710/711 and unmod 1954/1954.
+# The one position alnbase reports that asTair does not is the bottom-strand cytosine of a CG
+# at reference offset 0, which asTair drops because its trinucleotide SPECIFIC_CONTEXT runs
+# off the start of the contig.
+#
+# For any other purpose prefer directional.toml, which is the same claim about a
+# directional library stated as a rule rather than as six integers, and which additionally
+# gives the four-way strand of origin. The difference is deliberate and is the reason this
+# file exists: asTair contributes nothing from a record whose FLAG is not one of the six --
+# a supplementary alignment, a singleton mate, a not-proper pair. It does not count such a
+# record toward depth either, which an earlier version of this comment claimed it did:
+# pysam's pileup drops a non-proper pair before asTair sees it, and aligning the fixture with
+# and without a deliberate FF pair changes no position's MOD, UNMOD or TOTAL_DEPTH.
+#
+# The unknown arm below is what a run needs to reach that point at all. alnbase refuses to
+# run a strand rule that leaves a record uncovered, so without it the demo's FF pair (bwa
+# writes FLAG 65) aborts the run rather than being "reported", as this comment used to say.
+# Declared as unknown, the two records are skipped and counted, which is the intended shape.
+#
+# One bug found while mirroring the table, and not expressible as a strand rule: `astair call
+# --ignore_orphans False`, a documented option (caller.py:61), silently produces nothing. The
+# branch it turns on calls list.extend() with two arguments (caller.py:247-248, 259-260),
+# which raises TypeError; clean_pileup wraps its per-position body in `except Exception:
+# continue` (caller.py:339), so every position is skipped in turn. The run logs "finished
+# running", writes a header-only .mods file and a .stats file reporting 0 covered positions,
+# and exits 0.
+#
+# The six integers are a claim about fragment orientation, not about individual reads: 99 and
+# 147 are an FR pair whose read 1 is forward, which is a top-strand fragment and both of its
+# mates, the OT read 1 and the CTOT read 2. So CTOT and CTOB records are handled correctly and
+# constantly -- read 2 of every ordinary fragment is one. What the table cannot survive is a
+# pair whose read 1 came off the copy strand, so that its orientation is inverted relative to
+# its fragment's strand; then both mates are counted on the wrong side.
+#
+# A directional library does not produce that layout, and asTair is directional-only by design:
+# --library reverse flips the polarity globally, the nearest thing it has to PBAT (exchange the
+# two conditions below for such a run), and non-directional is described upstream as under
+# development. TAPS gives that limit no help, because the reference is not converted and so
+# nothing at alignment time discards such a pair the way a three-letter aligner's index choice
+# partly does. In the demo all four records of the two inverted pairs map at MAPQ 60 and are
+# called on the opposite conversion strand.
+
+[strand.conversion]
+"+" = "flags == 99 or flags == 147 or flags == 0"
+"-" = "flags == 83 or flags == 163 or flags == 16"
+unknown = "not (flags == 99 or flags == 147 or flags == 0 or flags == 83 or flags == 163 or flags == 16)"
+
+[strand.sequenced]
+forward = "not is_reverse"
+reverse = "is_reverse"

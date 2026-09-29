@@ -1,0 +1,46 @@
+# HISAT-3N -- YZ:A, conversion strand only.
+#
+# Read 2026-09-17 from HISAT-3N GitHub master (YZ at alignment_3n.h:717-718; FLAG
+# conformant at aln_sink.h:2574-2575, :2689-2692).
+#
+# YZ is + or -, the 3N index the read hit, which is the conversion strand directly. It does
+# not distinguish the strand of origin. The FLAG is conformant, so the sequenced direction
+# comes from 0x10.
+#
+# In HISAT-3N's default non-directional mode YZ is INFERRED from the read's conversion
+# counts (alignment_3n.h:288-313), and when the counts tie it falls back to the directional
+# rule (:299-308) -- so a fully methylated read is assigned a strand by assumption, not by
+# evidence, and this file will report that assumption as fact. With --directional-mapping (or
+# the undocumented --directional-mapping-reverse, which is PBAT) the library settles it
+# instead, and directional.toml applies and additionally gives the four-way strand. (There
+# is no separate PBAT file; see directional.toml for why.)
+#
+# Checked 2026-09-17 against real HISAT-3N 2.2.1-3n-0.0.3 output, built from commit f5dda37
+# (validation/demos/hisat-3n-strand), paired-end. On ordinary partly converted reads all
+# eight records were called with the conversion strand and the sequenced direction their
+# origin implies; YZ was the same on both mates of every pair, 0x10 agreed with how SEQ was
+# really stored on every record, and SEQ was reference-forward throughout. A sweep of 456
+# reads found one converted cytosine to be enough for the inference: it is not a vote that
+# needs depth, so the tie is the only failure.
+#
+# That run also measured the tie. On fully methylated reads YZ was wrong on every read from a
+# PCR copy -- 228 of 456, half the sweep -- at the right position, unclipped, MAPQ 60, and
+# identical to what --directional-mapping produces, so in the absence of evidence the default
+# mode is the directional mode applied without being asked for. Yf:i:0 marks those records,
+# being the number of conversions of the kind YZ names. It does not mark the other tie, one
+# conversion of each kind, which was wrong on the same 228 reads with Yf:i:1. Nor does
+# alnbase's count of read bases differing from the reference: a read with no conversion
+# matches whichever way it is walked, so that count stays at zero while half the records sit
+# on the wrong strand. Pass --directional-mapping when the library is directional.
+#
+# Two comments in alignment_3n.h invert the rule the code implements: :285-286 and :95-96 say
+# YZ is '+' when conversionCount[0] is the SMALLER count, while :309 assigns '+' when it is
+# the larger. The code is what this file follows, and the run above confirms it.
+
+[strand.conversion]
+"+" = 'YZ == "+"'
+"-" = 'YZ == "-"'
+
+[strand.sequenced]
+forward = "not is_reverse"
+reverse = "is_reverse"

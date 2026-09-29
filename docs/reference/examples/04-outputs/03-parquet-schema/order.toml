@@ -1,0 +1,9 @@
+# Row order within a record: a row is emitted when the walk reaches the query's
+# LAST column, so a wide query anchored early can come after a narrow one.
+[query.wide]                # 3 columns, anchor on column 0
+read = "C~~"
+refr = "CG~"
+
+[query.narrow]              # 1 column: fires on the G at column 4, before "wide" (anchored at 3) completes at 5
+read = "G"
+refr = "G"

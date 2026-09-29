@@ -1,0 +1,83 @@
+
+== The four pairs, each named for the strand its read 1 came from
+OT    fragment chr1 1-based 101-300: read 1 from OT, read 2 from CTOT
+CTOT  fragment chr1 1-based 351-550: read 1 from CTOT, read 2 from OT
+OB    fragment chr1 1-based 601-800: read 1 from OB, read 2 from CTOB
+CTOB  fragment chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB
+
+== meRanGh (hisat2): index, then paired-end, -f alone and -r alone
+
+== meRanGs (STAR): the same three
+
+== What each run wrote: the tags, the call the rule makes, and how SEQ is stored
+
+-- gh_pe
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    99    101   C2T   C2T   OT         OT     as sequenced       
+   OT    147   241   C2T   G2A   CTOT       CTOT   reference-forward  
+   OB    83    741   G2A   C2T   OB         OB     reference-forward  
+   OB    163   601   G2A   G2A   CTOB       CTOB   as sequenced       
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 0
+
+-- gh_f
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    0     101   C2T   C2T   OT         OT     as sequenced       
+   OB    16    741   G2A   C2T   OB         OB     reference-forward  
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 0
+
+-- gh_r
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    16    241   C2T   G2A   CTOT       CTOT   reference-forward  
+   OB    0     601   G2A   G2A   CTOB       CTOB   as sequenced       
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 0
+
+-- gs_pe
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    99    101   C2T   C2T   OT         OT     as sequenced       
+   OT    147   241   C2T   G2A   CTOT       CTOT   reference-forward  
+   OB    83    741   G2A   C2T   OB         OB     reference-forward  
+   OB    163   601   G2A   G2A   CTOB       CTOB   as sequenced       
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 0
+
+-- gs_f
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    0     101   C2T   C2T   OT         OT     as sequenced       
+   OB    16    741   G2A   C2T   OB         OB     reference-forward  
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 0
+
+-- gs_r
+   pair  flag  pos   YG    YR    rule call  truth  SEQ stored
+   OT    16    241   C2T   G2A   CTOT       CTOT   as sequenced       *** wrong way round
+   OB    0     601   G2A   G2A   CTOB       CTOB   reference-forward  *** wrong way round
+   strand of origin wrong: 0;  SEQ stored the wrong way round: 2
+
+== alnbase on each, with queries/strand/merantk.toml
+-- gh_pe
+read 4 records, scanned 4, skipped 0
+  0 of 240 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- gh_f
+read 2 records, scanned 2, skipped 0
+  0 of 120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- gh_r
+read 2 records, scanned 2, skipped 0
+  0 of 120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- gs_pe
+read 4 records, scanned 4, skipped 0
+  0 of 240 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- gs_f
+read 2 records, scanned 2, skipped 0
+  0 of 120 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+-- gs_r
+read 2 records, scanned 2, skipped 0
+  81 of 120 compared read bases differ from the reference (67.50%; a reference C read as T is not counted)
+
+== CG hits: meRanGh against meRanGs, mode by mode
+   pe   meRanGh 29 hits, meRanGs 29 hits, 29 in common, 0 only in meRanGh, 0 only in meRanGs
+   f    meRanGh 16 hits, meRanGs 16 hits, 16 in common, 0 only in meRanGh, 0 only in meRanGs
+   r    meRanGh 13 hits, meRanGs  7 hits, 7 in common, 6 only in meRanGh, 0 only in meRanGs
+
+== meRanGs -r, the broken run, in full
+OT	16	chr1	241	255	60M	*	0	0	AS:i:59	NM:i:0	MD:Z:60	NH:i:1	HI:i:1	YG:Z:C2T	YR:Z:G2A
+OB	0	chr1	601	255	60M	*	0	0	AS:i:59	NM:i:0	MD:Z:60	NH:i:1	HI:i:1	YG:Z:G2A	YR:Z:G2A
+   NM and MD are computed against the converted genome, so both records claim a perfect
+   match. Only comparing SEQ with the real reference finds the problem.

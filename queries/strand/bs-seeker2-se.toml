@@ -1,0 +1,25 @@
+# BS-Seeker2, SINGLE-END only -- XO:Z, four-way from the tag alone.
+#
+# Read 2026-09-17 from BS-Seeker2 GitHub master (bs_single_end.py:415-432; FLAG built at
+# output.py:54-61), and run against BS-Seeker2 v2.1.8's own output the same day
+# (validation/demos/bs-seeker2-strand): one read per strand of origin, each called as the
+# strand it was built from.
+#
+# XO's first character is the genome strand and the second the read's direction within it,
+# so +FW/+RC/-FW/-RC name all four strands of origin. As with BSBolt, reading the tag is
+# the fix and not a shortcut: SEQ is stored reference-forward but 0x10 follows the genome
+# strand rather than the record's orientation, so the two RC classes are inverted -- +RC
+# carries FLAG 0 where a conformant aligner writes 16, and -RC carries 16 where it writes
+# 0. BS-Seeker2's own caller reads only is_reverse
+# (bs_seeker2-call_methylation.py:335-340).
+#
+# Paired-end output needs a different file and does not have one. Its XO values are
+# +FR/-FR/+RF/-RF, one per pair rather than per record, and the flags are the literals
+# 67/115 and 131/179 (bs_pair_end.py:531-545,607-612), so both mates always share one 0x10
+# state and the mate bit has to be combined with XO to tell them apart.
+
+[strand.origin]
+OT   = 'XO == "+FW"'
+CTOT = 'XO == "+RC"'
+OB   = 'XO == "-FW"'
+CTOB = 'XO == "-RC"'

@@ -1,0 +1,17 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/unconverted.toml
+@CO	queries/strand/unconverted.toml -- no conversion chemistry, so every record walks the reference forward and 0x10 says only which way the read was sequenced. The conversion strand is "+" on everything and the origin stays unknown.
+@CO	These records carry no aux tag, because the rule reads none. They are the four
+@CO	paired layouts and both single-end orientations: the conversion is "+" on every
+@CO	one of them, which is the point, and only the sequenced direction moves.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
++:forward/pe-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII
++:reverse/pe-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII
++:reverse/pe-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII
++:forward/pe-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII
++:forward/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII
++:reverse/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII

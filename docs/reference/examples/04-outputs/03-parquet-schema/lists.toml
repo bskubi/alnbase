@@ -1,0 +1,5 @@
+# One query marks an extra '^' column, so the whole file uses the list layout.
+[query.CGpair]
+read = "Y~"
+refr = "CG"
+mark = "+^"

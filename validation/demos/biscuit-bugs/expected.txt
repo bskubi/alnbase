@@ -1,0 +1,150 @@
+
+== BC-2: hard clip shifts the SEQ index (pileup)
+-- promised: SAM spec: H does not consume SEQ. Both reads retain the C at chrH 11, so CV=1 and
+-- promised: BT=1.000, and each read matches the reference everywhere else (no ALT rows).
+-- BISCUIT, soft clip (control):
+chrH	11	C	.	NS=1;CX=CG;N5=TTCGT	0/0:-1,-2,-6:5:1:C1:1:1.000
+-- BISCUIT, hard clip:
+chrH	6	T	C	NS=1	1/1:-6,-2,-1:5:1:C1:1:1.00
+chrH	7	T	G	NS=1	1/1:-6,-2,-1:5:1:G1:1:1.00
+chrH	11	C	.	NS=1;CX=CG;N5=TTCGT	0/0:-1,-2,-6:5:1:Y1:1:0.000
+chrH	12	G	N	NS=1;CX=CG;N5=AACGA;AB=Y	1/1:-6,-2,-1:5:1:Y1:1:1.00
+-- alnbase, hard clip (refr_pos is 0-based; off_5p counts the hard-clipped bases):
+┌─────────┬────────────┬──────────┬────────┐
+│  qname  │    name    │ refr_pos │ off_5p │
+│ varchar │  varchar   │  int64   │ int64  │
+├─────────┼────────────┼──────────┼────────┤
+│ hc      │ C_retained │       10 │     15 │
+└─────────┴────────────┴──────────┴────────┘
+
+
+== BC-3: hard clip aborts epiread
+-- promised: one epiBED row for read hc.
+-- BISCUIT epiread on the BC-2 hard-clip BAM:
+Unknown cigar 5
+exit status 134
+
+== BC-8: retention count uses the wrong strand (pileup -t)
+-- promised: help: '-t INT Maximum cytosine retention in a read'; docs: retained C's for OT reads.
+-- promised: conv retains 0 Cs, so -t 5 keeps it; ret retains 10, so -t 5 drops it.
+-- BISCUIT -t 999999, C calls per contig (chrG is read conv, chrR is read ret):
+chrG 10  chrR 10
+-- BISCUIT -t 5, C calls per contig (chrG is read conv, chrR is read ret):
+chrG 0  chrR 10
+-- alnbase, retained and converted reference Cs per read:
+┌─────────┬──────────┬───────────┐
+│  qname  │ retained │ converted │
+│ varchar │  int64   │   int64   │
+├─────────┼──────────┼───────────┤
+│ conv    │        0 │        10 │
+│ ret     │       10 │         0 │
+└─────────┴──────────┴───────────┘
+
+
+== BC-18: last base of a contig and region end (pileup)
+-- promised: a row for every covered C: chrE 20 and chrE 30 (the contig's last base).
+-- promised: help: '-g STR Region'; a samtools-style region chrE:1-20 includes position 20.
+-- BISCUIT, whole BAM:
+chrE	20	C	.	NS=1;CX=CHH;N5=AACAA	0/0:-1,-2,-6:5:1:C1:1:1.000
+-- BISCUIT -g chrE:1-20:
+-- BISCUIT -g chrE:1-21:
+chrE	20	C	.	NS=1;CX=CHH;N5=AACAA	0/0:-1,-2,-6:5:1:C1:1:1.000
+-- alnbase (refr_pos is 0-based):
+┌────────────┬──────────┐
+│    name    │ refr_pos │
+│  varchar   │  int64   │
+├────────────┼──────────┤
+│ C_retained │       19 │
+│ C_retained │       29 │
+└────────────┴──────────┘
+
+
+== BC-10: -5/-3 measured along SEQ, not from the read's 5' end (pileup, epiread)
+-- promised: help: '-5 INT Minimum distance to 5' end of a read', '-3 INT ... 3' end'.
+-- promised: -5 10 drops G 56 (near the 5' end) and keeps G 6; -3 10 does the opposite.
+-- BISCUIT pileup -5 10 -3 0:
+chrF	56	G	.	NS=1;CX=CG;N5=TTCGT	0/0:-1,-2,-6:5:1:G1:1:1.000
+-- BISCUIT pileup -5 0 -3 10:
+chrF	6	G	.	NS=1;CX=CG;N5=TTCGT	0/0:-1,-2,-6:5:1:G1:1:1.000
+-- BISCUIT epiread -5 10 -3 0 (CG string from chrF 1: F = filtered, M = methylated):
+chrF	0	60	rev	1	-	F10x45Mx4	.	F10x50
+-- alnbase, off_5p and off_3p from the read's 5' and 3' ends as sequenced:
+┌─────────┬────────────┬──────────┬────────┬────────┐
+│  qname  │    name    │ refr_pos │ off_5p │ off_3p │
+│ varchar │  varchar   │  int64   │ int64  │ int64  │
+├─────────┼────────────┼──────────┼────────┼────────┤
+│ rev     │ C_retained │        5 │     54 │      5 │
+│ rev     │ C_retained │       55 │      4 │     55 │
+└─────────┴────────────┴──────────┴────────┴────────┘
+
+
+== BC-11: mate overlap without an MC tag (pileup)
+-- promised: help: '-d Double count cytosines in overlapping mate reads (avoided by default)'.
+-- promised: Pair p: R2 alone covers 150, so CV=1 at 150 (and at 160). Pair q: one fragment, CV=1 at 160.
+-- BISCUIT, pair p without MC:
+-- BISCUIT, pair p with MC (control):
+chrP	150	C	.	NS=1;CX=CG;N5=AACGA	0/0:-1,-2,-6:5:1:C1:1:1.000
+chrP	160	C	.	NS=1;CX=CG;N5=AACGA	0/0:-1,-2,-6:5:1:C1:1:1.000
+-- BISCUIT, pair q without MC:
+chrP	150	C	.	NS=1;CX=CG;N5=AACGA	0/0:-1,-2,-6:5:1:C1:1:1.000
+chrP	160	C	.	NS=1;CX=CG;N5=AACGA	0/0:-1,-2,-11:7:2:C2:2:1.000
+
+== BC-13: overlap test ignores the mate's contig (pileup -p)
+-- promised: -p keeps improper pairs; a mate on another contig cannot overlap, so CV=1 at chrI 120.
+-- BISCUIT -p, mate on chrJ:
+-- BISCUIT -p, mate on chrI 1001 (control):
+chrI	120	C	.	NS=1;CX=CG;N5=AACGA	0/0:-1,-2,-6:5:1:C1:1:1.000
+
+== BP-5: multi-BAM pileup uses the first BAM's contig order for every BAM
+-- promised: usage: 'biscuit pileup [options] <ref.fa> <in1.bam> [in2.bam ...]', one sample column
+-- promised: per BAM; sample bp5_b has CV=1 at chrI 120, whichever order the BAMs are given in.
+-- BISCUIT pileup ref.fa bp5_a.bam bp5_b.bam (columns CHROM POS REF ALT INFO, then one per BAM):
+chrJ	120	A	C	NS=2	./.:.,.,.:0:0:.:0:.	1/1:-6,-2,-1:5:1:C1:1:1.00
+chrJ	121	A	G	NS=2	./.:.,.,.:0:0:.:0:.	1/1:-6,-2,-1:5:1:G1:1:1.00
+-- BISCUIT pileup ref.fa bp5_b.bam bp5_a.bam (columns CHROM POS REF ALT INFO, then one per BAM):
+chrI	120	C	.	NS=2;CX=CG;N5=AACGA	0/0:-1,-2,-6:5:1:C1:1:1.000	./.:.,.,.:0:0:.:0:.
+
+== BE-2: epiread -B ignores a multi-sample SNP BED
+-- promised: docs (methylextraction.md): for -t snp 'Columns 6-9 are repeated for each sample found in
+-- promised: the VCF file'; epiread help: -B takes a BISCUIT SNP BED (pileup -> vcf2bed -t snp), and
+-- promised: epibed_format.md: a C with a T allele at frequency >= 0.05 is not callable. So with either
+-- promised: BED, the SNP string shows the C and the CG string has no M at 21 for the m reads.
+-- vcf2bed -s ALL -t snp (13 columns):
+chrS	20	21	C	T	0/1	C10T10	20	0.50	0/1	C10T10	20	0.50
+-- BISCUIT epiread with -B none (read, strand, CG string, SNP string from chrS 1):
+m1 + x20Mx19 x40
+s1 - x21Mx18 x40
+-- BISCUIT epiread with -B be2_all.snp.bed (read, strand, CG string, SNP string from chrS 1):
+m1 + x20Mx19 x40
+s1 - x21Mx18 x40
+-- BISCUIT epiread with -B be2_first9.snp.bed (read, strand, CG string, SNP string from chrS 1):
+m1 + x40 x20Cx19
+s1 - x21Mx18 x20Tx19
+
+== BE-3: SNP veto thresholds differ between pileup and epiread
+-- promised: epiread help: 'with an unfiltered BISCUIT SNP BED file ... should have the same results in
+-- promised: the epiBED as in pileup'. pileup calls the C at 21 (CV=21), so epiread gives M at 21.
+-- BISCUIT pileup (SP C21T1, AF1 = 1/22 printed to 2 decimals, then CV and BT):
+chrS	21	C	T	0/0:-3,-13,-96:43:22:C21T1:22:0.05:21:1.000
+-- vcf2bed -t snp:
+chrS	20	21	C	T	0/0	C21T1	22	0.05
+-- BISCUIT epiread -B (read, strand, CG string, SNP string from chrS 1):
+m1 + x40 x20Cx19
+s1 - x21Mx18 x20Tx19
+
+== BP-4: vcf2bed -c and mergecg -c rebuild counts from a 3-decimal beta
+-- promised: help: vcf2bed '-c Output Beta-M-U', mergecg '-c Output Beta-M-U'; M=1 and U=2000.
+-- BISCUIT pileup (SP C1Y2000, then CV and BT):
+chrS	21	0/0:-6,-1000,-1000:255:2001:C1Y2000:2001:0.000
+-- vcf2bed -c -t cg (chrom, start, end, percent, M, U):
+chrS	20	21	0	0	2001
+-- vcf2bed -t cg | mergecg -c (chrom, start, end, percent, M, U, strand detail):
+chrS	20	22	0	0	2001	C:0.000:2001,G:.:0
+
+== BP-8: mergecg exits on a row at a contig's first base
+-- promised: mergecg help: in.bed is vcf2bed output; the C at chrQ 1 is written as one row.
+-- vcf2bed -t c:
+chrQ	0	1	1.000	1
+-- BISCUIT mergecg:
+[refcache_getbase:165] Error retrieving base 0 outside range chrQ:1-40.
+exit status 1

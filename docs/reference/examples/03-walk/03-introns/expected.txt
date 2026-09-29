@@ -1,0 +1,75 @@
+== --splice-context default
+intron_0  flags=0  cigar=3M10N3M  strand=+  columns=19
+  off_5p     . . .  0  1  2 2 2 2 2  2  2  2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3 3 3 3  3  3  3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5 6 7 8 12 13 14 15 16 17 18 19 20
+  qual       . . . 10 11 12 . . . .  .  .  . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T , , , ,  ,  ,  ,  A  G  C  _  _  _
+  refr_base  _ A C  G  T  T G C A ,  C  T  T  A  G  C  A  T  G
+
+intron_16  flags=16  cigar=3M10N3M  strand=-  columns=19
+  off_5p     .  .  .  0  1  2  2  2  2  2 2 2 2  3  4  5 . .  .
+  off_3p     .  .  .  5  4  3  3  3  3  3 3 3 3  2  1  0 . .  .
+  refr_pos  20 19 18 17 16 15 14 13 12 11 7 6 5  4  3  2 1 0 -1
+  qual       .  .  . 15 14 13  .  .  .  . . . . 12 11 10 . .  .
+  read_base  _  _  _  G  C  T  ,  ,  ,  , , , ,  A  A  C _ _  _
+  refr_base  C  A  T  G  C  T  A  A  G  , T G C  A  A  C G T  _
+
+short_intron  flags=0  cigar=3M4N3M  strand=+  columns=16
+  off_5p     . . .  0  1  2 2 2 2 2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3 3 3 3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5 6 7 8  9 10 11 12 13 14
+  qual       . . . 10 11 12 . . . . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T , , , ,  G  G  C  _  _  _
+  refr_base  _ A C  G  T  T G C A A  G  G  C  C  T  T
+
+== --splice-context 0
+intron_0  flags=0  cigar=3M10N3M  strand=+  columns=13
+  off_5p     . . .  0  1  2 2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5 15 16 17 18 19 20
+  qual       . . . 10 11 12 . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T ,  A  G  C  _  _  _
+  refr_base  _ A C  G  T  T ,  A  G  C  A  T  G
+
+intron_16  flags=16  cigar=3M10N3M  strand=-  columns=13
+  off_5p     .  .  .  0  1  2  2  3  4  5 . .  .
+  off_3p     .  .  .  5  4  3  3  2  1  0 . .  .
+  refr_pos  20 19 18 17 16 15 14  4  3  2 1 0 -1
+  qual       .  .  . 15 14 13  . 12 11 10 . .  .
+  read_base  _  _  _  G  C  T  ,  A  A  C _ _  _
+  refr_base  C  A  T  G  C  T  ,  A  A  C G T  _
+
+short_intron  flags=0  cigar=3M4N3M  strand=+  columns=13
+  off_5p     . . .  0  1  2 2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5  9 10 11 12 13 14
+  qual       . . . 10 11 12 . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T ,  G  G  C  _  _  _
+  refr_base  _ A C  G  T  T ,  G  G  C  C  T  T
+
+== --splice-context 5
+intron_0  flags=0  cigar=3M10N3M  strand=+  columns=22
+  off_5p     . . .  0  1  2 2 2 2 2 2  2  2  2  2  2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3 3 3 3 3  3  3  3  3  3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+  qual       . . . 10 11 12 . . . . .  .  .  .  .  . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T , , , , ,  ,  ,  ,  ,  ,  A  G  C  _  _  _
+  refr_base  _ A C  G  T  T G C A A G  G  C  C  T  T  A  G  C  A  T  G
+
+intron_16  flags=16  cigar=3M10N3M  strand=-  columns=22
+  off_5p     .  .  .  0  1  2  2  2  2  2  2 2 2 2 2 2  3  4  5 . .  .
+  off_3p     .  .  .  5  4  3  3  3  3  3  3 3 3 3 3 3  2  1  0 . .  .
+  refr_pos  20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5  4  3  2 1 0 -1
+  qual       .  .  . 15 14 13  .  .  .  .  . . . . . . 12 11 10 . .  .
+  read_base  _  _  _  G  C  T  ,  ,  ,  ,  , , , , , ,  A  A  C _ _  _
+  refr_base  C  A  T  G  C  T  A  A  G  G  C C T T G C  A  A  C G T  _
+
+short_intron  flags=0  cigar=3M4N3M  strand=+  columns=16
+  off_5p     . . .  0  1  2 2 2 2 2  3  4  5  .  .  .
+  off_3p     . . .  5  4  3 3 3 3 3  2  1  0  .  .  .
+  refr_pos  -1 0 1  2  3  4 5 6 7 8  9 10 11 12 13 14
+  qual       . . . 10 11 12 . . . . 13 14 15  .  .  .
+  read_base  _ _ _  G  T  T , , , ,  G  G  C  _  _  _
+  refr_base  _ A C  G  T  T G C A A  G  G  C  C  T  T
+

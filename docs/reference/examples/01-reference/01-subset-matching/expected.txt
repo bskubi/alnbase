@@ -1,0 +1,70 @@
+== read odd after SAM->BAM conversion:
+odd A=GTNNTNACGT
+warning: in query 'same', pattern '~@=' column 0: '{._:J}' on the read side is unreachable; the column reduces to 'N'
+warning: in query 'same', pattern '~@=' column 0: '{._}' on the reference side is unreachable; the column reduces to 'N'
+warning: in query 'diff', pattern '~@/' column 0: '{._:J}' on the read side is unreachable; the column reduces to 'N'
+warning: in query 'diff', pattern '~@/' column 0: '{._}' on the reference side is unreachable; the column reduces to 'N'
+read 4 records, scanned 4, skipped 0
+  3 of 22 compared read bases differ from the reference (13.64%; a reference C read as T is not counted)
+┌─────────┬──────────┬───────────┬───────────┬───────────────────────────────────────────────────────────┐
+│  qname  │ refr_pos │ read_base │ refr_base │                           fired                           │
+│ varchar │  int64   │  varchar  │  varchar  │                          varchar                          │
+├─────────┼──────────┼───────────┼───────────┼───────────────────────────────────────────────────────────┤
+│ fwd     │       -1 │ _         │ _         │ any                                                       │
+│ fwd     │        0 │ A         │ A         │ any read_N refr_H refr_N refr_R same                      │
+│ fwd     │        1 │ C         │ C         │ any read_C read_N read_Y refr_H refr_N refr_S same        │
+│ fwd     │        2 │ G         │ G         │ any read_N refr_G refr_N refr_R refr_S same               │
+│ fwd     │        3 │ T         │ T         │ any read_N read_Y refr_H refr_N same                      │
+│ fwd     │        4 │ A         │ N         │ any read_N refr_N                                         │
+│ fwd     │        5 │ G         │ R         │ any read_N refr_N refr_R                                  │
+│ fwd     │        6 │ G         │ S         │ any read_N refr_N refr_S                                  │
+│ fwd     │        7 │ A         │ A         │ any read_N refr_H refr_N refr_R same                      │
+│ fwd     │        8 │ C         │ C         │ any read_C read_N read_Y refr_H refr_N refr_S same        │
+│ fwd     │        9 │ G         │ G         │ any read_N refr_G refr_N refr_R refr_S same               │
+│ fwd     │       10 │ T         │ T         │ any read_N read_Y refr_H refr_N same                      │
+│ fwd     │       11 │ A         │ N         │ any read_N refr_N                                         │
+│ fwd     │       12 │ _         │ _         │ any                                                       │
+│ allN    │       -1 │ _         │ _         │ any                                                       │
+│ allN    │        0 │ N         │ A         │ any read_N refr_H refr_N refr_R                           │
+│ allN    │        1 │ N         │ C         │ any read_N refr_H refr_N refr_S                           │
+│ allN    │        2 │ N         │ G         │ any read_N refr_G refr_N refr_R refr_S                    │
+│ allN    │        3 │ N         │ T         │ any read_N refr_H refr_N                                  │
+│ allN    │        4 │ N         │ N         │ any read_N refr_N                                         │
+│ allN    │        5 │ N         │ R         │ any read_N refr_N refr_R                                  │
+│ allN    │        6 │ N         │ S         │ any read_N refr_N refr_S                                  │
+│ allN    │        7 │ N         │ A         │ any read_N refr_H refr_N refr_R                           │
+│ allN    │        8 │ N         │ C         │ any read_N refr_H refr_N refr_S                           │
+│ allN    │        9 │ N         │ G         │ any read_N refr_G refr_N refr_R refr_S                    │
+│ allN    │       10 │ N         │ T         │ any read_N refr_H refr_N                                  │
+│ allN    │       11 │ N         │ N         │ any read_N refr_N                                         │
+│ allN    │       12 │ _         │ _         │ any                                                       │
+│ rev     │       -1 │ _         │ _         │ any                                                       │
+│ rev     │        0 │ T         │ T         │ any read_N read_Y refr_H refr_N same                      │
+│ rev     │        1 │ G         │ G         │ any read_N refr_G refr_N refr_R refr_S same               │
+│ rev     │        2 │ C         │ C         │ any read_C read_N read_Y refr_H refr_N refr_S same        │
+│ rev     │        3 │ A         │ A         │ any read_N refr_H refr_N refr_R same                      │
+│ rev     │        4 │ T         │ N         │ any read_N read_Y refr_N                                  │
+│ rev     │        5 │ C         │ Y         │ any read_C read_N read_Y refr_H refr_N                    │
+│ rev     │        6 │ C         │ S         │ any read_C read_N read_Y refr_N refr_S                    │
+│ rev     │        7 │ T         │ T         │ any read_N read_Y refr_H refr_N same                      │
+│ rev     │        8 │ G         │ G         │ any read_N refr_G refr_N refr_R refr_S same               │
+│ rev     │        9 │ C         │ C         │ any read_C read_N read_Y refr_H refr_N refr_S same        │
+│ rev     │       10 │ A         │ A         │ any read_N refr_H refr_N refr_R same                      │
+│ rev     │       11 │ T         │ N         │ any read_N read_Y refr_N                                  │
+│ rev     │       12 │ _         │ _         │ any                                                       │
+│ odd     │       -1 │ _         │ _         │ any                                                       │
+│ odd     │        0 │ A         │ A         │ any read_N refr_H refr_N refr_R same                      │
+│ odd     │        2 │ G         │ G         │ any read_N refr_G refr_N refr_R refr_S same               │
+│ odd     │        3 │ T         │ T         │ any read_N read_Y refr_H refr_N same                      │
+│ odd     │        4 │ N         │ N         │ any read_N refr_N                                         │
+│ odd     │        5 │ N         │ R         │ any read_N refr_N refr_R                                  │
+│ odd     │        6 │ T         │ S         │ any read_N read_Y refr_N refr_S                           │
+│ odd     │        7 │ N         │ A         │ any read_N refr_H refr_N refr_R                           │
+│ odd     │        8 │ A         │ C         │ any diff read_N refr_H refr_N refr_S                      │
+│ odd     │        9 │ C         │ G         │ any diff read_C read_N read_Y refr_G refr_N refr_R refr_S │
+│ odd     │       10 │ G         │ T         │ any diff read_N refr_H refr_N                             │
+│ odd     │       11 │ T         │ N         │ any read_N read_Y refr_N                                  │
+│ odd     │       12 │ _         │ _         │ any                                                       │
+└─────────┴──────────┴───────────┴───────────┴───────────────────────────────────────────────────────────┘
+  55 rows                                                                                      5 columns
+

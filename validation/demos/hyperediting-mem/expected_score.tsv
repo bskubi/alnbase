@@ -1,0 +1,151 @@
+arm	metric	stratum	found	total	rate
+aln-published	by_class	clip_edited	39	7650	0.005098
+aln-published	by_class	del_edited	0	7349	0.000000
+aln-published	by_class	flat_edited	21481	21578	0.995505
+aln-published	by_class	ins_edited	0	6890	0.000000
+aln-published	by_class	junction_edited	0	9569	0.000000
+aln-published	by_level	05-08	1711	5743	0.297928
+aln-published	by_level	09-12	8648	22159	0.390270
+aln-published	by_level	13-16	8646	19273	0.448607
+aln-published	by_level	17+	2515	5861	0.429108
+aln-published	by_offset	0	2089	4883	0.427811
+aln-published	by_offset	10	2187	5466	0.400110
+aln-published	by_offset	20	2152	5466	0.393707
+aln-published	by_offset	30	2185	5435	0.402024
+aln-published	by_offset	40	2190	5387	0.406534
+aln-published	by_offset	50	2106	5401	0.389928
+aln-published	by_offset	60	2118	5343	0.396407
+aln-published	by_offset	70	2152	5398	0.398666
+aln-published	by_offset	80	2240	5392	0.415430
+aln-published	by_offset	90	2101	4865	0.431860
+aln-published	overall	sites_true	53036		
+aln-published	overall	tp	21520		
+aln-published	overall	misplaced	24		
+aln-published	overall	spurious	0		
+aln-published	overall	reads_true	4560		
+aln-published	overall	reads_called	1793		
+mem-naive	by_class	clip_edited	2140	7650	0.279739
+mem-naive	by_class	del_edited	48	7349	0.006532
+mem-naive	by_class	flat_edited	21505	21578	0.996617
+mem-naive	by_class	ins_edited	0	6890	0.000000
+mem-naive	by_class	junction_edited	0	9569	0.000000
+mem-naive	by_level	05-08	1812	5743	0.315515
+mem-naive	by_level	09-12	9496	22159	0.428539
+mem-naive	by_level	13-16	9704	19273	0.503502
+mem-naive	by_level	17+	2681	5861	0.457430
+mem-naive	by_offset	0	2195	4883	0.449519
+mem-naive	by_offset	10	2422	5466	0.443103
+mem-naive	by_offset	20	2405	5466	0.439993
+mem-naive	by_offset	30	2432	5435	0.447470
+mem-naive	by_offset	40	2429	5387	0.450900
+mem-naive	by_offset	50	2348	5401	0.434734
+mem-naive	by_offset	60	2376	5343	0.444694
+mem-naive	by_offset	70	2385	5398	0.441830
+mem-naive	by_offset	80	2455	5392	0.455304
+mem-naive	by_offset	90	2246	4865	0.461665
+mem-naive	overall	sites_true	53036		
+mem-naive	overall	tp	23693		
+mem-naive	overall	misplaced	227		
+mem-naive	overall	spurious	0		
+mem-naive	overall	reads_true	4560		
+mem-naive	overall	reads_called	1972		
+mem-flat	by_class	clip_edited	2140	7650	0.279739
+mem-flat	by_class	del_edited	43	7349	0.005851
+mem-flat	by_class	flat_edited	21505	21578	0.996617
+mem-flat	by_class	ins_edited	0	6890	0.000000
+mem-flat	by_class	junction_edited	0	9569	0.000000
+mem-flat	by_level	05-08	1812	5743	0.315515
+mem-flat	by_level	09-12	9495	22159	0.428494
+mem-flat	by_level	13-16	9704	19273	0.503502
+mem-flat	by_level	17+	2677	5861	0.456748
+mem-flat	by_offset	0	2194	4883	0.449314
+mem-flat	by_offset	10	2420	5466	0.442737
+mem-flat	by_offset	20	2405	5466	0.439993
+mem-flat	by_offset	30	2432	5435	0.447470
+mem-flat	by_offset	40	2429	5387	0.450900
+mem-flat	by_offset	50	2348	5401	0.434734
+mem-flat	by_offset	60	2376	5343	0.444694
+mem-flat	by_offset	70	2385	5398	0.441830
+mem-flat	by_offset	80	2453	5392	0.454933
+mem-flat	by_offset	90	2246	4865	0.461665
+mem-flat	overall	sites_true	53036		
+mem-flat	overall	tp	23688		
+mem-flat	overall	misplaced	92		
+mem-flat	overall	spurious	0		
+mem-flat	overall	reads_true	4560		
+mem-flat	overall	reads_called	1972		
+mem-alnbase	by_class	clip_edited	7493	7650	0.979477
+mem-alnbase	by_class	del_edited	7055	7349	0.959995
+mem-alnbase	by_class	flat_edited	21205	21578	0.982714
+mem-alnbase	by_class	ins_edited	6719	6890	0.975181
+mem-alnbase	by_class	junction_edited	2914	9569	0.304525
+mem-alnbase	by_level	05-08	4438	5743	0.772767
+mem-alnbase	by_level	09-12	18861	22159	0.851167
+mem-alnbase	by_level	13-16	17548	19273	0.910497
+mem-alnbase	by_level	17+	4539	5861	0.774441
+mem-alnbase	by_offset	0	4061	4883	0.831661
+mem-alnbase	by_offset	10	4597	5466	0.841017
+mem-alnbase	by_offset	20	4665	5466	0.853458
+mem-alnbase	by_offset	30	4671	5435	0.859430
+mem-alnbase	by_offset	40	4736	5387	0.879154
+mem-alnbase	by_offset	50	4709	5401	0.871876
+mem-alnbase	by_offset	60	4637	5343	0.867864
+mem-alnbase	by_offset	70	4627	5398	0.857169
+mem-alnbase	by_offset	80	4589	5392	0.851076
+mem-alnbase	by_offset	90	4094	4865	0.841521
+mem-alnbase	overall	sites_true	53036		
+mem-alnbase	overall	tp	45386		
+mem-alnbase	overall	misplaced	264		
+mem-alnbase	overall	spurious	0		
+mem-alnbase	overall	reads_true	4560		
+mem-alnbase	overall	reads_called	4018		
+hisat2-flat	by_class	clip_edited	1242	7650	0.162353
+hisat2-flat	by_class	del_edited	43	7349	0.005851
+hisat2-flat	by_class	flat_edited	21397	21578	0.991612
+hisat2-flat	by_class	ins_edited	0	6890	0.000000
+hisat2-flat	by_class	junction_edited	0	9569	0.000000
+hisat2-flat	by_level	05-08	1783	5743	0.310465
+hisat2-flat	by_level	09-12	9198	22159	0.415091
+hisat2-flat	by_level	13-16	9096	19273	0.471956
+hisat2-flat	by_level	17+	2605	5861	0.444463
+hisat2-flat	by_offset	0	2148	4883	0.439894
+hisat2-flat	by_offset	10	2312	5466	0.422978
+hisat2-flat	by_offset	20	2284	5466	0.417856
+hisat2-flat	by_offset	30	2316	5435	0.426127
+hisat2-flat	by_offset	40	2324	5387	0.431409
+hisat2-flat	by_offset	50	2246	5401	0.415849
+hisat2-flat	by_offset	60	2255	5343	0.422048
+hisat2-flat	by_offset	70	2280	5398	0.422379
+hisat2-flat	by_offset	80	2349	5392	0.435645
+hisat2-flat	by_offset	90	2168	4865	0.445632
+hisat2-flat	overall	sites_true	53036		
+hisat2-flat	overall	tp	22682		
+hisat2-flat	overall	misplaced	58		
+hisat2-flat	overall	spurious	0		
+hisat2-flat	overall	reads_true	4560		
+hisat2-flat	overall	reads_called	1891		
+hisat2-alnbase	by_class	clip_edited	3313	7650	0.433072
+hisat2-alnbase	by_class	del_edited	6677	7349	0.908559
+hisat2-alnbase	by_class	flat_edited	21505	21578	0.996617
+hisat2-alnbase	by_class	ins_edited	6077	6890	0.882003
+hisat2-alnbase	by_class	junction_edited	9544	9569	0.997387
+hisat2-alnbase	by_level	05-08	4668	5743	0.812816
+hisat2-alnbase	by_level	09-12	19454	22159	0.877928
+hisat2-alnbase	by_level	13-16	17354	19273	0.900431
+hisat2-alnbase	by_level	17+	5640	5861	0.962293
+hisat2-alnbase	by_offset	0	4486	4883	0.918698
+hisat2-alnbase	by_offset	10	4848	5466	0.886937
+hisat2-alnbase	by_offset	20	4789	5466	0.876143
+hisat2-alnbase	by_offset	30	4767	5435	0.877093
+hisat2-alnbase	by_offset	40	4788	5387	0.888806
+hisat2-alnbase	by_offset	50	4737	5401	0.877060
+hisat2-alnbase	by_offset	60	4698	5343	0.879281
+hisat2-alnbase	by_offset	70	4757	5398	0.881252
+hisat2-alnbase	by_offset	80	4809	5392	0.891877
+hisat2-alnbase	by_offset	90	4437	4865	0.912025
+hisat2-alnbase	overall	sites_true	53036		
+hisat2-alnbase	overall	tp	47116		
+hisat2-alnbase	overall	misplaced	261		
+hisat2-alnbase	overall	spurious	0		
+hisat2-alnbase	overall	reads_true	4560		
+hisat2-alnbase	overall	reads_called	4010		

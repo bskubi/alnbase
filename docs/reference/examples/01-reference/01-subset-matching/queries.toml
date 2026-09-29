@@ -1,0 +1,52 @@
+# Single-column queries. Each asks one question about the OBSERVED value in
+# one column. An observation matches a pattern code when it is a (non-empty)
+# SUBSET of the code's set -- not when the two merely intersect.
+#
+# Reads (reads.sam):
+#   fwd   forward, SEQ ACGTAGGACGTA: plain bases everywhere, A over ref N,
+#         G over ref R (A/G), G over ref S (C/G)
+#   allN  forward, SEQ all N: the read side is N (= {ACGT}) in every column
+#   rev   same SEQ as fwd but FLAG 16: walked as sequenced, so BOTH sides are
+#         complemented and refr_pos runs 11 -> 0
+#   odd   SEQ "A=GT.XU*acgt" as typed in SAM: samtools stores = as code 0
+#         (the empty set, which matches nothing), . X * as N, U as T, and
+#         folds lowercase; see the samtools view line printed by run.sh
+
+# ---- reference side: which codes accept which reference symbols ----------
+[query.refr_G]
+read = "~"
+refr = "G"
+[query.refr_N]
+read = "~"
+refr = "N"
+[query.refr_H]          # A, C or T
+read = "~"
+refr = "H"
+[query.refr_R]          # A or G
+read = "~"
+refr = "R"
+[query.refr_S]          # C or G
+read = "~"
+refr = "S"
+[query.any]             # ~ : base, gap, pad or junction (not ERR)
+read = "~"
+refr = "~"
+
+# ---- relational codes: plain unambiguous base on BOTH sides ---------------
+[query.same]
+read = "~"
+refr = "="
+[query.diff]
+read = "~"
+refr = "/"
+
+# ---- read side ------------------------------------------------------------
+[query.read_C]
+read = "C"
+refr = "~"
+[query.read_Y]          # C or T
+read = "Y"
+refr = "~"
+[query.read_N]
+read = "N"
+refr = "~"

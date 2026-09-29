@@ -1,0 +1,1039 @@
+<title>The Inosine Blind Spot</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Serif:ital,wght@0,600;0,700;1,600&display=swap">
+
+<style>
+:root{
+  --ground:#F6F5F8;
+  --surface:#FFFFFF;
+  --surface-2:#EEECF3;
+  --ink:#1B1826;
+  --ink-2:#494357;
+  --muted:#7B7490;
+  --rule:#E1DDE9;
+  --rule-strong:#C8C2D6;
+  --accent:#A62A86;
+  --accent-soft:#F7E4F2;
+  --base-a:#2B8A5C;
+  --base-c:#2160A8;
+  --base-g:#8A6A18;
+  --base-t:#BF3B2E;
+  --ok:#2B7A57;
+  --stop:#B3302A;
+  --ok-soft:#E3F2EA;
+  --stop-soft:#FBE6E4;
+  --cell: clamp(9px, 2.55vw, 17px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#131118;
+    --surface:#1C1926;
+    --surface-2:#252132;
+    --ink:#EDEAF4;
+    --ink-2:#C3BCD4;
+    --muted:#938BA8;
+    --rule:#2F2B3C;
+    --rule-strong:#443E58;
+    --accent:#E87BC9;
+    --accent-soft:#3B2036;
+    --base-a:#5BC98D;
+    --base-c:#6FABEF;
+    --base-g:#D8AE4A;
+    --base-t:#F0776A;
+    --ok:#5BC98D;
+    --stop:#F0776A;
+    --ok-soft:#19301F;
+    --stop-soft:#341B1C;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#131118;
+  --surface:#1C1926;
+  --surface-2:#252132;
+  --ink:#EDEAF4;
+  --ink-2:#C3BCD4;
+  --muted:#938BA8;
+  --rule:#2F2B3C;
+  --rule-strong:#443E58;
+  --accent:#E87BC9;
+  --accent-soft:#3B2036;
+  --base-a:#5BC98D;
+  --base-c:#6FABEF;
+  --base-g:#D8AE4A;
+  --base-t:#F0776A;
+  --ok:#5BC98D;
+  --stop:#F0776A;
+  --ok-soft:#19301F;
+  --stop-soft:#341B1C;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:0 80px}
+.prose{max-width:63ch}
+p{margin:0 0 1em}
+p:last-child{margin-bottom:0}
+strong{font-weight:600}
+a{color:var(--accent)}
+
+h1{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-weight:700;
+  font-size:clamp(34px,7.4vw,58px);
+  line-height:1.02;
+  letter-spacing:-0.022em;
+  margin:0 0 18px;
+  text-wrap:balance;
+}
+h2{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-weight:600;
+  font-size:clamp(23px,4vw,30px);
+  line-height:1.16;
+  letter-spacing:-0.014em;
+  margin:0 0 14px;
+  text-wrap:balance;
+}
+h3{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:0;
+  margin:0 0 6px;
+}
+
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 10px;
+}
+
+header.hero{padding-block:clamp(40px,8vw,76px) 4px}
+.standfirst{
+  font-size:clamp(17px,2.4vw,20px);
+  line-height:1.5;
+  color:var(--ink-2);
+  max-width:56ch;
+  margin:0;
+}
+.byline{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;
+  color:var(--muted);
+  letter-spacing:.04em;
+  margin:22px 0 0;
+}
+
+section{padding-block:clamp(38px,6vw,60px) 0}
+section + section{border-top:1px solid var(--rule);margin-top:clamp(38px,6vw,60px)}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  padding:clamp(14px,2.6vw,22px);
+  margin-top:26px;
+}
+.panel-head{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 18px;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.panel-title{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.caption{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--muted);
+  margin:14px 0 0;
+  max-width:62ch;
+}
+.caption em{font-style:italic}
+
+/* --- controls --- */
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{
+  font:inherit;
+  font-size:13px;
+  font-weight:500;
+  color:var(--ink);
+  background:var(--surface-2);
+  border:1px solid var(--rule-strong);
+  border-radius:3px;
+  padding:6px 13px;
+  cursor:pointer;
+  transition:background .12s ease,border-color .12s ease;
+}
+button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.42;cursor:default}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:3px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-radius:0;background:transparent;padding:7px 13px}
+.seg button + button{border-left:1px solid var(--rule-strong)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.seg button[aria-pressed="true"]:hover{color:#fff}
+
+.slider-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-bottom:18px}
+input[type=range]{
+  flex:1 1 220px;
+  min-width:180px;
+  accent-color:var(--accent);
+  height:22px;
+}
+.slider-read{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:13px;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink-2);
+  white-space:nowrap;
+}
+label.slider-label{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* --- sequence tracks --- */
+.scroller{overflow-x:auto;padding-bottom:4px}
+.tracks{
+  display:grid;
+  grid-template-columns:auto auto;
+  gap:5px 12px;
+  align-items:center;
+  width:max-content;
+  min-width:100%;
+}
+.row-label{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  white-space:nowrap;
+  text-align:right;
+}
+.cells{display:grid;grid-auto-flow:column;grid-auto-columns:var(--cell)}
+.cell{
+  height:calc(var(--cell) * 1.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:calc(var(--cell) * .78);
+  font-weight:500;
+  line-height:1;
+  border-radius:2px;
+  transition:background .18s ease,color .18s ease;
+}
+.b-A{color:var(--base-a)}
+.b-C{color:var(--base-c)}
+.b-G{color:var(--base-g)}
+.b-T{color:var(--base-t)}
+.b-I{color:var(--accent)}
+.cell.edited{background:var(--accent);color:#fff}
+.cell.called{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.cell.flat{color:var(--muted)}
+.ruler{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:var(--cell);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:9px;
+  color:var(--muted);
+  height:12px;
+}
+.ruler span{display:flex;align-items:center;justify-content:center}
+.ruler span.tick{border-left:1px solid var(--rule-strong)}
+
+/* --- verdict --- */
+.verdict{
+  margin-top:18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 22px;
+  align-items:center;
+  padding:13px 15px;
+  border-radius:3px;
+  background:var(--surface-2);
+  border-left:3px solid var(--rule-strong);
+}
+.verdict.pass{background:var(--ok-soft);border-left-color:var(--ok)}
+.verdict.fail{background:var(--stop-soft);border-left-color:var(--stop)}
+.verdict.call{background:var(--accent-soft);border-left-color:var(--accent)}
+.verdict-status{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.verdict.pass .verdict-status{color:var(--ok)}
+.verdict.fail .verdict-status{color:var(--stop)}
+.verdict.call .verdict-status{color:var(--accent)}
+.verdict-note{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+.counts{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12px;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink-2);
+}
+.counts b{font-weight:600;color:var(--ink)}
+
+/* --- chemistry strip --- */
+.chem{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 14px;
+}
+.chem-step{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:96px;
+}
+.chem-glyph{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:30px;
+  font-weight:600;
+  line-height:1;
+}
+.chem-name{font-size:12px;color:var(--muted);line-height:1.35}
+.chem-arrow{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--rule-strong);
+  font-size:18px;
+  padding-bottom:16px;
+}
+.chem-arrow small{display:block;font-size:10px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+
+/* --- regimes --- */
+.regimes{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:620px){.regimes{grid-template-columns:1fr}}
+.regime{border:1px solid var(--rule);border-radius:3px;padding:14px}
+.pileup{display:flex;flex-direction:column;gap:3px;margin-top:10px}
+.readbar{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;height:9px;gap:1px}
+.readbar i{background:var(--surface-2);border-radius:1px}
+.readbar i.hit{background:var(--accent)}
+.regime-num{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-size:27px;
+  font-weight:600;
+  line-height:1;
+  color:var(--accent);
+}
+
+/* --- controls chart --- */
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end;height:150px;margin-top:8px}
+.bar-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:6px}
+.bar{background:var(--rule-strong);border-radius:2px 2px 0 0;min-height:2px}
+.bar.signal{background:var(--accent)}
+.bar-label{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  text-align:center;
+  color:var(--muted);
+}
+.bar-label b{display:block;color:var(--ink);font-weight:500}
+
+/* --- stakes --- */
+.stakes{display:grid;grid-template-columns:repeat(2,1fr);gap:0 34px;margin-top:26px}
+@media (max-width:620px){.stakes{grid-template-columns:1fr}}
+.stake{border-top:1px solid var(--rule);padding-block:16px 18px}
+.stake p{font-size:14px;color:var(--ink-2);margin:0}
+
+.pull{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-size:clamp(19px,3vw,25px);
+  line-height:1.34;
+  font-style:italic;
+  color:var(--ink);
+  border-left:2px solid var(--accent);
+  padding-left:20px;
+  margin:30px 0;
+  max-width:44ch;
+}
+
+footer{
+  margin-top:clamp(44px,7vw,72px);
+  padding-top:22px;
+  border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+.legend span b{font-weight:600}
+
+svg{display:block;max-width:100%;height:auto}
+.adar-blob{transition:transform .06s linear}
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* A genuine 36 bp window of the Alu consensus — the middle A-rich stretch that
+   sits inside most inverted-Alu duplexes. 16 of its 36 bases are adenosine. */
+const REF = "GTGAAACCCCGTCTCTACTAAAAATACAAAAATTAG";
+const A_POS = [...REF].map((b, i) => (b === "A" ? i : -1)).filter(i => i >= 0);
+const N_A = A_POS.length;
+const BUDGET = 2; // bwa aln -n 2, the pipeline's own setting
+
+const reduceMotion =
+  typeof window !== "undefined" &&
+  window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function Cells({ seq, cls }) {
+  return (
+    <div className="cells">
+      {[...seq].map((b, i) => (
+        <div key={i} className={"cell b-" + b + " " + (cls ? cls(i, b) : "")}>
+          {b}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Ruler({ n }) {
+  return (
+    <div className="ruler">
+      {Array.from({ length: n }, (_, i) => (
+        <span key={i} className={i % 10 === 0 ? "tick" : ""}>
+          {i % 10 === 0 ? i + 1 : ""}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Hero: an inverted-Alu pair folds, and ADAR walks the duplex
+ * ------------------------------------------------------------------ */
+
+const RUNGS = 15;
+const RUNG_X0 = 176;
+const RUNG_DX = 24;
+// Which rungs carry an adenosine, and on which strand. A pairs with U, so a
+// column is an A on one strand or the other, never both.
+const A_MAP = { 1: "top", 2: "bot", 4: "top", 5: "bot", 6: "top", 8: "bot", 9: "top", 11: "bot", 12: "top", 13: "bot" };
+
+function Duplex() {
+  const [phase, setPhase] = useState("linear"); // linear | folded
+  const [sweep, setSweep] = useState(-1); // rung index reached by ADAR
+  const timer = useRef(null);
+
+  useEffect(() => () => clearInterval(timer.current), []);
+
+  function fold() {
+    setPhase("folded");
+    setSweep(-1);
+  }
+  function runAdar() {
+    clearInterval(timer.current);
+    if (reduceMotion) { setSweep(RUNGS); return; }
+    setSweep(0);
+    let i = 0;
+    timer.current = setInterval(() => {
+      i += 1;
+      setSweep(i);
+      if (i >= RUNGS) clearInterval(timer.current);
+    }, 150);
+  }
+  function reset() {
+    clearInterval(timer.current);
+    setPhase("linear");
+    setSweep(-1);
+  }
+
+  const edits = Object.keys(A_MAP).filter(k => Number(k) <= sweep).length;
+  const totalA = Object.keys(A_MAP).length;
+  const adarX = RUNG_X0 + Math.max(0, Math.min(sweep, RUNGS)) * RUNG_DX;
+
+  return (
+    <div className="panel">
+      <div className="panel-head">
+        <span className="panel-title">Substrate — an inverted Alu pair</span>
+        <div className="controls">
+          <button onClick={fold} disabled={phase === "folded"}>Transcribe &amp; fold</button>
+          <button onClick={runAdar} disabled={phase !== "folded"}>Run ADAR</button>
+          <button onClick={reset}>Reset</button>
+        </div>
+      </div>
+
+      <svg viewBox="0 0 560 196" role="img"
+           aria-label={phase === "linear"
+             ? "A pre-mRNA with two Alu elements in opposite orientation"
+             : "The two Alu elements paired into a double-stranded hairpin, with adenosines marked"}>
+        {phase === "linear" ? (
+          <g>
+            <line x1="20" y1="98" x2="540" y2="98" stroke="var(--rule-strong)" strokeWidth="3" strokeLinecap="round" />
+            <g>
+              <path d="M110 84 L206 84 L222 98 L206 112 L110 112 Z" fill="var(--surface-2)" stroke="var(--rule-strong)" strokeWidth="1.5" />
+              <text x="158" y="103" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="var(--ink-2)">Alu</text>
+            </g>
+            <g>
+              <path d="M450 84 L354 84 L338 98 L354 112 L450 112 Z" fill="var(--surface-2)" stroke="var(--rule-strong)" strokeWidth="1.5" />
+              <text x="402" y="103" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="var(--ink-2)">Alu</text>
+            </g>
+            <text x="280" y="62" textAnchor="middle" fontFamily="IBM Plex Sans, sans-serif" fontSize="12" fill="var(--muted)">
+              two copies, opposite orientation — an intron or 3&#8242; UTR
+            </text>
+            <text x="20" y="140" fontFamily="IBM Plex Mono, monospace" fontSize="11" fill="var(--muted)">5&#8242;</text>
+            <text x="524" y="140" fontFamily="IBM Plex Mono, monospace" fontSize="11" fill="var(--muted)">3&#8242;</text>
+          </g>
+        ) : (
+          <g>
+            {/* backbones */}
+            <path d="M24 70 L160 70 L166 70" stroke="var(--rule-strong)" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <path d="M24 126 L160 126 L166 126" stroke="var(--rule-strong)" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <line x1="166" y1="70" x2="524" y2="70" stroke="var(--base-c)" strokeWidth="3.5" strokeLinecap="round" opacity="0.55" />
+            <line x1="166" y1="126" x2="524" y2="126" stroke="var(--base-c)" strokeWidth="3.5" strokeLinecap="round" opacity="0.55" />
+            <path d="M524 70 C 552 70, 552 126, 524 126" stroke="var(--base-c)" strokeWidth="3.5" fill="none" opacity="0.55" />
+
+            {/* rungs + adenosines */}
+            {Array.from({ length: RUNGS }, (_, i) => {
+              const x = RUNG_X0 + i * RUNG_DX;
+              const side = A_MAP[i];
+              const done = i <= sweep;
+              return (
+                <g key={i}>
+                  <line x1={x} y1="74" x2={x} y2="122" stroke="var(--rule)" strokeWidth="1.5" />
+                  {side && (
+                    <g>
+                      <circle
+                        cx={x}
+                        cy={side === "top" ? 70 : 126}
+                        r="8.5"
+                        fill={done ? "var(--accent)" : "var(--base-a)"}
+                        stroke="var(--surface)"
+                        strokeWidth="2"
+                      />
+                      <text
+                        x={x}
+                        y={side === "top" ? 74.5 : 130.5}
+                        textAnchor="middle"
+                        fontFamily="IBM Plex Mono, monospace"
+                        fontSize="10"
+                        fontWeight="600"
+                        fill="#fff"
+                      >
+                        {done ? "I" : "A"}
+                      </text>
+                    </g>
+                  )}
+                </g>
+              );
+            })}
+
+            {sweep >= 0 && sweep <= RUNGS && (
+              <g className="adar-blob" transform={`translate(${adarX} 0)`}>
+                <ellipse cx="0" cy="98" rx="21" ry="26" fill="var(--accent)" opacity="0.14" />
+                <ellipse cx="0" cy="98" rx="13" ry="17" fill="var(--accent)" opacity="0.9" />
+                <text x="0" y="102" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="9" fontWeight="600" fill="#fff">ADAR</text>
+              </g>
+            )}
+
+            <text x="24" y="174" fontFamily="IBM Plex Sans, sans-serif" fontSize="12" fill="var(--muted)">
+              {sweep < 0
+                ? "A perfect duplex — exactly what ADAR binds."
+                : `Deaminated ${edits} of ${totalA} adenosines to inosine.`}
+            </text>
+          </g>
+        )}
+      </svg>
+
+      <p className="caption">
+        There are on the order of a million Alu copies in the human genome. Where two of them land
+        in opposite orientation inside the same transcript, the RNA folds back on itself into a long
+        double-stranded stem. That stem is ADAR&#8217;s substrate, and the enzyme works
+        <em> processively</em> — it does not nick one base and leave, it walks.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Chemistry: A -> I, and what the sequencer writes down
+ * ------------------------------------------------------------------ */
+
+function Chemistry() {
+  const [view, setView] = useState("molecule");
+  const shown = view === "molecule" ? "GGCUIICUIAG" : "GGCUGGCUGAG";
+
+  return (
+    <div className="panel">
+      <div className="panel-head">
+        <span className="panel-title">Chemistry — one atom, one letter</span>
+        <div className="seg" role="group" aria-label="What to display">
+          <button id="chem-mol" aria-pressed={view === "molecule"} onClick={() => setView("molecule")}>
+            In the molecule
+          </button>
+          <button id="chem-data" aria-pressed={view === "data"} onClick={() => setView("data")}>
+            In your FASTQ
+          </button>
+        </div>
+      </div>
+
+      <div className="chem">
+        <div className="chem-step">
+          <span className="chem-glyph b-A">A</span>
+          <span className="chem-name">adenosine, as transcribed</span>
+        </div>
+        <div className="chem-arrow">&#8594;<small>ADAR, &#8722;NH&#8322;</small></div>
+        <div className="chem-step">
+          <span className="chem-glyph b-I">I</span>
+          <span className="chem-name">inosine &#8212; a real, distinct base</span>
+        </div>
+        <div className="chem-arrow">&#8594;<small>reverse transcriptase</small></div>
+        <div className="chem-step">
+          <span className="chem-glyph b-G">G</span>
+          <span className="chem-name">read out as guanosine</span>
+        </div>
+      </div>
+
+      <div className="scroller" style={{ marginTop: 20 }}>
+        <div className="tracks">
+          <div className="row-label">{view === "molecule" ? "RNA" : "read"}</div>
+          <Cells seq={shown} />
+        </div>
+      </div>
+
+      <p className="caption">
+        Inosine pairs like guanosine, so every machine downstream of the enzyme &#8212; the ribosome,
+        reverse transcriptase, the sequencer &#8212; records a <b>G</b>. You never observe an
+        inosine directly. You infer one from an <b>A&#8594;G</b> mismatch against the genome, which
+        is why the entire field&#8217;s signal is a mismatch pattern rather than a measurement.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Two regimes
+ * ------------------------------------------------------------------ */
+
+function bar(n, hits) {
+  return Array.from({ length: n }, (_, i) => (
+    <i key={i} className={hits.includes(i) ? "hit" : ""} />
+  ));
+}
+
+function Regimes() {
+  const ordinary = [[], [14], [], [14], [], [], [14], []];
+  return (
+    <div className="regimes">
+      <div className="regime">
+        <span className="regime-num">1</span>
+        <h3 style={{ marginTop: 6 }}>Ordinary editing</h3>
+        <p style={{ fontSize: 13.5, color: "var(--ink-2)", margin: "0 0 4px" }}>
+          One position, edited in some fraction of the transcripts. You pool coverage and estimate a
+          rate. Each read carries a single mismatch, so each read aligns without trouble.
+        </p>
+        <div className="pileup" aria-hidden="true">
+          {ordinary.map((h, i) => (
+            <div className="readbar" key={i}>{bar(28, h)}</div>
+          ))}
+        </div>
+        <p className="caption" style={{ marginTop: 10 }}>8 reads &#183; one site &#183; ~38% edited</p>
+      </div>
+
+      <div className="regime">
+        <span className="regime-num">2</span>
+        <h3 style={{ marginTop: 6 }}>Hyper-editing</h3>
+        <p style={{ fontSize: 13.5, color: "var(--ink-2)", margin: "0 0 4px" }}>
+          One duplex, swept end to end. A single read comes back with twenty or thirty changes. This
+          is not a site with an editing level. It is a transcript that has been rewritten.
+        </p>
+        <div className="pileup" aria-hidden="true">
+          <div className="readbar">{bar(28, [1, 3, 4, 7, 9, 10, 13, 14, 17, 19, 20, 23, 25, 26])}</div>
+        </div>
+        <p className="caption" style={{ marginTop: 10 }}>1 read &#183; 14 edits &#183; one processive pass</p>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  The centrepiece: the aligner, the blind spot, and the trick
+ * ------------------------------------------------------------------ */
+
+const MODES = [
+  { id: "four", label: "As the genome is" },
+  { id: "three", label: "Three-letter space" },
+  { id: "back", label: "Mapped back" },
+];
+
+function Aligner() {
+  const [k, setK] = useState(9);
+  const [mode, setMode] = useState("four");
+
+  const edited = useMemo(() => new Set(A_POS.slice(0, k)), [k]);
+  const read = useMemo(
+    () => [...REF].map((b, i) => (edited.has(i) ? "G" : b)).join(""),
+    [edited]
+  );
+  const refThree = REF.replace(/A/g, "G");
+  const readThree = read.replace(/A/g, "G");
+
+  const pct = Math.round((k / N_A) * 100);
+
+  let refSeq, readSeq, refLabel, readLabel, cls, v;
+
+  if (mode === "four") {
+    refSeq = REF; readSeq = read;
+    refLabel = "genome"; readLabel = "read";
+    cls = i => (edited.has(i) ? "edited" : "");
+    const mapped = k <= BUDGET;
+    v = {
+      klass: mapped ? "pass" : "fail",
+      status: mapped ? "aligned" : "unmapped — discarded",
+      counts: [["mismatches", k], ["budget", BUDGET]],
+      note: mapped
+        ? "Within the aligner's mismatch budget. This read reaches your BAM, and an ordinary editing caller will see it."
+        : "Past the budget, bwa reports no alignment at all. The read is dropped before any editing caller runs — and the more heavily edited it is, the more certainly it is dropped.",
+    };
+  } else if (mode === "three") {
+    refSeq = refThree; readSeq = readThree;
+    refLabel = "genome A→G"; readLabel = "read A→G";
+    cls = i => (REF[i] === "A" ? "flat" : "");
+    v = {
+      klass: "pass",
+      status: "aligned",
+      counts: [["mismatches", 0], ["budget", BUDGET]],
+      note: "Convert every A to G in the read and in the genome, and an edited A and an unedited A become the same letter. Every editing-induced mismatch disappears at once, no matter how many there were. The cost is real: the genome now holds three letters instead of four, so it is a more repetitive place to search.",
+    };
+  } else {
+    refSeq = REF; readSeq = read;
+    refLabel = "genome"; readLabel = "read";
+    cls = i => (edited.has(i) ? "called" : "");
+    v = {
+      klass: k > 0 ? "call" : "pass",
+      status: k > 0 ? k + " A→G calls" : "no edits",
+      counts: [["A→G", k], ["A sites", N_A]],
+      note: "Restore the original letters at the position the three-letter alignment found, compare read against genome, and every difference is a candidate editing site. This step is where the read offsets have to be turned back into genome coordinates — and where a pipeline that assumes read offset equals reference offset goes quietly wrong.",
+    };
+  }
+
+  return (
+    <div className="panel">
+      <div className="panel-head">
+        <span className="panel-title">The aligner&#8217;s view</span>
+        <div className="seg" role="group" aria-label="Alignment space">
+          {MODES.map(m => (
+            <button key={m.id} id={"mode-" + m.id} aria-pressed={mode === m.id} onClick={() => setMode(m.id)}>
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="slider-row">
+        <label className="slider-label" htmlFor="edit-level">Editing</label>
+        <input
+          id="edit-level"
+          type="range"
+          min="0"
+          max={N_A}
+          value={k}
+          onChange={e => setK(Number(e.target.value))}
+        />
+        <span className="slider-read">{k} / {N_A} adenosines &#183; {pct}%</span>
+      </div>
+
+      <div className="scroller">
+        <div className="tracks">
+          <div className="row-label"></div>
+          <Ruler n={REF.length} />
+          <div className="row-label">{refLabel}</div>
+          <Cells seq={refSeq} />
+          <div className="row-label">{readLabel}</div>
+          <Cells seq={readSeq} cls={cls} />
+        </div>
+      </div>
+
+      <div className={"verdict " + v.klass}>
+        <span className="verdict-status">{v.status}</span>
+        <span className="counts">
+          {v.counts.map(([label, n]) => (
+            <span key={label}>{label} <b>{n}</b></span>
+          ))}
+        </span>
+      </div>
+      <p className="caption">{v.note}</p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  The built-in controls
+ * ------------------------------------------------------------------ */
+
+const FAMILIES = [
+  { id: "A2G", h: 100, signal: true, note: "ADAR" },
+  { id: "A2C", h: 19, signal: false, note: "no enzyme" },
+  { id: "A2T", h: 14, signal: false, note: "no enzyme" },
+  { id: "G2C", h: 12, signal: false, note: "no enzyme" },
+];
+
+function Controls() {
+  return (
+    <div className="panel">
+      <div className="panel-head">
+        <span className="panel-title">Negative controls, built into the method</span>
+      </div>
+      <div className="bars" aria-hidden="true">
+        {FAMILIES.map(f => (
+          <div className="bar-col" key={f.id}>
+            <div className={"bar" + (f.signal ? " signal" : "")} style={{ height: f.h + "%" }} />
+            <div className="bar-label"><b>{f.id}</b>{f.note}</div>
+          </div>
+        ))}
+      </div>
+      <p className="caption">
+        <em>Schematic — the shape of a result that holds up, not measured data.</em> The pipeline
+        runs the same transformation for substitution types no known enzyme produces at scale.
+        Whatever <b>A2C</b>, <b>A2T</b> and <b>G2C</b> yield is the method&#8217;s own noise floor:
+        mis-mapping, sequencing error, unannotated SNPs, and the extra ambiguity of searching a
+        three-letter genome. If a change to the method lifts A2G and leaves the controls flat, it
+        found signal. If everything rises together, it found artifacts. Few pipelines carry a
+        falsification test this cheap.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+function App() {
+  return (
+    <div className="page">
+      <header className="hero">
+        <p className="eyebrow">A-to-I RNA editing</p>
+        <h1>The inosine blind spot</h1>
+        <p className="standfirst">
+          An enzyme rewrites your transcriptome as it is being read. The transcripts it rewrites
+          most thoroughly are the ones your aligner throws away first — so the standard workflow is
+          structurally blind to the strongest version of the signal it is looking for.
+        </p>
+        <p className="byline">Core biology behind the hyper-editing pipeline &#183; interactive</p>
+      </header>
+
+      <section>
+        <p className="eyebrow">Substrate</p>
+        <h2>Double-stranded RNA, made by accident</h2>
+        <div className="prose">
+          <p>
+            ADAR does not recognise a sequence motif. It recognises a shape: double-stranded RNA.
+            Your cells are full of it, and mostly not on purpose. Alu elements are short repeats
+            scattered roughly a million times through the human genome, and whenever two of them
+            land in opposite orientation inside the same transcript, that transcript folds back on
+            itself into a long duplex.
+          </p>
+          <p>
+            Almost all human RNA editing happens in these accidental hairpins, tucked into introns
+            and 3&#8242; UTRs. A handful of sites fall in coding sequence and change the protein —
+            the <b>GRIA2</b> glutamate receptor is edited at one position to near completion, and
+            mice that cannot do it die of seizures — but those are rare exceptions against an
+            enormous repetitive background.
+          </p>
+        </div>
+        <Duplex />
+      </section>
+
+      <section>
+        <p className="eyebrow">Chemistry</p>
+        <h2>The edit you can only see as a mismatch</h2>
+        <div className="prose">
+          <p>
+            ADAR strips an amine from adenosine and turns it into inosine. Nothing downstream can
+            tell inosine from guanosine, so the edit reaches you as a <b>G</b> where the genome says{" "}
+            <b>A</b> — or as a <b>T&#8594;C</b> change if the read came off the antisense strand,
+            which is why every tool in this space carries a strand-flip table.
+          </p>
+        </div>
+        <Chemistry />
+      </section>
+
+      <section>
+        <p className="eyebrow">Two regimes</p>
+        <h2>A site with a rate, or a read that was rewritten</h2>
+        <div className="prose">
+          <p>
+            Almost everything written about RNA editing describes the first regime: a position
+            edited in some percentage of transcripts, measured by pooling reads. Hyper-editing is
+            the other one. Because ADAR is processive, a single pass over a duplex can convert most
+            of the adenosines in a stretch, and the evidence arrives as one read carrying dozens of
+            changes rather than many reads carrying one each.
+          </p>
+        </div>
+        <Regimes />
+      </section>
+
+      <section>
+        <p className="eyebrow">The blind spot</p>
+        <h2>Why those reads are never in your data</h2>
+        <div className="prose">
+          <p>
+            Aligners work to a mismatch budget. A read with twenty differences from the reference
+            does not align badly — it does not align at all, and it leaves the workflow marked
+            unmapped before a single editing caller runs.
+          </p>
+          <p>
+            Drag the slider and watch where the read stops being data. The budget shown is the one
+            the published hyper-editing pipeline actually uses for its own alignments.
+          </p>
+        </div>
+
+        <p className="pull">
+          The more heavily a transcript is edited, the more certainly it is missing from the file
+          you analyse.
+        </p>
+
+        <div className="prose">
+          <p>
+            The fix is a change of alphabet. Convert every <b>A</b> to <b>G</b> in the read, convert
+            every <b>A</b> to <b>G</b> in a second copy of the genome, and align in that reduced
+            space: an edited adenosine and an untouched one are now indistinguishable, so the
+            mismatches vanish and the read places. Then restore the original letters and count the
+            differences. Switch between the three panels below to follow one read through it.
+          </p>
+          <p style={{ color: "var(--muted)", fontSize: 13.5 }}>
+            Bisulfite sequencing solves its own problem the same way, with a C&#8594;T reduction.
+            The two fields rarely cite each other and have independently made many of the same
+            mistakes.
+          </p>
+        </div>
+
+        <Aligner />
+        <div className="legend" style={{ marginTop: 14 }}>
+          <span><b className="b-A">A</b> adenine</span>
+          <span><b className="b-C">C</b> cytosine</span>
+          <span><b className="b-G">G</b> guanine</span>
+          <span><b className="b-T">T</b> thymine</span>
+          <span><b className="b-I">I</b> inosine — read as G</span>
+        </div>
+      </section>
+
+      <section>
+        <p className="eyebrow">Keeping yourself honest</p>
+        <h2>The method ships its own falsification test</h2>
+        <div className="prose">
+          <p>
+            Recovering reads that failed to align is exactly the manoeuvre most likely to invent
+            things. A three-letter genome is a more degenerate search space than a four-letter one,
+            and a wrong alignment in reduced space reappears, after mapping back, as a beautiful
+            cluster of A&#8594;G differences — a fake hyper-edited read that looks like the real
+            thing.
+          </p>
+        </div>
+        <Controls />
+      </section>
+
+      <section>
+        <p className="eyebrow">Why it matters</p>
+        <h2>What the number is actually measuring</h2>
+        <div className="prose">
+          <p>
+            Hyper-editing level is used as a global readout of ADAR activity and of how much
+            double-stranded RNA a cell is carrying. Both quantities sit near the middle of several
+            live questions.
+          </p>
+        </div>
+
+        <div className="stakes">
+          <div className="stake">
+            <h3>Telling self from virus</h3>
+            <p>
+              MDA5 reads long double-stranded RNA as a viral signature. ADAR1 editing is what marks
+              the cell&#8217;s own Alu duplexes as self and keeps the interferon alarm off. Lose it
+              and the cell attacks its own transcripts — the mechanism behind Aicardi-Goutières
+              syndrome.
+            </p>
+          </div>
+          <div className="stake">
+            <h3>An oncology target</h3>
+            <p>
+              Tumours that lose ADAR1 become sensitive to interferon and to checkpoint blockade, so
+              ADAR1 inhibition is under active pursuit as a way to make unresponsive tumours
+              respond. Hyper-edited duplexes are the substrate in that story, not a proxy for it.
+            </p>
+          </div>
+          <div className="stake">
+            <h3>Brain</h3>
+            <p>
+              Editing is highest in neural tissue, is developmentally regulated, and altered levels
+              have been reported in ALS, epilepsy, schizophrenia and autism. The recoding sites that
+              change receptor behaviour live here.
+            </p>
+          </div>
+          <div className="stake">
+            <h3>Where the transcript goes</h3>
+            <p>
+              Inosine-rich duplexes get bound and held in the nucleus, so editing is not only a
+              sequence change — it is one of the switches deciding whether a transcript is exported
+              at all.
+            </p>
+          </div>
+        </div>
+
+        <div className="prose" style={{ marginTop: 30 }}>
+          <p>
+            Which brings the problem back to software. The input to a hyper-editing pipeline is, by
+            construction, the pile of reads a normal aligner could not place — the hardest reads in
+            the run. Alignment capability is therefore not incidental to the method; it is the
+            binding constraint on how much of the biology you get to see. And the step that converts
+            an alignment back into genome coordinates has to be exactly right, because a cluster of
+            edits reported at the wrong position is indistinguishable, downstream, from a real one.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        Built as background for the hyper-editing arm of the alnbase validation work.<br />
+        Sequence shown is a 36 bp window of the Alu consensus &#183; mismatch budget from
+        <span style={{ fontFamily: "IBM Plex Mono, monospace" }}> bwa aln -n 2</span>, the setting
+        the published pipeline uses.
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>

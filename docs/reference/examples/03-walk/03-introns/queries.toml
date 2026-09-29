@@ -1,0 +1,13 @@
+# `col` matches every column (span 1), so its rows are the column list: pads,
+# intron context and the `,@,` marker included, since a query fires on any
+# window it matches (0.1.7). Its read row accepts pads, so how many pad rows it
+# gets follows the widest query; `--end-context N` would fix that number.
+# `wide` exists only to make the widest query span 3: the walk then emits
+# 3 pad columns at each end. Its rows are ignored.
+[query.col]
+read = "~"
+refr = "~"
+
+[query.wide]
+read = "~~~"
+refr = "~~~"

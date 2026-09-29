@@ -1,0 +1,18 @@
+# Run with --insertions emit. Every pattern below looks for "read base
+# against a reference gap" (N@.) columns. Soft-clipped bases are clip
+# columns (':') over the reference, so every such column is an inserted base.
+[query.refgap]         # any read base against a reference gap
+read = "N"
+refr = "."
+[query.ins_len1]       # a 1-base insertion: aligned column on both sides
+read = "NNN"
+refr = "N.N"
+mark = ".+."
+[query.ins_len2]       # a 2-base insertion, anchored on its first base
+read = "NNNN"
+refr = "N..N"
+mark = ".+.."
+[query.gap_after_aligned]  # first base of an insertion of any length
+read = "NN"
+refr = "N."
+mark = ".+"

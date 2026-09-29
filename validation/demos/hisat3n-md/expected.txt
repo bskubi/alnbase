@@ -1,0 +1,66 @@
+11 reads written; each should align 50M2D50M with MD 49T0^<del>50
+
+=== what HISAT-3N wrote, and what samtools calmd says it should be ===
+  s611_delGA   50M2D50M         HISAT-3N MD:Z:49T^GA50    samtools MD:Z:49T0^GA50   DIFFER
+  s3625_delGG  50M2D50M         HISAT-3N MD:Z:49T^GG50    samtools MD:Z:49T0^GG50   DIFFER
+  s5406_delAA  50M2D50M         HISAT-3N MD:Z:49T^AA50    samtools MD:Z:49T0^AA50   DIFFER
+  s5543_delGT  48M2D52M         HISAT-3N MD:Z:48^GT1T50   samtools MD:Z:48^GT1T50   agree
+  s7872_delAA  50M2D50M         HISAT-3N MD:Z:49T^AA50    samtools MD:Z:49T0^AA50   DIFFER
+  s8146_delAT  49M2D51M         HISAT-3N MD:Z:49^TA0T50   samtools MD:Z:49^TA0T50   agree
+  s8557_delTA  50M2D50M         HISAT-3N MD:Z:49T^TA50    samtools MD:Z:49T0^TA50   DIFFER
+  s9105_delAA  50M2D50M         HISAT-3N MD:Z:49T^AA50    samtools MD:Z:49T0^AA50   DIFFER
+  s9790_delTT  48M2D52M         HISAT-3N MD:Z:48^CT0T0T50 samtools MD:Z:48^CT0T0T50 agree
+  s15544_delTG 50M2D50M         HISAT-3N MD:Z:49T^TG50    samtools MD:Z:49T0^TG50   DIFFER
+  s17051_delTT 48M2D52M         HISAT-3N MD:Z:48^TT1T50   samtools MD:Z:48^TT1T50   agree
+
+  calmd complained about:
+    [bam_fillmd1] different NM for read 's611_delGA': 2 -> 3
+    [bam_fillmd1] different MD for read 's611_delGA': '49T^GA50' -> '49T0^GA50'
+    [bam_fillmd1] different NM for read 's3625_delGG': 2 -> 3
+    [bam_fillmd1] different MD for read 's3625_delGG': '49T^GG50' -> '49T0^GG50'
+    [bam_fillmd1] different NM for read 's5406_delAA': 2 -> 3
+    [bam_fillmd1] different MD for read 's5406_delAA': '49T^AA50' -> '49T0^AA50'
+    [bam_fillmd1] different NM for read 's5543_delGT': 2 -> 3
+    [bam_fillmd1] different NM for read 's7872_delAA': 2 -> 3
+    [bam_fillmd1] different MD for read 's7872_delAA': '49T^AA50' -> '49T0^AA50'
+    [bam_fillmd1] different NM for read 's8146_delAT': 2 -> 3
+    [bam_fillmd1] different NM for read 's8557_delTA': 2 -> 3
+    [bam_fillmd1] different MD for read 's8557_delTA': '49T^TA50' -> '49T0^TA50'
+    [bam_fillmd1] different NM for read 's9105_delAA': 2 -> 3
+    [bam_fillmd1] different MD for read 's9105_delAA': '49T^AA50' -> '49T0^AA50'
+    [bam_fillmd1] different NM for read 's9790_delTT': 2 -> 4
+    [bam_fillmd1] different NM for read 's15544_delTG': 2 -> 3
+    [bam_fillmd1] different MD for read 's15544_delTG': '49T^TG50' -> '49T0^TG50'
+    [bam_fillmd1] different NM for read 's17051_delTT': 2 -> 3
+
+=== can pysam still read the reference bases back? ===
+  s611_delGA       50M2D50M   MD 49T^GA50       NM 2  pysam ok
+  s3625_delGG      50M2D50M   MD 49T^GG50       NM 2  pysam ok
+  s5406_delAA      50M2D50M   MD 49T^AA50       NM 2  pysam ok
+  s5543_delGT      48M2D52M   MD 48^GT1T50      NM 2  pysam ok
+  s7872_delAA      50M2D50M   MD 49T^AA50       NM 2  pysam ok
+  s8146_delAT      49M2D51M   MD 49^TA0T50      NM 2  pysam ok
+  s8557_delTA      50M2D50M   MD 49T^TA50       NM 2  pysam ok
+  s9105_delAA      50M2D50M   MD 49T^AA50       NM 2  pysam ok
+  s9790_delTT      48M2D52M   MD 48^CT0T0T50    NM 2  pysam ok
+  s15544_delTG     50M2D50M   MD 49T^TG50       NM 2  pysam ok
+  s17051_delTT     48M2D52M   MD 48^TT1T50      NM 2  pysam ok
+
+  pysam read 11 correctly, 0 not
+
+=== the repeat-index MD builder, fed to the same consumers ===
+  --- correct MD, for comparison
+    CIGAR 5M2D13M  MD 5^CG13
+    pysam reads the reference as  ACGTATACGTACGTACGT
+    the reference actually is     ACGTATACGTACGTACGT
+    -> agrees
+    samtools calmd says MD 5^CG13
+
+  --- what constructRepeatMD builds
+    CIGAR 5M2D13M  MD ^CG18
+    pysam reads the reference as  CGGTATACGTACGTACGT
+    the reference actually is     ACGTATACGTACGTACGT
+    -> MISREAD
+    samtools calmd says MD 5^CG13
+    calmd stderr: [bam_fillmd1] different MD for read 'b': '^CG18' -> '5^CG13'
+

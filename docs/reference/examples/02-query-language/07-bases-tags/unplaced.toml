@@ -1,0 +1,15 @@
+# An anchor on a pad column passes the parse-time check (a pad is not a gap),
+# but has no SEQ position: the hit is counted, not written. This one fires in
+# the flank past the contig end (pad on both sides). It fires on every such pad
+# column, and there are (widest span) = 3 of them per end because `T` spans 3
+# (or --end-context N if given).
+[query.off_contig]
+read = "_"
+refr = "_"
+[query.T]
+read = "TTT"
+refr = "TTT"
+[tag.xc.bases]
+fill = "."
+c = "off_contig"
+t = "T"

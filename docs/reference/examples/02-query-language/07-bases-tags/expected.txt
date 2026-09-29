@@ -1,0 +1,13 @@
+== docs/bismark-xm.toml (u/U: reference context not determined)
+read 1 records, tagged 1, skipped 0
+  0 of 22 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+top	TTTCGTTTAGTTTTATTTNTTTT	XM:Z:...Z...x....h....u....u
+== clash.toml
+removed the incomplete output $work/clash.bam
+Error: record top: queries 'C_any' and 'CG' both mark SEQ position 3 (0-based) of tag XM, as 'a' and 'Z'. The queries one bases tag uses must never match at the same position; tighten one of them.
+(exit status non-zero)
+== unplaced.toml
+read 1 records, tagged 1, skipped 0
+  6 hits were anchored on a pad or a soft-clipped base, so had no aligned base to tag
+  0 of 22 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+top	TTTCGTTTAGTTTTATTTNTTTT	xc:Z:t..................t...

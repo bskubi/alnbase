@@ -1,0 +1,103 @@
+
+== The fixture: four probe pairs, 200 filler pairs, one FF pair
+   OT    chr1 1-based 101-300: read 1 from OT, read 2 from CTOT
+   CTOT  chr1 1-based 351-550: read 1 from CTOT, read 2 from OT
+   OB    chr1 1-based 601-800: read 1 from OB, read 2 from CTOB
+   CTOB  chr1 1-based 851-1050: read 1 from CTOB, read 2 from OB
+   filler pairs: 200
+   one FF pair, both mates from the top strand: not a proper pair
+
+== bwa mem
+
+== Flags: what bwa wrote, and where the four probes landed
+   count flag
+        1 65
+      102 83
+      102 99
+        1 129
+      102 147
+      102 163
+   probe pairs (qname, flag, pos):
+   OT     99    101
+   ff     65    101
+   ff     129   241
+   OT     147   241
+   CTOT   163   351
+   CTOT   83    491
+   OB     163   601
+   OB     83    741
+   CTOB   99    851
+   CTOB   147   991
+
+== asTair call: the default run
+INFO:astair.caller:asTair modification finder started running. 0.020402 seconds
+INFO:astair.caller:Starting modification calling on chr1 chromosome (sequence). 0.020794 seconds
+INFO:astair.caller:asTair modification finder finished running. 0.036585 seconds
+   -- stats
+   #CONTEXT	SPECIFIC_CONTEXT	MEAN_MODIFICATION_RATE_PERCENT	TOTAL_POSITIONS	COVERED_POSITIONS	MODIFIED	UNMODIFIED
+   CpG	*	26.652	265	261	710	1954
+   *	CGA	22.807	62	62	156	528
+   *	CGC	12.86	61	61	76	515
+   *	CGG	34.459	73	72	255	485
+   *	CGT	34.361	69	66	223	426
+
+== The depth claim: the same fixture without the FF pair
+   .mods files identical: the FF pair changed no position's MOD, UNMOD or TOTAL_DEPTH.
+   pysam's pileup drops a non-proper pair before asTair sees it, so it never reaches
+   depth either -- contrary to what astair.toml's comment used to say.
+
+== The bug: astair call --ignore_orphans False
+INFO:astair.caller:Starting modification calling on chr1 chromosome (sequence). 0.020904 seconds
+INFO:astair.caller:asTair modification finder finished running. 0.022976 seconds
+   exit status: 0
+   -- the mods file it wrote, in full (1 line)
+   #CHROM	START	END	MOD_LEVEL	MOD	UNMOD	REF	ALT	SPECIFIC_CONTEXT	CONTEXT	SNV	TOTAL_DEPTH
+   -- and the stats
+   #CONTEXT	SPECIFIC_CONTEXT	MEAN_MODIFICATION_RATE_PERCENT	TOTAL_POSITIONS	COVERED_POSITIONS	MODIFIED	UNMODIFIED
+   CpG	*	*	265	0	0	0
+   *	CGA	*	62	0	0	0
+   *	CGC	*	61	0	0	0
+   *	CGG	*	73	0	0	0
+   *	CGT	*	69	0	0	0
+   A successful-looking run, exit 0, and nothing in it. What actually happens, called
+   directly so the exception is not swallowed:
+   ignore_orphans=True  -> 8 desired, 8 undesired tuples
+   ignore_orphans=False -> TypeError: list.extend() takes exactly one argument (2 given)
+   caller.py:247-248 and 259-260 call list.extend() with two arguments; caller.py:339
+   catches every exception per position and continues, so the failure is silent.
+
+== alnbase with queries/strand/astair.toml
+   read 410 records, scanned 408, skipped 2 (given a null row)
+     of those, 2 were declined by this run's strand rule: no strand, so no walk and no row. Extend its [strand.*] tables to cover them.
+     7 of 24480 compared read bases differ from the reference (0.03%; a reference C read as T is not counted)
+
+== The four probes, as the rule calls them
+   pair  flag  sequenced from  informs about  rule says
+   CTOB  99    CTOB            -              +   <- wrong
+   CTOB  147   OB              -              +   <- wrong
+   CTOT  83    CTOT            +              -   <- wrong
+   CTOT  163   OT              +              -   <- wrong
+   OB    83    OB              -              -
+   OB    163   CTOB            -              -
+   OT    99    OT              +              +
+   OT    147   CTOT            +              +
+   conversion strand wrong: 4 of 8
+
+   CTOT and CTOB records are not the problem: read 2 of every ordinary fragment is one,
+   and asTair gets those right. 99 and 147 together are 'an FR pair whose read 1 is
+   forward', which is a top-strand fragment and both of its mates; 83 and 163 are the
+   same for a bottom-strand fragment. What breaks is a pair whose READ 1 came from the
+   copy strand, so that the pair's orientation is inverted relative to its fragment's
+   strand -- the CTOT and CTOB pairs above. A directional library never produces one,
+   and asTair is directional-only by design (--library directional|reverse; the docs
+   call non-directional 'under development'). This measures that documented limit.
+   What TAPS changes is only that nothing catches it earlier: the reference is not
+   converted, so bwa maps such a pair as happily as any other.
+
+== alnbase against asTair, position by position
+   asTair positions: 261   alnbase positions: 262   in common: 261   disagreeing: 0
+   asTair  totals: mod 710 unmod 1954
+   alnbase totals: mod 711 unmod 1954
+   only alnbase reports 1: (1, 0)
+   The positions asTair cannot reach are the ones whose trinucleotide SPECIFIC_CONTEXT
+   runs off the end of the contig; alnbase's CG query needs only the dinucleotide.

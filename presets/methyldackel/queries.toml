@@ -1,0 +1,50 @@
+# MethylDackel's methylation call (extract, commit 3c77bda), as an alnbase query file.
+#
+# MethylDackel walks a pileup: at a reference C (reference G for reads from the bottom
+# strand) it counts a read C as methylated and a read T as unmethylated, and takes the
+# context from the reference alone (docs/design/research/methylation-tools.md §2):
+#   - the next reference base G is CpG; otherwise the base after decides: G is CHG,
+#     anything else CHH;
+#   - an N counts as "not G", and so does a position past the end of the contig, so a
+#     C at the last base of a contig is CHH;
+#   - a deletion or insertion in the read does not change the context.
+# alnbase's walk orients every read along its conversion strand, so "reference C, read
+# C or T" covers both strands. Run with the default --insertions skip: MethylDackel
+# never sees inserted bases, and the reference bases either side stay adjacent.
+#
+# Configurable MethylDackel filters (MAPQ, base quality, flags) are not queries: the
+# validator turns them off in MethylDackel, or applies the same filter to both tools.
+
+[pat.cytosine_read_C]
+read = "C~~"
+refr = "C~~"
+
+[pat.cytosine_read_T]
+read = "T~~"
+refr = "C~~"
+
+[pat.next_is_G]           # the reference base after the C is G
+read = "~~~"
+refr = "~G~"
+
+[pat.second_next_is_G]    # the reference base two after the C is G
+read = "~~~"
+refr = "~~G"
+
+[query.CpG_methylated]
+where = "cytosine_read_C and next_is_G"
+
+[query.CpG_unmethylated]
+where = "cytosine_read_T and next_is_G"
+
+[query.CHG_methylated]
+where = "cytosine_read_C and not next_is_G and second_next_is_G"
+
+[query.CHG_unmethylated]
+where = "cytosine_read_T and not next_is_G and second_next_is_G"
+
+[query.CHH_methylated]
+where = "cytosine_read_C and not next_is_G and not second_next_is_G"
+
+[query.CHH_unmethylated]
+where = "cytosine_read_T and not next_is_G and not second_next_is_G"

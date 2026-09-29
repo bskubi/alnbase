@@ -1,0 +1,6 @@
+# Context carried by CAPTURES: one query, the two reference bases after the C
+# recorded with '^'. Any '^' in a run switches every file to list columns.
+[query.C]
+read = "Y~~"
+refr = "C~~"
+mark = "+^^"

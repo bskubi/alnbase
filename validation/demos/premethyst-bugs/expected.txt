@@ -1,0 +1,149 @@
+
+== PM-1, PM-3, PM-4: premethyst bam-extract on BSBolt alignments (XB tag, the default)
+-- BSBolt alignments of r1: name, FLAG, POS, CIGAR:
+plain:1#0	65	201	100M
+otins:1#0	65	701	50M2I48M
+otdel:1#0	65	1201	50M2D50M
+obins:1#0	113	1903	45M2I53M
+obdel:1#0	113	2399	50M2D50M
+noch:1#0	65	1	100M
+-- promised: every call at the reference position of its base, so the same positions as alnbase's
+-- promised: hits for the same reads. PM-3: the noch fragment's CG calls are reported. PM-4 (usage:
+-- promised: '-m Minimum chromosome size to retain (def = 10000000)'): no rows on chrP (3 kb) or chrQ
+-- premethyst bam-extract: cellInfo.txt:
+cell   all_calls  CG_sites  CG_pct  CH_sites  CH_pct  fragments  pairs  singles  no_CH
+noch   0          ""        0.00    ""        0.00    1          1      0        1
+obdel  50         11        100.00  39        0.00    1          1      0        0
+obins  54         19        100.00  35        0.00    1          1      0        0
+otdel  60         13        100.00  47        0.00    1          1      0        0
+otins  44         12        100.00  32        0.00    1          1      0        0
+plain  46         13        100.00  33        0.00    1          1      0        0
+-- calls in each r1 half: positions in both, only in alnbase, only in premethyst:
+┌─────────┬───────────────┬──────────────┬─────────────────┐
+│  cell   │ same_position │ alnbase_only │ premethyst_only │
+│ varchar │     int64     │    int64     │      int64      │
+├─────────┼───────────────┼──────────────┼─────────────────┤
+│ noch    │             0 │            7 │               0 │
+│ obdel   │            18 │            8 │               8 │
+│ obins   │            13 │            8 │               8 │
+│ otdel   │            21 │           15 │              15 │
+│ otins   │             9 │            8 │               8 │
+│ plain   │            22 │            0 │               0 │
+└─────────┴───────────────┴──────────────┴─────────────────┘
+
+-- otins: CG positions in the r1 half:
+┌────────────┬────────────────────────────────┐
+│   source   │          CG_positions          │
+│  varchar   │            int64[]             │
+├────────────┼────────────────────────────────┤
+│ alnbase    │ [729, 737, 748, 768, 785, 795] │
+│ premethyst │ [729, 737, 748, 770, 787, 797] │
+└────────────┴────────────────────────────────┘
+
+-- otdel: CG positions in the r1 half:
+┌────────────┬──────────────────────────────────────────────────┐
+│   source   │                   CG_positions                   │
+│  varchar   │                     int64[]                      │
+├────────────┼──────────────────────────────────────────────────┤
+│ alnbase    │ [1207, 1239, 1250, 1257, 1267, 1292, 1298, 1300] │
+│ premethyst │ [1207, 1239, 1250, 1255, 1265, 1290, 1296, 1298] │
+└────────────┴──────────────────────────────────────────────────┘
+
+-- obins: CG positions in the r1 half:
+┌────────────┬────────────────────────────────────────────┐
+│   source   │                CG_positions                │
+│  varchar   │                  int64[]                   │
+├────────────┼────────────────────────────────────────────┤
+│ alnbase    │ [1928, 1931, 1938, 1940, 1972, 1996, 1998] │
+│ premethyst │ [1928, 1931, 1938, 1940, 1974, 1998, 2000] │
+└────────────┴────────────────────────────────────────────┘
+
+-- obdel: CG positions in the r1 half:
+┌────────────┬──────────────────────────────────────┐
+│   source   │             CG_positions             │
+│  varchar   │               int64[]                │
+├────────────┼──────────────────────────────────────┤
+│ alnbase    │ [2432, 2434, 2438, 2467, 2485, 2487] │
+│ premethyst │ [2432, 2434, 2438, 2465, 2483, 2485] │
+└────────────┴──────────────────────────────────────┘
+
+
+== PM-2: premethyst bam-extract -B on Bismark alignments (XM tag)
+-- Bismark alignments of r1: name, FLAG, POS, CIGAR:
+plain:1#0	99	201	100M
+otins:1#0	99	701	50M2I48M
+otdel:1#0	99	1201	50M2D50M
+obins:1#0	83	1903	45M2I53M
+obdel:1#0	83	2399	50M2D50M
+clip:1#0	99	2601	10S90M
+-- promised: the same positions as alnbase's hits (usage: '-B Methylation call field is in Bismark
+-- promised: format (XM:Z:) Eg. Bismark or UA-Meth as aligner')
+-- premethyst bam-extract -B: cellInfo.txt:
+cell   all_calls  CG_sites  CG_pct  CH_sites  CH_pct  fragments  pairs  singles  no_CH
+clip   38         10        100.00  28        0.00    1          1      0        0
+obdel  50         11        100.00  39        0.00    1          1      0        0
+obins  54         19        100.00  35        0.00    1          1      0        0
+otdel  60         12        100.00  48        2.08    1          1      0        0
+otins  44         12        100.00  32        0.00    1          1      0        0
+plain  46         13        100.00  33        0.00    1          1      0        0
+-- calls in each r1 half: positions in both, only in alnbase, only in premethyst:
+┌─────────┬───────────────┬──────────────┬─────────────────┐
+│  cell   │ same_position │ alnbase_only │ premethyst_only │
+│ varchar │     int64     │    int64     │      int64      │
+├─────────┼───────────────┼──────────────┼─────────────────┤
+│ clip    │             2 │           17 │              17 │
+│ obdel   │            18 │            8 │               8 │
+│ obins   │            13 │            8 │               8 │
+│ otdel   │            20 │           16 │              16 │
+│ otins   │             9 │            8 │               8 │
+│ plain   │            22 │            0 │               0 │
+└─────────┴───────────────┴──────────────┴─────────────────┘
+
+-- clip: CG positions in the r1 half:
+┌────────────┬────────────────────────────────┐
+│   source   │          CG_positions          │
+│  varchar   │            int64[]             │
+├────────────┼────────────────────────────────┤
+│ alnbase    │ [2603, 2637, 2663, 2676, 2683] │
+│ premethyst │ [2613, 2647, 2673, 2686, 2693] │
+└────────────┴────────────────────────────────┘
+
+-- otins: CG positions in the r1 half:
+┌────────────┬────────────────────────────────┐
+│   source   │          CG_positions          │
+│  varchar   │            int64[]             │
+├────────────┼────────────────────────────────┤
+│ alnbase    │ [729, 737, 748, 768, 785, 795] │
+│ premethyst │ [729, 737, 748, 770, 787, 797] │
+└────────────┴────────────────────────────────┘
+
+-- otdel: CG positions in the r1 half:
+┌────────────┬──────────────────────────────────────────────────┐
+│   source   │                   CG_positions                   │
+│  varchar   │                     int64[]                      │
+├────────────┼──────────────────────────────────────────────────┤
+│ alnbase    │ [1207, 1239, 1250, 1257, 1267, 1292, 1298, 1300] │
+│ premethyst │ [1207, 1239, 1255, 1265, 1290, 1296, 1298]       │
+└────────────┴──────────────────────────────────────────────────┘
+
+
+== PM-11: the last record of a cell is dropped when it has no mate (bam_extract.pm)
+-- promised: a fragment with one record is extracted as a single (cellInfo counts 'singles');
+-- promised: usage: fastq-align takes -2 as optional, so single-end input is accepted
+-- premethyst bam-extract, plain without r2: cellInfo.txt:
+cell   all_calls  CG_sites  CG_pct  CH_sites  CH_pct  fragments  pairs  singles  no_CH
+noch   0          ""        0.00    ""        0.00    1          1      0        1
+obdel  50         11        100.00  39        0.00    1          1      0        0
+obins  54         19        100.00  35        0.00    1          1      0        0
+otdel  60         13        100.00  47        0.00    1          1      0        0
+otins  44         12        100.00  32        0.00    1          1      0        0
+plain  0          ""        0.00    ""        0.00    0          0      0        0
+-- premethyst bam-extract, single-end r1 alignments: cellInfo.txt:
+cell   all_calls  CG_sites  CG_pct  CH_sites  CH_pct  fragments  pairs  singles  no_CH
+clip   0          ""        0.00    ""        0.00    0          0      0        0
+noch   0          ""        0.00    ""        0.00    0          0      0        0
+obdel  0          ""        0.00    ""        0.00    0          0      0        0
+obins  0          ""        0.00    ""        0.00    0          0      0        0
+otdel  0          ""        0.00    ""        0.00    0          0      0        0
+otins  0          ""        0.00    ""        0.00    0          0      0        0
+plain  0          ""        0.00    ""        0.00    0          0      0        0

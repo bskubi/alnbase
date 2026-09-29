@@ -1,0 +1,8 @@
+[query.before_del]     # read base immediately before a deletion (walk order)
+read = "N."
+refr = "NN"
+mark = "+."
+[query.after_del]      # read base immediately after it
+read = ".N"
+refr = "NN"
+mark = ".+"

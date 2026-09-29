@@ -1,0 +1,35 @@
+ "(b) Methyl-HiC: hic_sup_overlap, molecule chr1:41-100 (+) joined to chr2:101-140 (+), L = 100"
+
+                "chr1:41"             "61"                "81"             "chr2:101"             "121"              "140"
+                   |                   |                   |                   |                   |                  |
+ "ref"       ------+-------------------+-------------------+-------------------+-------------------+------------------+-------
+
+ "input"
+             "R1 primary  60M20S  chr1:41  MAPQ 60   SA chr2,101,+,60S20M,40,0"
+ "R1 +"            *-==========================================================~~~~~~~~~~~~~~~~~~~>
+
+             "R1 supplementary  60H20M  chr2:101  MAPQ 40   SA chr1,41,+,60M20S,60,0"
+ "R1 +"            *-----------------------------------------------------------==================->
+
+             "R2 primary  35M  chr2:106  MAPQ 60"
+ "R2 -"                                                                             <-===============================-*
+
+                                                                                    ###############
+             "chr2:106-120, 15 bases, R1 supplementary x R2: the primaries never meet"
+
+ "output: R2 scores higher on the overlap (MAPQ 60 + Q30 vs 40 + Q30), so R1 gives up its copy"
+
+             "R1 primary  60M20S  unchanged, but SA now chr2,101,+,60S5M15S,40,1 (NM over the 5M left)"
+ "R1 +"            *-==========================================================~~~~~~~~~~~~~~~~~~~>
+
+             "R1 supplementary  60H5M15S  chr2:101   SA chr1,41,+,60M20S,60,5 (NM from the primary's tag)"
+ "R1 +"            *-----------------------------------------------------------=====~~~~~~~~~~~~~~>
+
+             "R2 primary  35M  unchanged   (Q40 over chr2:106-120)"
+ "R2 -"                                                                             <-===============================-*
+
+
+ *-====->  "a read, 5' end to 3' end: aligned (M)"
+ *~~~~~~>  "soft clip (S)"
+ *------>  "hard clip (H): not in SEQ"
+ ########  "bases observed by both reads"

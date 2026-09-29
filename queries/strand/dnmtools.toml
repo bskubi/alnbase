@@ -1,0 +1,49 @@
+# abismal / dnmtools -- CV:A with FLAG 0x10, conversion strand only.
+#
+# Read 2026-09-17 from dnmtools v1.5.0 (abismal 3.3.0, which ships inside it).
+#
+# CV is written by abismal, dnmtools' own aligner (abismal.cpp:480 single-end, :660 and :688
+# paired), and says which conversion the READ shows as it came off the sequencer: T for a
+# T-rich read, A for an A-rich one. It is NOT the reference strand that carried the
+# conversion. abismal's own README.md:112-117 puts it plainly -- "This tag is independent of
+# the strand the read was mapped to" -- and in the default directional mode it is the mate
+# number and nothing else, T on every read 1 and A on every read 2. Only under -R (random
+# PBAT) or -P does it vary with the read.
+#
+# The conversion strand is CV combined with the mapped strand, which is how abismal itself
+# computes it (abismal.cpp:1269-1270, the XOR of read_is_a_rich and read_rc). A T-rich read
+# on the forward strand carries C>T against the reference, so '+'; the same read mapped
+# reverse reads G>A against the reference, so '-'.
+#
+# Checked 2026-09-17 against real abismal 3.3.0 output (validation/demos/dnmtools-strand),
+# paired-end, on a fixture with one pair from each of the four strands of origin. Under -R
+# all eight records mapped at NM:i:0 and this rule gave every one the conversion strand its
+# origin implies. An earlier version of this file read CV alone -- CV:A:T as '+' -- and was
+# backwards on all four reverse records.
+#
+# SEQ MUST BE REPAIRED FIRST. abismal stores SEQ exactly as it appears in the input FASTQ,
+# on reverse records too (README.md:108-109), which is not what SAM says and not what
+# alnbase's walk assumes. On the fixture the reverse records differ from the reference in
+# 42-49 of 60 bases as stored and in 5-13 once reverse-complemented. dnmtools' own tools
+# compensate by reading SEQ backwards without complementing (methcounts.cpp:299-325); every
+# other reader, alnbase included, must reverse-complement SEQ and reverse QUAL on each 0x10
+# record before use. The demo above does it in five lines. alnbase's count of read bases
+# differing from the reference is the check: it is near the read length on an unrepaired BAM.
+#
+# DO NOT USE on a BAM that `dnmtools format` has written. That step writes CV:A:T on every
+# record and merges the two mates of a fragment into a single record whose CIGAR bridges the
+# gap with an N and whose paired bit is gone (format-reads.cpp, bam_record_utils.cpp:833-913).
+# A formatted BAM is recognisable by having CV:A:T everywhere and no 0x1.
+#
+# `dnmtools format` is also the only place dnmtools translates a BSMAP ZS or Bismark XR into
+# CV (bam_record_utils.cpp:833-913, called only from format-reads.cpp:339,348), so a BSMAP or
+# Bismark BAM that carries CV has already been formatted and is out of scope here. Use
+# bsmap.toml or bismark.toml on the aligner's own output instead.
+
+[strand.conversion]
+"+" = '(CV == "T" and not is_reverse) or (CV == "A" and is_reverse)'
+"-" = '(CV == "T" and is_reverse) or (CV == "A" and not is_reverse)'
+
+[strand.sequenced]
+forward = "not is_reverse"
+reverse = "is_reverse"

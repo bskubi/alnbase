@@ -1,0 +1,22 @@
+# A pad `_` on the read side exists only in the flank columns the walk adds
+# before the first and after the last aligned column. Where the pad sits in
+# the pattern says WHICH end of the walk is required. Which sequencing end
+# that is depends on the walk orientation: see 03-walk-and-matching.md.
+# Patterns run along the conversion strand, but off_5p / off_3p are measured
+# from the ends of the read as sequenced (alnbase 0.1.2), so for read 2
+# (R2_fwd, R2_rev) `walk_start` fires on the base with off_3p = 0.
+
+[query.walk_start]       # the first walked read base (pad column before it)
+read = "_N"
+refr = "~N"
+mark = ".+"
+
+[query.walk_end]         # the last walked read base (pad column after it)
+read = "N_"
+refr = "N~"
+mark = "+."
+
+[query.contig_start]     # first walked base is the contig's first base:
+read = "_N"              # the flank column before it is off the contig,
+refr = "_N"              # so its reference side is a pad too
+mark = ".+"

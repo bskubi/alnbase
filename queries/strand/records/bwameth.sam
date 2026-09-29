@@ -1,0 +1,12 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/bwameth.toml
+@CO	queries/strand/bwameth.toml -- YD plus a conformant 0x10.
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
++:forward/f-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	YD:Z:f
++:reverse/f-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	YD:Z:f
+-:reverse/r-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	YD:Z:r
+-:forward/r-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	YD:Z:r

@@ -1,0 +1,32 @@
+[query.TG]
+read = "T~"
+refr = "CG"
+
+[query.CG]
+read = "C~"
+refr = "CG"
+
+[query.THH]
+read = "T~~"
+refr = "CHH"
+
+[query.CHH]
+read = "C~~"
+refr = "CHH"
+
+[query.THG]
+read = "T~~"
+refr = "CHG"
+
+[query.CHG]
+read = "C~~"
+refr = "CHG"
+
+[tag.XM.bases]
+fill = "."
+z = "TG"
+Z = "CG"
+h = "THH"
+H = "CHH"
+x = "THG"
+X = "CHG"

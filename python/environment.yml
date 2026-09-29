@@ -1,0 +1,22 @@
+# Development and runtime environment for alnbase-agg.
+#
+# Pinned because the aggregation's correctness is checked against recorded
+# expected output: an unpinned DuckDB that changes a rounding or a sort order
+# would look like a regression in this package. Rebuild with:
+#
+#   micromamba create -y -f python/environment.yml
+#
+# Short on purpose. This package generates SQL and hands DuckDB a relation, so
+# the format writers that need h5py or pyBigWig are not here -- they live with
+# the packages that own those formats, registered through
+# alnbase_agg.writers.register.
+name: alnbase-agg
+channels: [conda-forge]
+dependencies:
+  # 3.11 or newer for tomllib in the standard library; the recipe is TOML and
+  # pulling in a third-party parser for something the stdlib carries is waste.
+  - python=3.12
+  - duckdb=1.4.1
+  - python-duckdb=1.4.1
+  - click=8.1.8
+  - pytest=8.4.1

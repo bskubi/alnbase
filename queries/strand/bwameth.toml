@@ -1,0 +1,39 @@
+# bwa-meth 0.2.10 -- YD:Z, conversion strand only.
+#
+# Read 2026-09-17 from bwa-meth 0.2.10 (YD at bwameth.py:480; SEQ restored from the
+# original read at :500-503; directional-only per README.md:28).
+#
+# YD is f or r, the converted contig hit. bwa-meth leaves bwa's FLAG untouched, so 0x10 is
+# conformant and gives the sequenced direction. YC:Z is also written but is assigned from
+# the mate number alone (:205) and carries nothing the FLAG does not, so it is not used
+# here.
+#
+# bwa-meth supports directional libraries only, so directional.toml also applies and
+# additionally recovers the four-way strand of origin. Use this file when you want the
+# strand taken from the aligner's own evidence rather than from the library's design; use
+# directional.toml when you need conv_strand or a Bismark-style [tag.XX.strand].
+#
+# Checked 2026-09-17 against real bwa-meth 0.2.10 output (validation/demos/bwameth-strand),
+# paired-end. On a directional library all four records were called with the conversion
+# strand and the sequenced direction their origin implies; 0x10 agreed with how SEQ was
+# really stored on every mapped record, and SEQ was reference-forward throughout. YD was the
+# same on both mates of every pair, as a conversion-strand tag must be. YC was CT on every
+# first-in-pair record and GA on every second-in-pair one regardless of strand, confirming it
+# carries nothing the FLAG does not. Running directional.toml over the same BAM gave the same
+# hits at the same reference positions, 0 disagreements.
+#
+# Two things that run also showed. bwa-meth tags YD only on mapped records (bwameth.py:469-473
+# returns before the tag is appended), so an unmapped record is `unknown` to this rule and
+# alnbase skips and counts it. And because bwa-meth is directional-only, a copy-strand read
+# that reaches it is either dropped -- 93% of them in that demo's sweep -- or placed on the
+# opposite conversion strand at the right position and high MAPQ, with nothing in the record
+# to mark it. Every copy-strand read that mapped at all was wrong. Neither this rule nor any
+# other can recover from that; filter such a library by design.
+
+[strand.conversion]
+"+" = 'YD == "f"'
+"-" = 'YD == "r"'
+
+[strand.sequenced]
+forward = "not is_reverse"
+reverse = "is_reverse"

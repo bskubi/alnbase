@@ -1,0 +1,20 @@
+read 5 records, scanned 5, skipped 0
+  0 of 54 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+┌─────────────────┬──────────────┬────────┬────────┬──────────┬───────────┬───────────┐
+│      qname      │     name     │ off_5p │ off_3p │ refr_pos │ read_base │ refr_base │
+│     varchar     │   varchar    │ int64  │ int64  │  int64   │  varchar  │  varchar  │
+├─────────────────┼──────────────┼────────┼────────┼──────────┼───────────┼───────────┤
+│ R1_fwd          │ walk_start   │      0 │     11 │        3 │ G         │ G         │
+│ R1_fwd          │ walk_end     │     11 │      0 │       14 │ A         │ A         │
+│ R1_rev          │ walk_start   │      0 │     11 │       14 │ T         │ T         │
+│ R1_rev          │ walk_end     │     11 │      0 │        3 │ C         │ C         │
+│ R2_fwd          │ walk_start   │     11 │      0 │       14 │ T         │ T         │
+│ R2_fwd          │ walk_end     │      0 │     11 │        3 │ C         │ C         │
+│ R2_rev          │ walk_start   │     11 │      0 │        3 │ G         │ G         │
+│ R2_rev          │ walk_end     │      0 │     11 │       14 │ A         │ A         │
+│ at_contig_start │ walk_start   │      0 │      5 │        0 │ G         │ G         │
+│ at_contig_start │ contig_start │      0 │      5 │        0 │ G         │ G         │
+│ at_contig_start │ walk_end     │      5 │      0 │        5 │ T         │ T         │
+└─────────────────┴──────────────┴────────┴────────┴──────────┴───────────┴───────────┘
+  11 rows                                                                   7 columns
+

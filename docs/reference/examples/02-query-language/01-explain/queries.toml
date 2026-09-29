@@ -1,0 +1,19 @@
+# Dry-run inspection: no BAM, no reference. Tables may appear in any order.
+[query.mCG]                       # a CG cytosine, not inside a GATC junction
+mark  = "...+^..."                # anchor on column 3, also capture column 4
+where = "cg and not junc"
+
+[pat.cg]
+read = "~~~Yo~~~"                 # o is an alias declared below
+refr = "~~~CG~~~"
+
+[pat.junc]
+read = "~~~~~~~~"
+refr = "GATCGATC"
+
+[alias]
+o = "{N.}"                        # a base or a deletion (not a pad, not a junction)
+
+[query.mismatch]                  # relational code: read differs from reference
+read = "N"
+refr = "/"

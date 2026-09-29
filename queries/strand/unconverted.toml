@@ -1,0 +1,33 @@
+# No conversion at all: an ordinary BAM from an assay that does not convert the reference.
+#
+# For: any assay alnbase is used on that is not a conversion chemistry -- variant and motif
+# work, RNA modifications read as mismatches, damage profiles, anything where the question is
+# a pattern over the read and the reference rather than a cytosine's fate. A strand rule is
+# mandatory for every run that reads records, and none of the other files here fits an
+# unconverted library, so this is that file.
+#
+# Every record walks along the reference forward, so `read` and `refr` are in reference
+# orientation on every record and `refr_pos` always increases. That is what makes a pattern
+# written against the reference mean the same thing on every record.
+#
+# The `strand` column is `+` on everything, which is not a claim that the fragment came from
+# the top strand -- there is no converted strand to name. `conv_strand` is null, because no
+# strand of origin exists to report. The read's own orientation is not lost: it is
+# `read_reverse`, taken from FLAG 0x10, and it is what `off_5p` and `off_3p` count from, so a
+# position "20 bases from the 5' end" means the sequencer's 5' end on both orientations.
+#
+# Do NOT use this file on a bisulfite, TAPS or other conversion BAM. It would walk every
+# bottom-strand record forwards, so the informative base of each pair would be read from the
+# wrong side and the conversion would look like a reference mismatch.
+#
+# Conversely, do not reach for directional.toml here. On an unconverted library it makes the
+# walk follow each fragment's orientation, so roughly half the records come out reverse
+# complemented with `refr_pos` decreasing, and a motif query then finds the motif on one half
+# of the data and its reverse complement on the other.
+
+[strand.conversion]
+"+" = "true"
+
+[strand.sequenced]
+forward = "not is_reverse"
+reverse = "is_reverse"

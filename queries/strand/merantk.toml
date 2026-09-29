@@ -1,0 +1,48 @@
+# meRanTK (meRanGh, meRanGs) -- YG:Z and YR:Z, four-way from the two tags together.
+#
+# Read 2026-09-17 from meRanTK GitHub master (icbi-lab/meRanTK c06d726, v1.3.0).
+#
+# YG is the converted genome index that won and YR the conversion applied to the read, the
+# same split as Bismark's XG and XR, so the two together name the strand of origin of the
+# record. meRanTK is directional only and discards wrong-direction alignments before output
+# (meRanGh.pl:2030-2100), so a read from a PCR copy of the strand it was sequenced from does
+# not map at all.
+#
+# Checked 2026-09-17 against real meRanGh and meRanGs output
+# (validation/demos/merantk-strand), on a fixture with one pair from each of the four strands
+# of origin. Both tools were run three ways -- paired-end, -f alone and -r alone -- and all
+# twenty mapped records were called the strand they were really sequenced from.
+#
+# All four cells are used, which an earlier version of this comment denied. YR is never a
+# per-read measurement: paired-end, it is the mate number, C2T on read 1 and G2A on read 2
+# unconditionally (meRanGh.pl:3029-3060, meRanGs.pl:3056-3087), so half of every paired-end
+# run is CTOT or CTOB; single-end, it is a run-level constant assigned once before the read
+# loop from whether -r was given (meRanGh.pl:1432-1433, meRanGs.pl:1483-1484), so a -f run is
+# OT/OB throughout and a -r run CTOT/CTOB throughout. None of that makes the rule wrong: YG
+# carries the fragment's strand and YR the mate, and a record's own strand of origin is
+# exactly the combination.
+#
+# Because the wrong-direction filter keeps C2T-index hits only when 0x10 is clear and
+# G2A-index hits only when it is set (and the reverse in a -r run), YG and 0x10 are redundant
+# within any one run, and in single-end this rule reduces to what directional.toml would say.
+# Reading the tags is still worth it: they say which reduction applies without the caller
+# having to know how the run was invoked.
+#
+# meRanGs single-end with -r alone writes SEQ the wrong way round on every record. Its
+# single-end SEQ registration takes no direction argument (meRanGs.pl:2035-2064) and stores
+# the read as sequenced on a C2T hit and reverse-complemented on a G2A hit, which the -r
+# filter inverts; meRanGh's equivalent does take one (meRanGh.pl:1988-2018) and is correct in
+# every mode. The records still carry NM:i:0 and MD:Z:60, computed against the converted
+# genome, so nothing inside the BAM contradicts itself. Measured: 81 of 120 read bases differ
+# from the reference on that run and 0 of 120 on meRanGh's. No strand rule can express this,
+# because it is how the bases are stored and not which strand the record belongs to; repair
+# SEQ first, or use meRanGh, or run meRanGs paired-end.
+#
+# meRanT (transcriptome alignment) writes no conversion tag and is not covered by any file
+# here.
+
+[strand.origin]
+OT   = 'YG == "C2T" and YR == "C2T"'
+CTOT = 'YG == "C2T" and YR == "G2A"'
+OB   = 'YG == "G2A" and YR == "C2T"'
+CTOB = 'YG == "G2A" and YR == "G2A"'

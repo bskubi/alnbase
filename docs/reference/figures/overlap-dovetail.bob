@@ -1,0 +1,29 @@
+ "(d) Dovetailing mates: read_through, a 30 bp molecule chr1:161-190 read 40 + 40"
+
+                  "151"     "161"     "171"     "181"    "190"     "200"
+                   |         |         |         |        |         |
+ "chr1"      ------+---------+---------+---------+--------+---------+-----------------------------------
+
+ "input: each read runs 10 bases of adapter past the other read's 5' end, soft-clipped"
+
+             "30M10S  POS 161  FLAG 99   TLEN 30"
+ "R1 +"                      *-============================~~~~~~~~~>
+
+             "10S30M  POS 161  FLAG 147  TLEN -30"
+ "R2 -"            <~~~~~~~~~============================-*
+
+                             ##############################
+             "chr1:161-190, the whole molecule: L = 30 < 40"
+
+ "output: R1 keeps the overlap, so R2 gives up every aligned base"
+
+             "30M10S  POS 161  FLAG 73 (0x8 set; 0x20, 0x2 cleared)  PNEXT 161  TLEN 0  MC *"
+ "R1 +"                      *-============================~~~~~~~~~>
+
+             "R2 -> unmapped: FLAG 133 (0x4 set; 0x10, 0x2 cleared), RNAME/POS chr1:161 from R1,"
+             "MAPQ 0, CIGAR *, TLEN 0, MC 30M10S, SEQ and QUAL reversed back to sequencing orientation"
+
+ *-====->  "a read, 5' end to 3' end: aligned (M)"
+ *~~~~~~>  "soft clip (S)"
+ *------>  "hard clip (H): not in SEQ"
+ ########  "bases observed by both reads"

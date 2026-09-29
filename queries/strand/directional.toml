@@ -1,0 +1,53 @@
+# Directional library, conformant FLAG, no strand tag.
+#
+# For: bwa-meth 0.2.10, BISCUIT 1.10.3 with -b 1, HISAT-3N with --directional-mapping,
+# methylpy's own output BAM, Bismark 0.25.1 directional paired-end or single-end, BSMAP 2.90
+# -n 0 single-end -- any input where the library is directional and FLAG 0x10 means what SAM
+# says. Read 2026-09-17; evidence in docs/design/research/strand-determination.md, case 1.
+#
+# This is alnbase's historical `--library directional` rule, written out: the read number
+# picks the converted original or its complement, and 0x10 picks the strand. An unpaired
+# read has is_last_in_template false, so it is treated as read 1, as before.
+#
+# It is a rule about the library, not about the aligner, so it is also the file to reach
+# for when an aligner writes no usable tag. If the library was not directional, this file
+# will silently call CTOT reads as OT; use the aligner's own file instead.
+#
+# PBAT is not an exception to that, and there is no separate PBAT file, because a PBAT library
+# does not reach a BAM as one. Both pipelines built for PBAT put the reads back into the
+# directional arrangement first: Bismark --pbat paired-end swaps 0x40 and 0x80 on every pair,
+# since under --pbat every pair is CTOT or CTOB (bismark:8818-8866), and methylpy --pbat
+# exchanges the mate files (call_mc_pe.py:225-227) or reverse-complements every read
+# (utilities.py:817). So this file is the right one for Bismark --pbat paired-end output --
+# measured at 0 of 402 records wrong in validation/demos/pbat-strand, where a rule written for
+# the PBAT library was wrong on all 402 -- with the caveat that it names the strand of origin
+# as the converted original where the read actually came off the copy. Use bismark.toml when
+# the origin matters.
+#
+# Bismark --pbat SINGLE-END is the one case this file gets wrong: 0x10 there carries the genome
+# conversion, contradicting how SEQ was stored on 201 of 201 records, so this file names the
+# right conversion strand (the anchors land correctly) but the wrong origin on every record.
+# Use bismark.toml.
+#
+# For an assay with no conversion at all, use unconverted.toml: this file would make the walk
+# follow each fragment's orientation and reverse-complement roughly half the records.
+#
+# Checked 2026-09-18 against real Bismark output (validation/demos/directional-strand), which
+# is the only way to check a rule that reads no tag: Bismark's XR/XG names all four strands
+# from evidence this file never touches, so the two rules are independent, and the fixture
+# knows which strand each read was built from. Over 402 paired-end and 202 single-end records
+# both rules called every record the strand it was built from, and alnbase put 2601 and 1320
+# CG anchors at identical positions under each.
+#
+# Single-end is on that list because of that run. Bismark sets 0x10 from the genome conversion
+# on single-end output rather than from SEQ's orientation, which is why bismark.toml has to
+# read the tags; on a directional library the two coincide, because matching the bottom-strand
+# index is the same thing as having been sequenced from the bottom strand. No record in the
+# single-end arm had 0x10 contradict how SEQ was actually stored. They part company only on the
+# CTOT and CTOB reads a directional library does not contain.
+
+[strand.origin]
+OT   = "not is_reverse and not is_last_in_template"
+CTOT = "is_reverse and is_last_in_template"
+OB   = "is_reverse and not is_last_in_template"
+CTOB = "not is_reverse and is_last_in_template"

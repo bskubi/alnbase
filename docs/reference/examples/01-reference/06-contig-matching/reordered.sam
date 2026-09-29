@@ -1,0 +1,7 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:10
+@SQ	SN:chr2	LN:10	M5:47e6617a37a2590e0cac54cb9f628788
+@SQ	SN:chr10	LN:10
+on_chr2	0	chr2	4	60	5M	*	0	0	GGGGG	IIIII
+on_chr10	0	chr10	1	60	3M	*	0	0	CCC	III
+unmapped	4	*	0	0	*	*	0	0	ACG	III

@@ -1,0 +1,19 @@
+@HD	VN:1.6	SO:unsorted
+@SQ	SN:chr1	LN:1000
+@CO	Records for queries/strand/bismark.toml
+@CO	queries/strand/bismark.toml -- the XR/XG table in that file's comment, both layouts.
+@CO	The four pe rows also cover --non_directional paired-end: there a CTOT pair writes
+@CO	the same two records as an OT pair with the mate bit swapped between them, so no
+@CO	new combination appears (validation/demos/bismark-nondirectional-pe).
+@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
+@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
+@CO	conversion strand. Anything after the first "/" is a label for the reader.
+@CO	The convention, and the test that enforces it, are in ./README.md.
+OT/pe-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:CT	XG:Z:CT
+CTOT/pe-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:GA	XG:Z:CT
+OB/pe-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:CT	XG:Z:GA
+CTOB/pe-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:GA	XG:Z:GA
+OT/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:CT
+CTOT/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:CT
+OB/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:GA
+CTOB/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:GA

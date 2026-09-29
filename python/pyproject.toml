@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alnbase-agg"
+version = "0.8.0"
+description = "Aggregate alnbase hit tables with DuckDB, where a run is a SQL script"
+requires-python = ">=3.11"
+# Deliberately short. This package runs a SQL script and hands DuckDB a
+# connection; the formats that need h5py or pyarrow are an extra, so a user who
+# only wants a .cov file does not install a stack for HDF5.
+dependencies = [
+    "duckdb>=1.1",
+    "click>=8.1",
+    # For `alnbase-agg check`, which reads single bases out of a FASTA.
+    # Required rather than optional: a check nobody can run does not prevent an
+    # off-by-one, and this is the one class of error in this pipeline that
+    # produces output which looks right at every position and is wrong at all
+    # of them. pyfaidx is small and pure Python, so it costs a user who never
+    # runs the check almost nothing.
+    "pyfaidx>=0.7",
+]
+
+[project.optional-dependencies]
+# What `formats/amethyst_h5.py` needs, and anything else that streams groups
+# rather than writing one table.
+amethyst = ["h5py>=3.8", "numpy>=1.24", "pyarrow>=14"]
+
+[project.scripts]
+alnbase-agg = "alnbase_agg.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["alnbase_agg*"]
+
+# The SQL library is the larger half of this package and ships inside it, so
+# that `.read lib/filters.sql` resolves from an installed wheel exactly as it
+# does from a checkout. `formats/amethyst_h5.py` is listed here as data rather
+# than found as a module on purpose: it is run by `.python`, not imported, and
+# making it importable would invite somebody to import it for a side effect.
+[tool.setuptools.package-data]
+alnbase_agg = ["sql/*.sql", "sql/lib/*.sql", "sql/formats/*.sql", "sql/formats/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

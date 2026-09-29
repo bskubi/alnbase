@@ -1,0 +1,216 @@
+## 1. non-UTF-8 aux text selected as a column, without --permissive
+Error: record badtext: text in an aux tag that is not UTF-8. Pass --permissive to read what can be read and count these records instead.
+exit=1
+the failed run removed its output files:
+no bad_* files
+## 2. flat layout, default fields (core), --permissive
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+exit=0
+-- flat_0_0.parquet  metadata={'coordinate_base': '0', 'format_version': '9'}
+   shard              uint32                 nullable=False
+   record_id          uint64                 nullable=False
+   ref_name           string                 nullable=True
+   strand             string                 nullable=True
+   name               string                 nullable=True
+   off_5p             int64                  nullable=True
+   off_3p             int64                  nullable=True
+   refr_pos           int64                  nullable=True
+   qual               uint8                  nullable=True
+   read_base          string                 nullable=True
+   refr_base          string                 nullable=True
+┌───────────┬─────────┬────────┬────────┬──────────┬───────┬───────────┬───────────┬──────────┬─────────┐
+│ record_id │  name   │ off_5p │ off_3p │ refr_pos │ qual  │ read_base │ refr_base │ ref_name │ strand  │
+│  uint64   │ varchar │ int64  │ int64  │  int64   │ uint8 │  varchar  │  varchar  │ varchar  │ varchar │
+├───────────┼─────────┼────────┼────────┼──────────┼───────┼───────────┼───────────┼──────────┼─────────┤
+│         0 │ TG      │      5 │      8 │        3 │    37 │ T         │ C         │ chr1     │ +       │
+│         0 │ TG      │     10 │      3 │        8 │    42 │ T         │ C         │ chr1     │ +       │
+│         1 │ CG      │      4 │      9 │        9 │    40 │ C         │ C         │ chr1     │ -       │
+│         1 │ CG      │      9 │      4 │        4 │    40 │ C         │ C         │ chr1     │ -       │
+│         2 │ TG      │      3 │     10 │        3 │    40 │ T         │ C         │ chr1     │ +       │
+│         2 │ CG      │      8 │      5 │        8 │    40 │ C         │ C         │ chr1     │ +       │
+│         3 │ NULL    │   NULL │   NULL │     NULL │  NULL │ NULL      │ NULL      │ chr1     │ +       │
+│         4 │ NULL    │   NULL │   NULL │     NULL │  NULL │ NULL      │ NULL      │ NULL     │ +       │
+└───────────┴─────────┴────────┴────────┴──────────┴───────┴───────────┴───────────┴──────────┴─────────┘
+
+## 3. list layout
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+-- list_0_0.parquet  metadata={'coordinate_base': '0', 'format_version': '9'}
+   shard              uint32                 nullable=False
+   record_id          uint64                 nullable=False
+   ref_name           string                 nullable=True
+   strand             string                 nullable=True
+   name               string                 nullable=True
+   off_5p             int64                  nullable=True
+   off_3p             int64                  nullable=True
+   refr_pos           int64                  nullable=True
+   qual               uint8                  nullable=True
+   capture_col        list<item: int32>      nullable=True
+   capture_read       list<item: string>     nullable=True
+   capture_refr       list<item: string>     nullable=True
+   capture_qual       list<item: uint8>      nullable=True
+   capture_off_5p     list<item: int64>      nullable=True
+   capture_off_3p     list<item: int64>      nullable=True
+   capture_refr_pos   list<item: int64>      nullable=True
+┌───────────┬─────────┬────────┬─────────────┬───┬──────────────┬────────────────┬────────────────┬──────────────────┐
+│ record_id │  name   │ off_5p │ capture_col │ … │ capture_qual │ capture_off_5p │ capture_off_3p │ capture_refr_pos │
+│  uint64   │ varchar │ int64  │   int32[]   │ … │   uint8[]    │    int64[]     │    int64[]     │     int64[]      │
+├───────────┼─────────┼────────┼─────────────┼───┼──────────────┼────────────────┼────────────────┼──────────────────┤
+│         0 │ CGpair  │      5 │ [0, 1]      │ … │ [37, 38]     │ [5, 6]         │ [8, 7]         │ [3, 4]           │
+│         0 │ CGpair  │     10 │ [0, 1]      │ … │ [42, 43]     │ [10, 11]       │ [3, 2]         │ [8, 9]           │
+│         1 │ CGpair  │      4 │ [0, 1]      │ … │ [40, 40]     │ [4, 5]         │ [9, 8]         │ [9, 8]           │
+│         1 │ CGpair  │      9 │ [0, 1]      │ … │ [40, 40]     │ [9, 10]        │ [4, 3]         │ [4, 3]           │
+│         2 │ CGpair  │      3 │ [0, 1]      │ … │ [40, 40]     │ [3, 4]         │ [10, 9]        │ [3, 4]           │
+│         2 │ CGpair  │      8 │ [0, 1]      │ … │ [40, 40]     │ [8, 9]         │ [5, 4]         │ [8, 9]           │
+│         3 │ NULL    │   NULL │ NULL        │ … │ NULL         │ NULL           │ NULL           │ NULL             │
+│         4 │ NULL    │   NULL │ NULL        │ … │ NULL         │ NULL           │ NULL           │ NULL             │
+└───────────┴─────────┴────────┴─────────────┴───┴──────────────┴────────────────┴────────────────┴──────────────────┘
+  8 rows                                                                                        10 columns (8 shown)
+
+## 4. -f all plus aux columns (and type mismatches), --only-hits off
+read 5 records, scanned 4, skipped 1 (given a null row)
+  1 records had text in an aux tag that is not UTF-8, read as null
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+exit=0
+-- all_0_0.parquet  metadata={'coordinate_base': '0', 'format_version': '9'}
+   shard              uint32                 nullable=False
+   record_id          uint64                 nullable=False
+   qname              string                 nullable=True
+   flags              uint16                 nullable=True
+   tid                int32                  nullable=True
+   ref_name           string                 nullable=True
+   pos                int64                  nullable=True
+   end_pos            int64                  nullable=True
+   unclipped_start    int64                  nullable=True
+   unclipped_end      int64                  nullable=True
+   mapq               uint8                  nullable=True
+   cigar              string                 nullable=True
+   read_len           int64                  nullable=True
+   hard_clip_5p       int64                  nullable=True
+   hard_clip_3p       int64                  nullable=True
+   soft_clip_5p       int64                  nullable=True
+   soft_clip_3p       int64                  nullable=True
+   is_paired          bool                   nullable=True
+   is_proper_pair     bool                   nullable=True
+   is_unmapped        bool                   nullable=True
+   is_mate_unmapped   bool                   nullable=True
+   is_reverse         bool                   nullable=True
+   is_mate_reverse    bool                   nullable=True
+   is_first_in_template bool                   nullable=True
+   is_last_in_template bool                   nullable=True
+   is_secondary       bool                   nullable=True
+   is_supplementary   bool                   nullable=True
+   is_duplicate       bool                   nullable=True
+   is_qc_fail         bool                   nullable=True
+   strand             string                 nullable=True
+   conv_strand        string                 nullable=True
+   read_reverse       bool                   nullable=True
+   insert_size        int64                  nullable=True
+   mate_tid           int32                  nullable=True
+   mate_ref_name      string                 nullable=True
+   mate_pos           int64                  nullable=True
+   seq_ascii          string                 nullable=True
+   qual_phred         string                 nullable=True
+   NM                 int64                  nullable=True
+   XA                 string                 nullable=True
+   XC                 int64                  nullable=True
+   XI                 int64                  nullable=True
+   XF                 double                 nullable=True
+   XH                 string                 nullable=True
+   XB                 string                 nullable=True
+   BF                 string                 nullable=True
+   XZ                 string                 nullable=True
+   YY                 int64                  nullable=True
+   name               string                 nullable=True
+   off_5p             int64                  nullable=True
+   off_3p             int64                  nullable=True
+   refr_pos           int64                  nullable=True
+   qual               uint8                  nullable=True
+   read_base          string                 nullable=True
+   refr_base          string                 nullable=True
+┌───────────┬──────────┬────────┬───────┬──────────┬───┬─────────┬─────────────┬──────────┬───────────────┬──────────┐
+│ record_id │  qname   │ flags  │  tid  │ ref_name │ … │ strand  │ insert_size │ mate_tid │ mate_ref_name │ mate_pos │
+│  uint64   │ varchar  │ uint16 │ int32 │ varchar  │ … │ varchar │    int64    │  int32   │    varchar    │  int64   │
+├───────────┼──────────┼────────┼───────┼──────────┼───┼─────────┼─────────────┼──────────┼───────────────┼──────────┤
+│         0 │ typed    │      0 │     0 │ chr1     │ … │ +       │           0 │     NULL │ NULL          │     NULL │
+│         1 │ rev      │     16 │     0 │ chr1     │ … │ -       │           0 │     NULL │ NULL          │     NULL │
+│         2 │ badtext  │      0 │     0 │ chr1     │ … │ +       │           0 │     NULL │ NULL          │     NULL │
+│         3 │ nohit    │      0 │     0 │ chr1     │ … │ +       │           0 │     NULL │ NULL          │     NULL │
+│         4 │ unmapped │      4 │  NULL │ NULL     │ … │ +       │           0 │     NULL │ NULL          │     NULL │
+└───────────┴──────────┴────────┴───────┴──────────┴───┴─────────┴─────────────┴──────────┴───────────────┴──────────┘
+  5 rows                                                                                       17 columns (10 shown)
+
+┌───────────┬────────────────┬────────────────┬───┬────────────┬──────────────────────┬─────────────────────┐
+│ record_id │   seq_ascii    │   qual_phred   │ … │ is_reverse │ is_first_in_template │ is_last_in_template │
+│  uint64   │    varchar     │    varchar     │ … │  boolean   │       boolean        │       boolean       │
+├───────────┼────────────────┼────────────────┼───┼────────────┼──────────────────────┼─────────────────────┤
+│         0 │ GGTTGTTTCGTTTT │ ABCDEFGHIJKLMN │ … │ false      │ false                │ false               │
+│         1 │ TTTCGTTTCGTTTT │ IIIIIIIIIIIIII │ … │ true       │ false                │ false               │
+│         2 │ TTTTGTTTCGTTTT │ IIIIIIIIIIIIII │ … │ false      │ false                │ false               │
+│         3 │ TTTT           │ IIII           │ … │ false      │ false                │ false               │
+│         4 │ ACGT           │ IIII           │ … │ false      │ false                │ false               │
+└───────────┴────────────────┴────────────────┴───┴────────────┴──────────────────────┴─────────────────────┘
+  5 rows                                                                                8 columns (6 shown)
+
+┌───────────┬───────┬─────────┬───────┬────────────┬────────┬─────────┬─────────┬───────────┬─────────┬───────┐
+│ record_id │  NM   │   XA    │  XC   │     XI     │   XF   │   XH    │   XB    │    BF     │   XZ    │  YY   │
+│  uint64   │ int64 │ varchar │ int64 │   int64    │ double │ varchar │ varchar │  varchar  │ varchar │ int64 │
+├───────────┼───────┼─────────┼───────┼────────────┼────────┼─────────┼─────────┼───────────┼─────────┼───────┤
+│         0 │     3 │ q       │    -5 │ 3000000000 │    2.5 │ 1AE3    │ -3,0,7  │ 1.5,-0.25 │ hello   │  NULL │
+│         1 │     0 │ NULL    │  NULL │       NULL │   NULL │ NULL    │ NULL    │ NULL      │ NULL    │  NULL │
+│         2 │  NULL │ NULL    │  NULL │       NULL │   NULL │ NULL    │ NULL    │ NULL      │ NULL    │  NULL │
+│         3 │  NULL │ NULL    │  NULL │       NULL │   NULL │ NULL    │ NULL    │ NULL      │ NULL    │  NULL │
+│         4 │  NULL │ NULL    │  NULL │       NULL │   NULL │ NULL    │ NULL    │ NULL      │ um      │  NULL │
+└───────────┴───────┴─────────┴───────┴────────────┴────────┴─────────┴─────────┴───────────┴─────────┴───────┘
+
+## 4b. the first spelling of a tag wins; a later spelling of the same tag is dropped. Type mismatches read as null:
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+┌───────────┬─────────┬───────┬────────┬──────────────┬───────┬───────┬───────┬───────┐
+│ record_id │   NM    │  XA   │   XC   │      XI      │  XF   │  XB   │  XH   │  XZ   │
+│  uint64   │ varchar │ int64 │ double │    double    │ int64 │ int64 │ int64 │ int64 │
+├───────────┼─────────┼───────┼────────┼──────────────┼───────┼───────┼───────┼───────┤
+│         0 │ NULL    │  NULL │   -5.0 │ 3000000000.0 │  NULL │  NULL │  NULL │  NULL │
+│         1 │ NULL    │  NULL │   NULL │         NULL │  NULL │  NULL │  NULL │  NULL │
+│         2 │ NULL    │  NULL │   NULL │         NULL │  NULL │  NULL │  NULL │  NULL │
+│         3 │ NULL    │  NULL │   NULL │         NULL │  NULL │  NULL │  NULL │  NULL │
+│         4 │ NULL    │  NULL │   NULL │         NULL │  NULL │  NULL │  NULL │  NULL │
+└───────────┴─────────┴───────┴────────┴──────────────┴───────┴───────┴───────┴───────┘
+
+## 5. aliases: -f qual selects qual_phred (not the hit column qual); is_ot selects strand
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+-- alias_0_0.parquet  metadata={'coordinate_base': '0', 'format_version': '9'}
+   shard              uint32                 nullable=False
+   record_id          uint64                 nullable=False
+   qual_phred         string                 nullable=True
+   strand             string                 nullable=True
+   ref_name           string                 nullable=True
+   seq_ascii          string                 nullable=True
+   is_qc_fail         bool                   nullable=True
+## 6. --only-hits drops hitless rows (nohit, unmapped)
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+┌───────────┬─────────┬───────┐
+│ record_id │  qname  │   n   │
+│  uint64   │ varchar │ int64 │
+├───────────┼─────────┼───────┤
+│         0 │ typed   │     2 │
+│         1 │ rev     │     2 │
+│         2 │ badtext │     2 │
+└───────────┴─────────┴───────┘
+
+## 7. IPC stream output carries the same schema; the extension is not checked
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+['shard', 'record_id', 'qname', 'name', 'off_5p', 'off_3p', 'refr_pos', 'qual', 'read_base', 'refr_base'] 8 {'format_version': '9', 'coordinate_base': '0'}
+manifest keys ['alnbase_version', 'format_version', 'coordinate_base', 'run_id', 'command', 'command_line', 'input', 'reference', 'strand', 'output', 'query_files', 'extract', 'walk', 'contigs']
+## 8. parquet footer: compression, row groups, key-value metadata
+read 5 records, scanned 4, skipped 1 (given a null row)
+  5 of 44 compared read bases differ from the reference (11.36%; a reference C read as T is not counted)
+row_groups 4 [2, 2, 2, 2]
+codec ZSTD kv keys ['ARROW:schema', 'alnbase_manifest', 'coordinate_base', 'format_version']
+{'shard': ('PLAIN', 'RLE', 'RLE_DICTIONARY'), 'record_id': ('RLE', 'DELTA_BINARY_PACKED'), 'qname': ('RLE', 'DELTA_BYTE_ARRAY'), 'name': ('PLAIN', 'RLE', 'RLE_DICTIONARY'), 'off_5p': ('RLE', 'DELTA_BINARY_PACKED'), 'off_3p': ('RLE', 'DELTA_BINARY_PACKED'), 'refr_pos': ('RLE', 'DELTA_BINARY_PACKED'), 'qual': ('PLAIN', 'RLE', 'RLE_DICTIONARY'), 'read_base': ('PLAIN', 'RLE', 'RLE_DICTIONARY'), 'refr_base': ('PLAIN', 'RLE', 'RLE_DICTIONARY')}
+## 9. row order within a record follows the column where each query completes
+[('narrow', 4, 4), ('wide', 3, 3)]

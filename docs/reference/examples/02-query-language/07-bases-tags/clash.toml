@@ -1,0 +1,12 @@
+# Two queries under different codes of one bases tag that fire on the same
+# base: accepted when the file is read, refused when a record shows it.
+[query.C_any]
+read = "C"
+refr = "C"
+[query.CG]
+read = "C~"
+refr = "CG"
+[tag.XM.bases]
+fill = "."
+a = "C_any"
+Z = "CG"

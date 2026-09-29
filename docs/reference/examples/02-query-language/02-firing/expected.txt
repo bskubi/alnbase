@@ -1,0 +1,46 @@
+read 2 records, scanned 2, skipped 0
+  0 of 14 compared read bases differ from the reference (0.00%; a reference C read as T is not counted)
+┌─────────┬───────────┬────────┬────────┬──────────┬───────────┬───────────┐
+│  qname  │   name    │ off_5p │ off_3p │ refr_pos │ read_base │ refr_base │
+│ varchar │  varchar  │ int64  │ int64  │  int64   │  varchar  │  varchar  │
+├─────────┼───────────┼────────┼────────┼──────────┼───────────┼───────────┤
+│ r_left  │ offcontig │   NULL │   NULL │       -1 │ _         │ _         │
+│ r_left  │ flankC    │   NULL │   NULL │        2 │ _         │ C         │
+│ r_left  │ AA        │      0 │      7 │        4 │ A         │ A         │
+│ r_left  │ AA        │      1 │      6 │        5 │ A         │ A         │
+│ r_left  │ AA        │      2 │      5 │        6 │ A         │ A         │
+│ r_left  │ C         │      6 │      1 │       10 │ C         │ C         │
+│ r_left  │ CG        │      6 │      1 │       10 │ C         │ C         │
+│ r_left  │ wide      │      4 │      3 │        8 │ T         │ T         │
+│ r_left  │ wide      │      5 │      2 │        9 │ T         │ T         │
+│ r_end   │ C         │      4 │      1 │       20 │ C         │ C         │
+│ r_end   │ wide      │      0 │      5 │       16 │ T         │ T         │
+│ r_end   │ CG        │      4 │      1 │       20 │ C         │ C         │
+│ r_end   │ wide      │      1 │      4 │       17 │ T         │ T         │
+│ r_end   │ wide      │      2 │      3 │       18 │ T         │ T         │
+│ r_end   │ offcontig │   NULL │   NULL │       22 │ _         │ _         │
+│ r_end   │ wide      │      3 │      2 │       19 │ T         │ T         │
+│ r_end   │ offcontig │   NULL │   NULL │       23 │ _         │ _         │
+│ r_end   │ offcontig │   NULL │   NULL │       24 │ _         │ _         │
+│ r_end   │ offcontig │   NULL │   NULL │       25 │ _         │ _         │
+│ r_end   │ offcontig │   NULL │   NULL │       26 │ _         │ _         │
+└─────────┴───────────┴────────┴────────┴──────────┴───────────┴───────────┘
+  20 rows                                                        7 columns
+
+$ --trace-records 1 (the first record, grid shows the flank columns)
+r_left  chr1:5 (1-based POS)  (18 columns)
+
+  col          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 
+  read         X  X  X  X  X  A  A  A  A  T  T  C  G  X  X  X  X  X 
+  refr         X  G  G  C  G  A  A  A  A  T  T  C  G  T  T  T  T  T 
+
+  pattern progress: columns matched so far, * where complete
+  AA          .  .  .  .  .  1  *  *  *  .  .  .  .  .  .  .  .  . 
+  CG          .  .  .  .  .  .  .  .  .  .  .  1  *  .  .  .  .  . 
+  C           .  .  .  .  .  .  .  .  .  .  .  *  .  .  .  .  .  . 
+  wide        .  .  .  .  .  .  .  .  .  1  2  3  4  *  *  .  .  . 
+  flankC      .  .  .  *  .  .  .  .  .  .  .  .  .  .  .  .  .  . 
+  offcontig   *  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . 
+
+  AA: matches ending at column 6, 7, 8
+    column 6, anchor column 5: read A, refr A, walk offset 0, refr_pos 4 (0-based)

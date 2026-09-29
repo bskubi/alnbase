@@ -1,0 +1,28 @@
+=== Case A: same reads, two CIGARs ===
+ground truth, against the read's own 5' end:
+  position 1: 1027 reference C, 389 deaminated -> 0.3788
+  position 2: 1019 reference C, 422 deaminated -> 0.4141
+Pos       	caseA/md_endtoend	caseA/md_clipped
+1         	0.3788    	0.0000    
+2         	0.4141    	0.0000    
+3         	0.0000    	0.0000    
+4         	0.0000    	0.0000    
+5         	0.0000    	0.0000    
+
+=== Case B: simulated ancient DNA, bwa aln vs bwa mem ===
+
+-- high damage: bwa mem soft-clipped 1748 of 59948 mapped reads
+Pos       	truth     	md_high_aln	md_high_mem
+1         	0.4006    	0.3988    	0.3697    
+2         	0.2194    	0.2208    	0.1929    
+3         	0.1251    	0.1204    	0.1020    
+4         	0.0639    	0.0635    	0.0538    
+5         	0.0331    	0.0349    	0.0293    
+
+-- low damage: bwa mem soft-clipped 140 of 59986 mapped reads
+Pos       	truth     	md_low_aln	md_low_mem
+1         	0.1062    	0.1022    	0.0991    
+2         	0.0578    	0.0562    	0.0538    
+3         	0.0305    	0.0311    	0.0296    
+4         	0.0157    	0.0157    	0.0152    
+5         	0.0106    	0.0104    	0.0097    

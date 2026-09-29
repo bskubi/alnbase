@@ -1,0 +1,10 @@
+# dnmtools ships abismal, its own three-letter aligner, inside the same conda package, and
+# abismal is the thing that writes the CV tag queries/strand/dnmtools.toml reads. Both are on
+# bioconda at the version below, which is what validation/demos/dnmtools-strand was run
+# against; samtools is for sorting and for the SEQ repair the demo has to do.
+name: dnmtools
+channels: [conda-forge, bioconda]
+dependencies:
+  - dnmtools=1.5.0        # ships abismal 3.3.0
+  - abismal
+  - samtools=1.24

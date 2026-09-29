@@ -1,0 +1,75 @@
+### input
+pair_overlap	99	chr1	41	60	40M	=	61	60	SEQ 40	MC:Z:40M
+pair_overlap	147	chr1	61	60	40M	=	41	-60	SEQ 40	MC:Z:40M
+hic_sup_overlap	97	chr1	41	60	60M20S	chr2	106	0	SEQ 80	MC:Z:35M	SA:Z:chr2,101,+,60S20M,40,0;
+hic_sup_overlap	2145	chr2	101	40	60H20M	=	106	40	SEQ 20	MC:Z:35M	SA:Z:chr1,41,+,60M20S,60,0;
+hic_sup_overlap	145	chr2	106	60	35M	chr1	41	0	SEQ 35	MC:Z:60M20S
+primary_inside_overlap	2147	chr2	141	60	20M60H	chr1	41	0	SEQ 20	MC:Z:80M	SA:Z:chr1,41,+,20S60M,20,0;
+primary_inside_overlap	99	chr1	41	20	20S60M	=	41	80	SEQ 80	MC:Z:80M	SA:Z:chr2,141,+,20M60S,60,0;
+primary_inside_overlap	147	chr1	41	60	80M	=	41	-80	SEQ 80	MC:Z:20S60M
+read_through	99	chr1	161	60	30M10S	=	161	30	SEQ 40	MC:Z:10S30M
+read_through	147	chr1	161	60	10S30M	=	161	-30	SEQ 40	MC:Z:30M10S
+
+### defaults
+$ alnbase overlap in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	SEQ 40	MC:Z:20S20M
+pair_overlap	147	chr1	81	60	20S20M	=	41	-60	SEQ 40	MC:Z:40M
+hic_sup_overlap	97	chr1	41	60	60M20S	chr2	106	0	SEQ 80	SA:Z:chr2,101,+,60S5M15S,40,1;	MC:Z:35M
+hic_sup_overlap	2145	chr2	101	40	60H5M15S	=	106	40	SEQ 20	SA:Z:chr1,41,+,60M20S,60,5;	MC:Z:35M
+hic_sup_overlap	145	chr2	106	60	35M	chr1	41	0	SEQ 35	MC:Z:60M20S
+primary_inside_overlap	97	chr2	141	60	20M60S	chr1	41	0	SEQ 80	MC:Z:80M
+primary_inside_overlap	145	chr1	41	60	80M	chr2	141	0	SEQ 80	MC:Z:20M60S
+read_through	73	chr1	161	60	30M10S	=	161	0	SEQ 40	MC:Z:*
+read_through	133	chr1	161	0	*	=	161	0	SEQ 40	MC:Z:30M10S
+--- samtools fixmate -m on this output
+  fixmate -m changed none of FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN MC
+--- samtools flagstat (primary lines, read 1, read 2, singletons)
+8 + 0 primary
+4 + 0 read1
+4 + 0 read2
+1 + 0 singletons (12.50% : N/A)
+
+### --keep r2 (read_through: R1 is the read left unmapped)
+$ alnbase overlap --keep r2 in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	20M20S	=	61	60	SEQ 40	MC:Z:40M
+pair_overlap	147	chr1	61	60	40M	=	41	-60	SEQ 40	MC:Z:20M20S
+hic_sup_overlap	97	chr1	41	60	60M20S	chr2	106	0	SEQ 80	SA:Z:chr2,101,+,60S5M15S,40,1;	MC:Z:35M
+hic_sup_overlap	2145	chr2	101	40	60H5M15S	=	106	40	SEQ 20	SA:Z:chr1,41,+,60M20S,60,5;	MC:Z:35M
+hic_sup_overlap	145	chr2	106	60	35M	chr1	41	0	SEQ 35	MC:Z:60M20S
+primary_inside_overlap	97	chr2	141	60	20M60S	chr1	41	0	SEQ 80	MC:Z:80M
+primary_inside_overlap	145	chr1	41	60	80M	chr2	141	0	SEQ 80	MC:Z:20M60S
+read_through	101	chr1	161	0	*	=	161	0	SEQ 40	MC:Z:10S30M
+read_through	153	chr1	161	60	10S30M	=	161	0	SEQ 40	MC:Z:*
+--- samtools fixmate -m on this output
+  fixmate -m changed none of FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN MC
+--- samtools flagstat (primary lines, read 1, read 2, singletons)
+8 + 0 primary
+4 + 0 read1
+4 + 0 read2
+1 + 0 singletons (12.50% : N/A)
+
+### --clip-mode hard (the promoted primary keeps no hard clip it did not make)
+$ alnbase overlap --clip-mode hard in.bam out.bam
+exit status: 0
+pair_overlap	99	chr1	41	60	40M	=	81	60	SEQ 40	MC:Z:20H20M
+pair_overlap	147	chr1	81	60	20H20M	=	41	-60	SEQ 20	MC:Z:40M
+hic_sup_overlap	97	chr1	41	60	60M20S	chr2	106	0	SEQ 80	SA:Z:chr2,101,+,60S5M15S,40,1;	MC:Z:35M
+hic_sup_overlap	2145	chr2	101	40	60H5M15H	=	106	40	SEQ 5	SA:Z:chr1,41,+,60M20S,60,5;	MC:Z:35M
+hic_sup_overlap	145	chr2	106	60	35M	chr1	41	0	SEQ 35	MC:Z:60M20S
+primary_inside_overlap	97	chr2	141	60	20M60S	chr1	41	0	SEQ 80	MC:Z:80M
+primary_inside_overlap	145	chr1	41	60	80M	chr2	141	0	SEQ 80	MC:Z:20M60S
+read_through	73	chr1	161	60	30M10S	=	161	0	SEQ 40	MC:Z:*
+read_through	133	chr1	161	0	*	=	161	0	SEQ 40	MC:Z:30M10S
+--- samtools fixmate -m on this output
+  fixmate -m changed none of FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN MC
+--- samtools flagstat (primary lines, read 1, read 2, singletons)
+8 + 0 primary
+4 + 0 read1
+4 + 0 read2
+1 + 0 singletons (12.50% : N/A)
+
+### unmapped read in full (defaults): SEQ reverse-complemented back to sequencing orientation
+input : 147 10S30M CTTCCGATCTGAGCTGGTGTGTTATCCATTCATGGCAGAC
+output: 133 * GTCTGCCATGAATGGATAACACACCAGCTCAGATCGGAAG

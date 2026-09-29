@@ -1,0 +1,33 @@
+# c2 is CAGGTCCG (0-based positions 0..7).
+#   start  SAM POS 1 (1-based) -> first aligned base at refr_pos 0
+#   end    SAM POS 6           -> aligned over refr_pos 5,6,7, the last 3 bases
+#   overhang (see the last query)
+#
+# 'before' looks one column BEFORE a read base: column 0 is off the read
+# (read side PAD, from the walk's flank) and, at the contig start, also off
+# the contig (reference side PAD). 'after' is the mirror at the other end.
+# Both capture the off-read column (^) so its coordinate is reported.
+
+[query.before]
+read = "_~"
+refr = "_~"
+mark = "^+"
+
+[query.after]
+read = "~_"
+refr = "~_"
+mark = "+^"
+
+# A reference-side '_' means "off the contig", never "off the read":
+# this one needs the read side to be pad AND the reference to exist.
+[query.after_on_contig]
+read = "~_"
+refr = "~N"
+mark = "+^"
+
+# 'overhang' is aligned at SAM POS 7 with 4M on an 8-base contig, so its last
+# two ALIGNED bases lie past the contig end (neither samtools nor alnbase
+# rejects this). The reference side there is PAD, inside the alignment.
+[query.read_base_off_contig]
+read = "N"
+refr = "_"

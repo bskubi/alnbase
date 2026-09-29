@@ -1,0 +1,19 @@
+# Reference c1 after indexing (0-based position: FASTA byte -> stored symbol)
+#   0-3  ACGT -> A C G T
+#   4    U    -> T
+#   5    u    -> T (lowercase folded)
+#   6    N    -> N
+#   7    n    -> N
+#   8    R    -> R
+#   9    Y    -> Y
+# The read "r" is 10M of plain bases, so the read side is never the question.
+
+[query.tilde]   # ~ matches every symbol an index can hold
+read = "~"
+refr = "~"
+[query.n]       # N matches every base set, ambiguous or not
+read = "~"
+refr = "N"
+[query.gap]     # a reference never holds a gap, so '.' never fires here
+read = "~"
+refr = "."

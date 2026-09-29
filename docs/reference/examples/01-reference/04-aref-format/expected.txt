@@ -1,0 +1,50 @@
+== ref.fa
+>c1
+ACGTN
+>c22
+acRYg
+== decode ref.aref
+file size 135
+trailer: n_contigs=2 version=3 magic=b'REFRMM\x1a\n'
+data body: bytes [0,15)  b'c1\x01\x02\x04\x08\x0fc22\x01\x02\x05\n\x04'
+contig 0: name='c1'@0 seq_off=2 len=5 bytes=['0b00000001', '0b00000010', '0b00000100', '0b00001000', '0b00001111'] md5=252fe4e1c9aa67ce660443056dfa3799
+contig 1: name='c22'@7 seq_off=10 len=5 bytes=['0b00000001', '0b00000010', '0b00000101', '0b00001010', '0b00000100'] md5=46791fe7acb95ea373ea6d44dc51f900
+(bit 0 A, 1 C, 2 G, 3 T, 4 GAP, 5 PAD, 6 CLIP, 7 SKIP; an index holds bases only: N=0b1111, R=A|G, Y=C|T)
+== the stored digests are the @SQ M5 values samtools dict computes
+SN:c1 M5:252fe4e1c9aa67ce660443056dfa3799
+SN:c22 M5:46791fe7acb95ea373ea6d44dc51f900
+== version 4 (newer), versions 2 and 1 (older) and version 0 are all refused
+$ alnbase info v4.aref
+Error: index format version 4, but this alnbase understands 3; rebuild the index or use a newer alnbase
+(exit 1)
+$ alnbase info v2.aref
+Error: index format version 2, but this alnbase understands 3; rebuild it with `alnbase index`
+(exit 1)
+$ alnbase info v1.aref
+Error: index format version 1, but this alnbase understands 3; rebuild it with `alnbase index`
+(exit 1)
+$ alnbase info v0.aref
+Error: index format version 0, but this alnbase understands 3; rebuild it with `alnbase index`
+(exit 1)
+$ alnbase info badmagic.aref
+Error: bad magic
+(exit 1)
+$ alnbase info truncated.aref
+Error: bad magic
+(exit 1)
+$ alnbase info short.aref
+Error: file too short to hold a trailer
+(exit 1)
+$ alnbase info nonexistent.aref
+Error: No such file or directory (os error 2)
+(exit 1)
+== an empty FASTA gives a valid, empty index (a 24-byte trailer)
+$ alnbase index empty.fa empty.aref
+(exit 0)
+$ alnbase info empty.aref
+empty.aref
+  format version  3
+  contigs         0
+  total bases     0
+  file size       24 bytes
+(exit 0)

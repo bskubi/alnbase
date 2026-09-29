@@ -1,0 +1,19 @@
+ "query CG_in_reference: read ~~ over refr CG (span 2). The widest query in the run spans 6,"
+ "so by default each read end gets 6 pad columns, the widest span (--end-context)."
+
+ column        pad   pad   pad   pad   pad   pad   read  read  read  ...   read  read  pad   pad   pad   pad   pad   pad  
+ reference      T     C     G     T     T     C     G     T     T    ...    T     T     T     T     T     C     G     T   
+              ------------------------------------------------------------------------------------------------------------
+                                "pads"                     "the aligned read"                     "pads"
+
+                     +---------+
+ window 1            |C     G  |   "all pads"
+                     +---------+
+
+                                             +---------+
+ window 2                                    |C     G  |   "pad + read"
+                                             +---------+
+
+                                                                                                         +---------+
+ window 3                                                                                   "all pads"   |C     G  |
+                                                                                                         +---------+
