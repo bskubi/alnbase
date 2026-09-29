@@ -5,9 +5,8 @@
 #   ./make-docs.sh rust     the alnbase crate only
 #   ./make-docs.sh agg      the alnbase-agg Python package only
 #
-# site/ holds generated pages and is ignored by git. Hand-written documentation
-# lives in docs/ and is committed. Keeping the two apart makes it clear which
-# files a person may edit: nothing under site/ survives the next build.
+# site/ holds generated pages and is ignored by git. Do not edit files under
+# site/: nothing there survives the next build.
 #
 #   site/index.html   a page that links to both
 #   site/rust/        the alnbase crate, from rustdoc
@@ -92,10 +91,10 @@ cat > "$SITE/index.html" <<'HTML'
   <li><a href="rust/alnbase/index.html">alnbase</a> &mdash; the Rust binary that
       walks alignments and matches queries.</li>
   <li><a href="agg/alnbase_agg.html">alnbase-agg</a> &mdash; the Python package
-      that compiles recipes into DuckDB SQL over hit tables.</li>
+      that runs SQL scripts over hit tables.</li>
 </ul>
 <p class="note">These pages are generated. Rebuild them with
-<code>./make-docs.sh</code>. The hand-written guides are in <code>docs/</code>.</p>
+<code>./make-docs.sh</code>.</p>
 HTML
 
 echo

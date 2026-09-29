@@ -1,4 +1,0 @@
-[query.Ccap]          # anchor on the C, also record the next two columns
-read = "Y~~"
-refr = "C~~"
-mark = "+^^"

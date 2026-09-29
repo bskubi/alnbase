@@ -1,8 +1,0 @@
-# run 2 redefines XM only, with fill "_" and CG calls only.
-[query.CGonly]
-read = "C~"
-refr = "CG"
-
-[tag.XM.bases]
-fill = "_"
-M = "CGonly"

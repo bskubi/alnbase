@@ -1,4 +1,0 @@
-# An unrelated six-column query. Its only effect should be on its own hits.
-[query.unrelated_wide]
-read = "~~~~~~"
-refr = "AAAAAA"

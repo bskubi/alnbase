@@ -1,8 +1,0 @@
-[query.CG]            # anchor = column 0, the C
-read = "Y~"
-refr = "CG"
-
-[query.CG_on_G]       # same pattern, anchor = column 1, the G
-read = "Y~"
-refr = "CG"
-mark = ".+"

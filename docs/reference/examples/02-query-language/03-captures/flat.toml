@@ -1,4 +1,0 @@
-# Every query records only its anchor -> flat read_base/refr_base columns.
-[query.CG]
-read = "Y~"
-refr = "CG"

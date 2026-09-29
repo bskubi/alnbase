@@ -1,4 +1,0 @@
-# A reference CG, whatever the read shows there (including nothing: `~` matches a pad).
-[query.CG_in_reference]
-read = "~~"
-refr = "CG"

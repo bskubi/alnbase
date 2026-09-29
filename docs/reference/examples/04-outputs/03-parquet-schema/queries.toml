@@ -1,8 +1,0 @@
-# Anchor-only queries: the flat capture layout (read_base / refr_base).
-[query.TG]
-read = "T~"
-refr = "CG"
-
-[query.CG]
-read = "C~"
-refr = "CG"

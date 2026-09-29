@@ -1,8 +1,0 @@
-# As span3.toml but the widest query spans 5 -> 5 pad columns each end.
-[query.col]
-read = "~"
-refr = "~"
-
-[query.wide]
-read = "~~~~~"
-refr = "~~~~~"

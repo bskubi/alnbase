@@ -1,6 +1,0 @@
-@HD	VN:1.6	SO:unsorted
-@SQ	SN:chr1	LN:10
-@SQ	SN:chrUn_BAMonly	LN:500
-on_chr1	0	chr1	1	60	3M	*	0	0	AAA	III
-on_chrUn	0	chrUn_BAMonly	1	60	3M	*	0	0	AAA	III
-on_chr1_again	0	chr1	4	60	3M	*	0	0	AAA	III

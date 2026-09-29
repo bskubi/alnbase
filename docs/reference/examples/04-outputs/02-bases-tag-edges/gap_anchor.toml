@@ -1,7 +1,0 @@
-# The anchor column's read side is '~', which includes a deletion: refused at parse.
-[query.q]
-read = "~G"
-refr = "CG"
-[tag.XM.bases]
-fill = "."
-z = "q"

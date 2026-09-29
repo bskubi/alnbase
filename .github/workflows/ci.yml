@@ -48,7 +48,7 @@ jobs:
         run: cargo test --release
 
       # An independent derivation of every column's coordinates, outside cargo test
-      # so that none of its arithmetic is alnbase's (tests/oracle/README.md).
+      # so that none of its arithmetic is alnbase's.
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -59,7 +59,6 @@ jobs:
           cargo build --release
           python tests/oracle/walk_oracle.py --alnbase target/release/alnbase --records 3000 --seed 1
 
-      # Hand-written edge cases, each diffed against the table it was written
-      # with (tests/fixtures/README.md).
+      # Hand-written edge cases, each diffed against the table it was written with.
       - name: Fixtures
         run: PY=python ALNBASE="$PWD/target/release/alnbase" tests/fixtures/run.sh

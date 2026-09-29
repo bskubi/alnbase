@@ -1,9 +1,0 @@
-# One '^' anywhere in the run switches EVERY query to list columns.
-[query.CG]
-read = "Y~"
-refr = "CG"
-
-[query.CN_next]     # C followed by any reference base; also report column 1
-read = "Y~"
-refr = "CN"
-mark = "+^"
