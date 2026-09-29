@@ -659,9 +659,9 @@ pub struct Resolved {
 /// It names a file rather than describing one, because the fix is to pass a
 /// file: `queries/strand/` ships one per surveyed aligner, and the right one
 /// is a property of the BAM, which alnbase will not guess at.
-pub const NO_STRAND_RULE: &str = "no strand rule: one --query-file must declare [strand.origin] \
-     (or [strand.conversion]), which says how this aligner records the strand a read was \
-     converted on. alnbase ships one file per surveyed aligner in queries/strand/ -- pass the \
+pub const NO_STRAND_RULE: &str = "no strand rule: one --query-file must declare \
+     [strand.original] and [strand.aligned], which say how this aligner records the strand a \
+     read came from. alnbase ships one file per surveyed aligner in queries/strand/ -- pass the \
      one that matches the BAM, for example --query-file queries/strand/directional.toml";
 
 /// The strand rule declared by query files that have already been read --
@@ -743,14 +743,6 @@ impl QueryArgs {
         // strands, so they are exempt; `--trace-records` is not one of them.
         if strand.is_none() && !self.is_dry_run() {
             return Err(NO_STRAND_RULE.to_string());
-        }
-
-        // A `strand` tag and a rule that never names an origin are an
-        // impossible pair, and which one the user meant to change is a question
-        // only they can answer. Settled here, against the files alone, so that
-        // it costs a second rather than a scan.
-        if let Some(rule) = &strand {
-            crate::tags::strand_tags_need_origin(&tags, rule)?;
         }
 
         Ok(Resolved { aliases, queries, tags, strand, sources })
@@ -841,34 +833,30 @@ mod tests {
             .to_string()
     }
 
-    /// A `strand` tag and a two-way rule are refused while the files are being
-    /// read, before a BAM is opened, because which of the two the user meant to
-    /// change is not something alnbase can guess.
+    /// A `strand` tag resolves under a rule that reads the original strand from
+    /// a tag and the aligned direction from the FLAG, since the pair names the
+    /// strand of origin.
     #[test]
-    fn a_strand_tag_needs_a_four_way_rule() {
+    fn a_strand_tag_resolves_under_any_rule() {
         let tag = query_file(
             "xrtag",
             "[query.cg]\n[pat.p]\nread = \"C~\"\nrefr = \"CG\"\n\n\
              [tag.XR.strand]\nCT = [\"OT\", \"CTOB\"]\nGA = [\"CTOT\", \"OB\"]\n",
         );
-        let two_way = query_file(
-            "twoway",
-            "[strand.conversion]\n\"+\" = \"not is_reverse\"\n\"-\" = \"is_reverse\"\n\n\
-             [strand.sequenced]\nforward = \"not is_reverse\"\nreverse = \"is_reverse\"\n",
+        let yd = query_file(
+            "ydrule",
+            "[strand.original]\nforward = 'YD == \"f\"'\nreverse = 'YD == \"r\"'\n\n\
+             [strand.aligned]\nforward = \"not is_reverse\"\nreverse = \"is_reverse\"\n",
         );
-        let run = |rule: &str| {
-            Harness::try_parse_from([
-                "alnbase", "--query-file", &tag, "--query-file", rule, "a.bam", "r.mm", "out.bam",
+        for rule in [yd, strand_arg()] {
+            let resolved = Harness::try_parse_from([
+                "alnbase", "--query-file", &tag, "--query-file", &rule, "a.bam", "r.mm", "out.bam",
             ])
             .expect("parse")
             .args
-            .resolve()
-        };
-        let msg = run(&two_way).unwrap_err();
-        assert!(msg.contains("tag XR writes"), "{msg}");
-        assert!(msg.contains("[tag.XR.strand]"), "{msg}");
-        // The shipped directional rule names all four, so the same tag resolves.
-        assert!(run(&strand_arg()).is_ok());
+            .resolve();
+            assert!(resolved.is_ok(), "{rule}: {:?}", resolved.err());
+        }
     }
 
     /// The parquet options, parsed on their own.
@@ -1184,10 +1172,8 @@ mod tests {
     /// came from on the way through.
     #[test]
     fn one_strand_rule_comes_through_and_a_second_is_refused() {
-        let rule = "[strand.origin]\nOT = 'XG == \"CT\" and not is_last_in_template'\n\
-                    CTOT = 'XG == \"CT\" and is_last_in_template'\n\
-                    OB = 'XG == \"GA\" and not is_last_in_template'\n\
-                    CTOB = 'XG == \"GA\" and is_last_in_template'\n";
+        let rule = "[strand.original]\nforward = 'XG == \"CT\"'\nreverse = 'XG == \"GA\"'\n\
+                    [strand.aligned]\nforward = 'not is_reverse'\nreverse = 'is_reverse'\n";
         let a = query_file("strand_rule_a", rule);
         let b = query_file("strand_rule_b", rule);
 
@@ -1205,10 +1191,8 @@ mod tests {
     /// mirror offsets the tagging run did not.
     #[test]
     fn a_rule_is_recovered_from_stored_query_files() {
-        let text = "[strand.origin]\nOT = 'not is_last_in_template and not is_reverse'\n\
-                    CTOT = 'is_last_in_template and is_reverse'\n\
-                    OB = 'not is_last_in_template and is_reverse'\n\
-                    CTOB = 'is_last_in_template and not is_reverse'\n";
+        let text = "[strand.original]\nforward = 'true'\n\
+                    [strand.aligned]\nforward = 'not is_reverse'\nreverse = 'is_reverse'\n";
         let plain = QuerySource { path: "q.toml".into(), text: "[query.c]\nread = \"C\"\nrefr = \"C\"\n".into() };
         let ruled = QuerySource { path: "strand.toml".into(), text: text.into() };
 

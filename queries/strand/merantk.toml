@@ -41,8 +41,10 @@
 # meRanT (transcriptome alignment) writes no conversion tag and is not covered by any file
 # here.
 
-[strand.origin]
-OT   = 'YG == "C2T" and YR == "C2T"'
-CTOT = 'YG == "C2T" and YR == "G2A"'
-OB   = 'YG == "G2A" and YR == "C2T"'
-CTOB = 'YG == "G2A" and YR == "G2A"'
+[strand.original]
+forward = 'YG == "C2T"'
+reverse = 'YG == "G2A"'
+
+[strand.aligned]
+forward = '(YG == "C2T" and YR == "C2T") or (YG == "G2A" and YR == "G2A")'
+reverse = '(YG == "C2T" and YR == "G2A") or (YG == "G2A" and YR == "C2T")'

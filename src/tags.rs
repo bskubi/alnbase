@@ -32,9 +32,6 @@
 //! directional paired-end library puts read 1 on OT/OB and read 2 on
 //! CTOT/CTOB, a non-directional one puts either read anywhere -- so a mapping
 //! must cover all four whatever protocol it is later used with.
-//!
-//! That is also why the two are checked against each other before a run starts:
-//! see [`strand_tags_need_origin`].
 
 use std::fmt;
 
@@ -239,51 +236,6 @@ impl TagConfig {
         }
         Ok(())
     }
-}
-
-/// Refuse a `strand` tag the run's rule cannot fill in.
-///
-/// A `strand` tag gives one value per strand of origin, so writing one needs
-/// every record's origin. A rule that reaches only the conversion strand --
-/// built on `[strand.conversion]`, or on a `[strand.origin]` table with a `"+"`
-/// or `"-"` key -- cannot say whether a `+` record is OT or CTOT, and the two
-/// take different values in every tag anyone writes.
-///
-/// The pairing is a property of the two files, not of any record, so it is
-/// settled before the BAM is opened. `bam_out` keeps a backstop for the same
-/// case, but reaching it would mean a scan that dies on its first record after
-/// the reference index has been loaded.
-pub fn strand_tags_need_origin(
-    tags: &TagConfig,
-    rule: &crate::strand_rule::StrandRule,
-) -> Result<(), String> {
-    if rule.names_origin() {
-        return Ok(());
-    }
-    let named: Vec<String> = tags
-        .tags
-        .iter()
-        .filter(|t| matches!(t.kind, TagKind::Strand(_)))
-        .map(|t| t.name.to_string())
-        .collect();
-    if named.is_empty() {
-        return Ok(());
-    }
-    let (subject, tables) = match named.as_slice() {
-        [one] => (format!("tag {one} writes"), format!("[tag.{one}.strand]")),
-        many => (
-            format!("tags {} write", many.join(", ")),
-            many.iter().map(|n| format!("[tag.{n}.strand]")).collect::<Vec<_>>().join(", "),
-        ),
-    };
-    let source = rule.source();
-    let source = if source.is_empty() { String::new() } else { format!(" in {source}") };
-    Err(format!(
-        "{subject} a value per strand of origin (OT, CTOT, OB, CTOB), but this run's strand \
-         rule{source} reaches only the conversion strand, so no record's origin is known -- \
-         `+` does not say whether a read is OT or CTOT. Either pass a rule whose \
-         [strand.origin] table names all four strands, or drop {tables}."
-    ))
 }
 
 /// Check that every query a bases tag uses has a read base under its anchor
@@ -565,70 +517,5 @@ mod tests {
         let mut a = TagConfig { tags: vec![xr()] };
         let msg = a.merge(TagConfig { tags: vec![xr()] }).unwrap_err();
         assert!(msg.contains("tag XR is declared in more than one"), "{msg}");
-    }
-
-    /// Build a rule from tables the way `query_toml` would.
-    fn rule(origin: &[(&str, &str)], conv: &[(&str, &str)], seq: &[(&str, &str)])
-        -> crate::strand_rule::StrandRule
-    {
-        let own = |t: &[(&str, &str)]| -> Vec<(String, String)> {
-            t.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect()
-        };
-        crate::strand_rule::StrandRule::from_tables(&own(origin), &own(conv), &own(seq))
-            .unwrap()
-            .named("rule.toml")
-    }
-
-    fn xr_tag() -> TagConfig {
-        TagConfig {
-            tags: vec![TagSpec {
-                name: TagName::parse("XR").unwrap(),
-                kind: TagKind::Strand(
-                    strand_tag(&[e("CT", many(&["OT", "CTOB"])), e("GA", many(&["CTOT", "OB"]))])
-                        .unwrap(),
-                ),
-            }],
-        }
-    }
-
-    #[test]
-    fn a_strand_tag_needs_a_rule_that_names_the_origin() {
-        let four = rule(
-            &[
-                ("OT", "not is_reverse and not is_last_in_template"),
-                ("CTOT", "is_reverse and is_last_in_template"),
-                ("OB", "is_reverse and not is_last_in_template"),
-                ("CTOB", "not is_reverse and is_last_in_template"),
-            ],
-            &[],
-            &[],
-        );
-        assert!(strand_tags_need_origin(&xr_tag(), &four).is_ok());
-
-        // A two-way rule: the tag cannot be filled in, and the refusal names
-        // the tag, the rule's file and the table to drop.
-        let two = rule(&[], &[("+", "not is_reverse"), ("-", "is_reverse")],
-                       &[("forward", "not is_reverse"), ("reverse", "is_reverse")]);
-        let msg = strand_tags_need_origin(&xr_tag(), &two).unwrap_err();
-        assert!(msg.contains("tag XR writes"), "{msg}");
-        assert!(msg.contains("rule.toml"), "{msg}");
-        assert!(msg.contains("[tag.XR.strand]"), "{msg}");
-
-        // The same rule is fine for a run that declares no strand tag.
-        assert!(strand_tags_need_origin(&TagConfig { tags: vec![] }, &two).is_ok());
-
-        // A [strand.origin] table with a "+" key reaches only the conversion
-        // strand for those records, so it is refused too.
-        let mixed = rule(
-            &[
-                ("OT", "not is_reverse and not is_last_in_template"),
-                ("CTOT", "is_reverse and is_last_in_template"),
-                ("OB", "is_reverse and not is_last_in_template"),
-                ("+", "not is_reverse and is_last_in_template"),
-            ],
-            &[],
-            &[("forward", "not is_reverse"), ("reverse", "is_reverse")],
-        );
-        assert!(strand_tags_need_origin(&xr_tag(), &mixed).is_err());
     }
 }

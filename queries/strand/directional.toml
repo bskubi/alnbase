@@ -46,8 +46,10 @@
 # single-end arm had 0x10 contradict how SEQ was actually stored. They part company only on the
 # CTOT and CTOB reads a directional library does not contain.
 
-[strand.origin]
-OT   = "not is_reverse and not is_last_in_template"
-CTOT = "is_reverse and is_last_in_template"
-OB   = "is_reverse and not is_last_in_template"
-CTOB = "not is_reverse and is_last_in_template"
+[strand.original]
+forward = "(not is_reverse and not is_last_in_template) or (is_reverse and is_last_in_template)"
+reverse = "(is_reverse and not is_last_in_template) or (not is_reverse and is_last_in_template)"
+
+[strand.aligned]
+forward = "not is_reverse"
+reverse = "is_reverse"

@@ -20,8 +20,8 @@
 # off the start of the contig.
 #
 # For any other purpose prefer directional.toml, which is the same claim about a
-# directional library stated as a rule rather than as six integers, and which additionally
-# gives the four-way strand of origin. The difference is deliberate and is the reason this
+# directional library stated as a rule rather than as six integers. The difference is
+# deliberate and is the reason this
 # file exists: asTair contributes nothing from a record whose FLAG is not one of the six --
 # a supplementary alignment, a singleton mate, a not-proper pair. It does not count such a
 # record toward depth either, which an earlier version of this comment claimed it did:
@@ -56,11 +56,11 @@
 # partly does. In the demo all four records of the two inverted pairs map at MAPQ 60 and are
 # called on the opposite conversion strand.
 
-[strand.conversion]
-"+" = "flags == 99 or flags == 147 or flags == 0"
-"-" = "flags == 83 or flags == 163 or flags == 16"
+[strand.original]
+forward = "flags == 99 or flags == 147 or flags == 0"
+reverse = "flags == 83 or flags == 163 or flags == 16"
 unknown = "not (flags == 99 or flags == 147 or flags == 0 or flags == 83 or flags == 163 or flags == 16)"
 
-[strand.sequenced]
+[strand.aligned]
 forward = "not is_reverse"
 reverse = "is_reverse"

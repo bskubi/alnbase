@@ -18,8 +18,10 @@
 # 67/115 and 131/179 (bs_pair_end.py:531-545,607-612), so both mates always share one 0x10
 # state and the mate bit has to be combined with XO to tell them apart.
 
-[strand.origin]
-OT   = 'XO == "+FW"'
-CTOT = 'XO == "+RC"'
-OB   = 'XO == "-FW"'
-CTOB = 'XO == "-RC"'
+[strand.original]
+forward = 'XO == "+FW" or XO == "+RC"'
+reverse = 'XO == "-FW" or XO == "-RC"'
+
+[strand.aligned]
+forward = 'XO == "+FW" or XO == "-RC"'
+reverse = 'XO == "+RC" or XO == "-FW"'

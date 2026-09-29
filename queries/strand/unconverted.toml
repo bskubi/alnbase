@@ -11,8 +11,9 @@
 # written against the reference mean the same thing on every record.
 #
 # The `strand` column is `+` on everything, which is not a claim that the fragment came from
-# the top strand -- there is no converted strand to name. `conv_strand` is null, because no
-# strand of origin exists to report. The read's own orientation is not lost: it is
+# the top strand -- there is no converted strand to name. For the same reason `conv_strand`,
+# which is OT for a forward read and CTOT for a reverse one here, says nothing about
+# conversion. The read's own orientation is not lost: it is
 # `read_reverse`, taken from FLAG 0x10, and it is what `off_5p` and `off_3p` count from, so a
 # position "20 bases from the 5' end" means the sequencer's 5' end on both orientations.
 #
@@ -25,9 +26,9 @@
 # complemented with `refr_pos` decreasing, and a motif query then finds the motif on one half
 # of the data and its reverse complement on the other.
 
-[strand.conversion]
-"+" = "true"
+[strand.original]
+forward = "true"
 
-[strand.sequenced]
+[strand.aligned]
 forward = "not is_reverse"
 reverse = "is_reverse"

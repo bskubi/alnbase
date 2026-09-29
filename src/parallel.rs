@@ -771,24 +771,27 @@ mod tests {
     /// A rule built from the tables a query file would declare, for the two
     /// tests below. `unknown` is the escape a rule uses to say a record is not
     /// one it can call.
-    fn rule(pairs: &[(&str, &str)]) -> std::sync::Arc<crate::strand_rule::StrandRule> {
-        let origin: Vec<(String, String)> =
-            pairs.iter().map(|(k, v)| ((*k).to_string(), (*v).to_string())).collect();
-        let r = crate::strand_rule::StrandRule::from_tables(&origin, &[], &[]).unwrap();
+    fn rule(original: &[(&str, &str)]) -> std::sync::Arc<crate::strand_rule::StrandRule> {
+        let own = |t: &[(&str, &str)]| -> Vec<(String, String)> {
+            t.iter().map(|(k, v)| ((*k).to_string(), (*v).to_string())).collect()
+        };
+        let aligned = own(&[("forward", "not is_reverse"), ("reverse", "is_reverse")]);
+        let r = crate::strand_rule::StrandRule::from_tables(&own(original), &aligned).unwrap();
         std::sync::Arc::new(r.named("test.toml"))
     }
 
     /// The walk takes its strand from the run's rule and not from the FLAG.
     /// These records are forward and unpaired, which the directional rule
-    /// calls OT and writes on the plus strand; a rule that calls them OB has
-    /// to move every row to the minus strand, or the rule is not being read.
+    /// calls OT and writes on the plus strand; a rule that gives them a reverse
+    /// original strand has to move every row to the minus strand, or the rule
+    /// is not being read.
     #[test]
     fn the_walk_takes_its_strand_from_the_rule() {
         let bam = write_bam("par_rule", CONTIG, GENOME.len(), &reads(4));
         let refr = shared_reference("par_rule", CONTIG, GENOME);
 
         let mut cfg = config(2, 1, "rule");
-        let inverted = rule(&[("OB", "not is_reverse"), ("CTOT", "is_reverse")]);
+        let inverted = rule(&[("reverse", "not is_reverse"), ("forward", "is_reverse")]);
         cfg.shard.strand = inverted.clone();
         cfg.out.strand = inverted;
 
@@ -814,7 +817,7 @@ mod tests {
         let refr = shared_reference("par_unknown", CONTIG, GENOME);
 
         let mut cfg = config(2, 1, "unknown");
-        let declines_reverse = rule(&[("OT", "not is_reverse"), ("unknown", "is_reverse")]);
+        let declines_reverse = rule(&[("forward", "not is_reverse"), ("unknown", "is_reverse")]);
         cfg.shard.strand = declines_reverse.clone();
         cfg.out.strand = declines_reverse;
 

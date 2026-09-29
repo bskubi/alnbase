@@ -420,26 +420,7 @@ impl Tagger<'_> {
                     PlannedKind::Bases { .. } => {
                         std::str::from_utf8(&bufs[ti]).expect("codes and fill are ASCII").to_string()
                     }
-                    PlannedKind::Strand(s) => {
-                        // A two-way rule cannot say which of OT/CTOT a read came
-                        // from, and a strand tag names all four.
-                        // `tags::strand_tags_need_origin` refuses that pair
-                        // while the run is still reading its query files, so
-                        // this is a backstop that should never speak; it stays a
-                        // refusal rather than a guessed value, because a wrong
-                        // strand written into a BAM outlives the run.
-                        let Some(origin) = call.origin else {
-                            bail!(
-                                "record {}: tag {} names a strand of origin, but this run's \
-                                 strand rule distinguishes only the conversion strand, so the \
-                                 record's origin is unknown. Use a rule with a [strand.origin] \
-                                 table, or drop the tag.",
-                                qname_of(record),
-                                t.name
-                            );
-                        };
-                        s.value(origin).to_string()
-                    }
+                    PlannedKind::Strand(s) => s.value(call.origin()).to_string(),
                 };
                 Ok((t.name.bytes(), v))
             })

@@ -24,9 +24,11 @@
 # rather than assumed -- 0x10 contradicts how SEQ was really stored on every *_G2A record
 # and no other, 2 of 2 directional and 4 of 4 under -UN.
 
-[strand.origin]
-OT      = 'YS == "W_C2T"'
-CTOT    = 'YS == "W_G2A"'
-OB      = 'YS == "C_C2T"'
-CTOB    = 'YS == "C_G2A"'
+[strand.original]
+forward = 'YS == "W_C2T" or YS == "W_G2A"'
+reverse = 'YS == "C_C2T" or YS == "C_G2A"'
 unknown = 'YS == "WC"'          # unmapped records
+
+[strand.aligned]
+forward = 'YS == "W_C2T" or YS == "C_G2A"'
+reverse = 'YS == "W_G2A" or YS == "C_C2T"'

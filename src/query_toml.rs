@@ -107,17 +107,17 @@ order, and a query may name a pattern declared below it.
                     written where nothing matched, and one entry per code naming
                     the query that writes it: `z = \"TG\"`. One query per code, and
                     a query's anchor must always be on a read base.
-  [tag.XX.strand]   a BAM tag with one value per read, by conversion strand:
+  [tag.XX.strand]   a BAM tag with one value per read, by strand of origin:
                     `CT = [\"OT\", \"CTOT\"]`. Every strand needs a value.
-  [strand.origin]   how to recover a read's original strand: one condition per
-                    strand, `OT = \"not is_reverse and not is_last_in_template\"`,
-                    over named fields, `flags == 99` and tags, `XG == \"CT\"`.
-                    Exactly one must match each record; `unknown` is the escape.
-  [strand.conversion]
-  [strand.sequenced]
-                    for input naming only the converted strand: `\"+\"`/`\"-\"`
-                    conditions, and `forward`/`reverse` beside them. Rules for
-                    each surveyed aligner ship in `queries/strand/`.
+  [strand.original] the reference strand a read's sequence came from: one
+                    condition per key, `forward = 'XG == \"CT\"'`, over named
+                    fields, `flags == 99` and tags.
+  [strand.aligned]  whether the read as sequenced aligns forward or reverse:
+                    `forward = \"not is_reverse\"`. Both tables take the keys
+                    forward, reverse and unknown; exactly one key must match
+                    each record, and `unknown` skips it. The strand of origin
+                    follows from the pair. Rules for each surveyed aligner ship
+                    in `queries/strand/`.
 
 Codes in a row are uppercase IUPAC, plus:
   .  -  Z     gap                 =   both sides the same unambiguous base
@@ -149,16 +149,14 @@ struct RawFile {
     strand: Option<RawStrand>,
 }
 
-/// How to recover each record's original strand. `origin` names all four
-/// strands at once; `conversion` plus `sequenced` names the two halves
-/// separately, for input that distinguishes only two. Which combinations are
-/// legal is [`crate::strand_rule::StrandRule::from_tables`]'s to say.
+/// How to recover each record's strand: the reference strand its sequence
+/// came from, and the direction it aligns as sequenced. Both are required;
+/// [`crate::strand_rule::StrandRule::from_tables`] says so.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct RawStrand {
-    origin: Option<IndexMap<String, String>>,
-    conversion: Option<IndexMap<String, String>>,
-    sequenced: Option<IndexMap<String, String>>,
+    original: Option<IndexMap<String, String>>,
+    aligned: Option<IndexMap<String, String>>,
 }
 
 #[derive(Deserialize)]
@@ -351,11 +349,7 @@ pub fn parse_file(src: &str) -> Result<QueryFile, FileError> {
         let pairs = |t: &Option<IndexMap<String, String>>| -> Vec<(String, String)> {
             t.iter().flat_map(|m| m.iter().map(|(k, v)| (k.clone(), v.clone()))).collect()
         };
-        let rule = StrandRule::from_tables(
-            &pairs(&st.origin),
-            &pairs(&st.conversion),
-            &pairs(&st.sequenced),
-        )
+        let rule = StrandRule::from_tables(&pairs(&st.original), &pairs(&st.aligned))
         .map_err(|e| err(Loc::Toml("[strand]".into()), e.to_string()))?;
         file.strand = Some(rule);
     }
@@ -771,11 +765,11 @@ GA = ["OB", "CTOB"]
     #[test]
     fn a_file_of_only_a_strand_rule_parses() {
         let f = parse_file(
-            "[strand.origin]\n\
-             OT = \"not is_reverse and not is_last_in_template\"\n\
-             CTOT = \"is_reverse and is_last_in_template\"\n\
-             OB = \"is_reverse and not is_last_in_template\"\n\
-             CTOB = \"not is_reverse and is_last_in_template\"\n",
+            "[strand.original]\n\
+             forward = \"true\"\n\
+             [strand.aligned]\n\
+             forward = \"not is_reverse\"\n\
+             reverse = \"is_reverse\"\n",
         )
         .unwrap_or_else(|e| panic!("{e}"));
         assert!(f.queries.is_empty());
@@ -804,17 +798,22 @@ GA = ["OB", "CTOB"]
 
     #[test]
     fn a_broken_strand_rule_is_reported_at_the_table() {
-        let e = bad("[strand.origin]\nOT = \"not is_reverse\"\n[strand.conversion]\n\"+\" = \"is_reverse\"\n");
+        let e = bad("[strand.original]\nforward = \"not is_reverse\"\n");
         assert_eq!(e.at, Loc::Toml("[strand]".into()));
-        assert!(e.msg.contains("alternatives"), "{e}");
+        assert!(e.msg.contains("[strand.aligned]"), "{e}");
 
-        let e = bad("[strand.origin]\nOT = \"not is_revarse\"\n");
+        let e = bad(
+            "[strand.original]\nforward = \"not is_revarse\"\n[strand.aligned]\nforward = \"true\"\n",
+        );
         assert!(e.msg.contains("unknown field"), "{e}");
-        assert!(e.msg.contains("`OT`"), "{e}");
+        assert!(e.msg.contains("`forward`"), "{e}");
 
-        // An unknown table under [strand] is a typo, not a new feature.
-        let e = bad("[strand.orgin]\nOT = \"not is_reverse\"\n");
-        assert!(e.msg.contains("unknown field"), "{e}");
+        // An unknown table under [strand] is a typo, not a new feature. That
+        // includes the tables earlier versions took.
+        for table in ["orignal", "origin", "conversion", "sequenced"] {
+            let e = bad(&format!("[strand.{table}]\nforward = \"true\"\n"));
+            assert!(e.msg.contains("unknown field"), "{table}: {e}");
+        }
     }
 
     #[test]

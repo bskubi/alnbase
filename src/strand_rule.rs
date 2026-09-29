@@ -1,36 +1,41 @@
-//! Recover a read's original strand from a rule that the user declares. The
-//! program never assumes the strand.
+//! Recover a read's strand from a rule that the user declares. The program
+//! never assumes the strand.
 //!
-//! The design is in `docs/design/strand-rules.md`; the rules themselves ship as
-//! query files under `queries/strand/`, one per aligner. This module is the
-//! engine those files drive: it parses the `[strand.*]` tables into a
-//! [`StrandRule`] and answers, per record, the three things the walk needs.
+//! The rules ship as query files under `queries/strand/`, one per aligner.
+//! This module is the engine those files drive: it parses the two
+//! `[strand.*]` tables into a [`StrandRule`] and answers, per record, the two
+//! things the walk needs.
 //!
 //! # What a call carries
 //!
-//! - **the conversion strand** ([`ConvStrand`]): which reference strand carried
-//!   the conversion. This is the direction [`crate::alignment::walk_alignment`]
-//!   runs and which reference base is informative.
-//! - **the sequenced direction** ([`SeqDir`]): whether the read *as sequenced*
-//!   runs along the reference forward or backward, which is what `off_5p` and
-//!   `off_3p` count from.
-//! - **the strand of origin** ([`Strand`]), when the input distinguishes all
-//!   four. `None` when it does not. bwa-meth, BISCUIT, HISAT-3N and dnmtools
-//!   say only which strand was converted, and not which of the two reads on
-//!   that strand this record is.
+//! - **the original strand** (`[strand.original]`): the reference strand the
+//!   read's sequence came from. For a conversion assay this is the strand that
+//!   carried the conversion. It is the direction
+//!   [`crate::alignment::walk_alignment`] runs, and it decides which reference
+//!   base is informative.
+//! - **the aligned direction** (`[strand.aligned]`): whether the read *as
+//!   sequenced* runs along the reference forward or backward. This is what
+//!   `off_5p` and `off_3p` count from.
 //!
-//! The first two follow from the third by biology, not by convention, so a rule
-//! that names the origin needs no FLAG at all. That is what makes the aligners
-//! whose 0x10 means the converted reference strand (Bismark single-end, BSBolt
-//! read 2, BS-Seeker2) ordinary declarations here rather than special cases.
+//! Both tables take the keys `forward`, `reverse` and `unknown`.
+//!
+//! The pair gives the strand of origin (OT, CTOT, OB, CTOB) with no further
+//! input, because each of the four strands is one combination of the two:
+//! see [`StrandCall::origin`]. A rule never states the origin itself.
+//!
+//! A rule does not have to read FLAG 0x10. That is what makes the aligners
+//! whose 0x10 means the converted reference strand (Bismark single-end,
+//! BSBolt read 2, BS-Seeker2) ordinary declarations here rather than special
+//! cases.
 //!
 //! # Why no fallback
 //!
-//! Exactly one key of a table must match each record. No match, or two matches,
-//! is an error naming the record — not a silent default. A rule that does not
-//! cover its input is a rule that is wrong about its input, and the failure
-//! mode of guessing is calls placed on the wrong strand, which no downstream
-//! check would catch. `unknown` is the one escape, and it is written down.
+//! Exactly one key of each table must match each record. No match, or two
+//! matches, is an error naming the record -- not a silent default. A rule that
+//! does not cover its input is a rule that is wrong about its input, and the
+//! failure mode of guessing is calls placed on the wrong strand, which no
+//! downstream check would catch. `unknown` is the one escape, and it is
+//! written down.
 
 use std::fmt;
 
@@ -42,91 +47,92 @@ use crate::tags::Strand;
 
 // ------------------------------------------------------------ what a call is --
 
-/// The reference strand that carried the conversion: the `strand` column's
-/// `+`/`-`, and the direction the walk runs.
+/// A direction along the reference. Both strand tables answer with one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ConvStrand {
-    Plus,
-    Minus,
-}
-
-impl ConvStrand {
-    pub fn name(self) -> &'static str {
-        match self {
-            ConvStrand::Plus => "+",
-            ConvStrand::Minus => "-",
-        }
-    }
-}
-
-/// Whether the read as sequenced runs along the reference forward or backward.
-///
-/// Not FLAG 0x10: for three of the surveyed aligners the bit carries the
-/// converted reference strand instead, and this is the value that says so.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SeqDir {
+pub enum Dir {
     Forward,
     Reverse,
 }
 
-impl SeqDir {
+impl Dir {
     pub fn name(self) -> &'static str {
         match self {
-            SeqDir::Forward => "forward",
-            SeqDir::Reverse => "reverse",
+            Dir::Forward => "forward",
+            Dir::Reverse => "reverse",
         }
     }
 
-    /// Whether the read runs opposite the reference — the `read_reverse`
-    /// column.
     pub fn is_reverse(self) -> bool {
-        matches!(self, SeqDir::Reverse)
+        matches!(self, Dir::Reverse)
     }
 }
 
 /// What a rule decides about one record.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StrandCall {
-    pub conversion: ConvStrand,
-    pub sequenced: SeqDir,
-    /// `None` when the input distinguishes only two of the four strands.
-    pub origin: Option<Strand>,
+    /// The reference strand the read's sequence came from.
+    pub original: Dir,
+    /// Whether the read as sequenced runs along the reference forward or
+    /// backward. Not FLAG 0x10: for three of the surveyed aligners the bit
+    /// carries the converted reference strand instead.
+    pub aligned: Dir,
 }
 
 impl StrandCall {
-    /// The call a named strand of origin implies. See the table in
-    /// `docs/design/strand-rules.md`: OT and CTOB are copies of the top-strand
-    /// sequence and so read forward; OT and CTOT are the converted top strand
-    /// and its complement, so the informative reference base is C.
+    /// The call for a named strand of origin.
+    ///
+    /// OT and CTOB are copies of the top-strand sequence, so as sequenced they
+    /// run forward. OT and CTOT come from the converted top strand, so their
+    /// original strand is forward and the informative reference base is C.
     pub fn from_origin(origin: Strand) -> StrandCall {
-        let (conversion, sequenced) = match origin {
-            Strand::Ot => (ConvStrand::Plus, SeqDir::Forward),
-            Strand::Ctot => (ConvStrand::Plus, SeqDir::Reverse),
-            Strand::Ob => (ConvStrand::Minus, SeqDir::Reverse),
-            Strand::Ctob => (ConvStrand::Minus, SeqDir::Forward),
+        let (original, aligned) = match origin {
+            Strand::Ot => (Dir::Forward, Dir::Forward),
+            Strand::Ctot => (Dir::Forward, Dir::Reverse),
+            Strand::Ob => (Dir::Reverse, Dir::Reverse),
+            Strand::Ctob => (Dir::Reverse, Dir::Forward),
         };
-        StrandCall { conversion, sequenced, origin: Some(origin) }
+        StrandCall { original, aligned }
     }
 
-    /// Whether the walk runs backwards along the reference: a, and nothing
-    /// else. The walk emits columns 5'->3' along the conversion strand, so a
-    /// minus-strand conversion is walked from the alignment's far end with
-    /// both sides reverse complemented.
+    /// The strand of origin this call is. Each of the four strands is exactly
+    /// one combination of the original strand and the aligned direction, so
+    /// this is total, and it is the inverse of [`from_origin`](Self::from_origin).
+    pub fn origin(self) -> Strand {
+        match (self.original, self.aligned) {
+            (Dir::Forward, Dir::Forward) => Strand::Ot,
+            (Dir::Forward, Dir::Reverse) => Strand::Ctot,
+            (Dir::Reverse, Dir::Reverse) => Strand::Ob,
+            (Dir::Reverse, Dir::Forward) => Strand::Ctob,
+        }
+    }
+
+    /// The original strand as the `strand` column writes it: `+` or `-`.
+    pub fn sign(self) -> &'static str {
+        match self.original {
+            Dir::Forward => "+",
+            Dir::Reverse => "-",
+        }
+    }
+
+    /// Whether the walk runs backwards along the reference. The walk emits
+    /// columns 5'->3' along the original strand, so a reverse original strand
+    /// is walked from the alignment's far end with both sides reverse
+    /// complemented.
     pub fn walk_reversed(self) -> bool {
-        matches!(self.conversion, ConvStrand::Minus)
+        self.original.is_reverse()
     }
 
     /// Whether a walk offset counts from the opposite end of the read from the
-    /// sequencer: a against b.
+    /// sequencer.
     ///
     /// SEQ is stored along the reference by every aligner surveyed, so walk
-    /// order runs backwards through SEQ exactly when the conversion strand is
-    /// minus, and sequencing order runs backwards through it exactly when the
-    /// read is reverse. When those disagree the walk offset has to be mirrored
-    /// to give `off_5p`. For a directional library that is precisely read 2,
-    /// which is the rule this replaces.
+    /// order runs backwards through SEQ exactly when the original strand is
+    /// reverse, and sequencing order runs backwards through it exactly when
+    /// the read aligns reverse. When those disagree the walk offset has to be
+    /// mirrored to give `off_5p`. For a directional library that is precisely
+    /// read 2.
     pub fn mirrors_read(self) -> bool {
-        self.walk_reversed() != self.sequenced.is_reverse()
+        self.walk_reversed() != self.aligned.is_reverse()
     }
 }
 
@@ -482,64 +488,29 @@ fn parse_cond(src: &str) -> Result<Cond> {
 
 // ---------------------------------------------------------------- the rule --
 
-/// What a key of `[strand.origin]` names.
+/// What a key of either strand table names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum OriginKey {
-    /// One of the four strands.
-    Origin(Strand),
-    /// `"+"`/`"-"`: the conversion strand is known, the origin is not. The
-    /// `[strand.sequenced]` table then applies to exactly these records.
-    Conversion(ConvStrand),
+enum Key {
+    Dir(Dir),
     Unknown,
 }
 
-impl OriginKey {
-    fn parse(key: &str) -> Result<OriginKey> {
-        if let Some(s) = Strand::from_name(key) {
-            return Ok(OriginKey::Origin(s));
-        }
+impl Key {
+    fn parse(table: &str, key: &str) -> Result<Key> {
         match key {
-            "+" => Ok(OriginKey::Conversion(ConvStrand::Plus)),
-            "-" => Ok(OriginKey::Conversion(ConvStrand::Minus)),
-            "unknown" => Ok(OriginKey::Unknown),
+            "forward" => Ok(Key::Dir(Dir::Forward)),
+            "reverse" => Ok(Key::Dir(Dir::Reverse)),
+            "unknown" => Ok(Key::Unknown),
             _ => Err(anyhow!(
-                "`{key}` is not a strand: [strand.origin] takes OT, CTOT, OB, CTOB, \
-                 \"+\", \"-\" or unknown"
+                "`{key}` is not a key of [strand.{table}]: it takes forward, reverse or unknown"
             )),
         }
     }
 
     fn name(self) -> String {
         match self {
-            OriginKey::Origin(s) => s.name().to_string(),
-            OriginKey::Conversion(c) => c.name().to_string(),
-            OriginKey::Unknown => "unknown".to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ConvKey {
-    Conversion(ConvStrand),
-    Unknown,
-}
-
-impl ConvKey {
-    fn parse(key: &str) -> Result<ConvKey> {
-        match key {
-            "+" => Ok(ConvKey::Conversion(ConvStrand::Plus)),
-            "-" => Ok(ConvKey::Conversion(ConvStrand::Minus)),
-            "unknown" => Ok(ConvKey::Unknown),
-            _ => Err(anyhow!(
-                "`{key}` is not a conversion strand: [strand.conversion] takes \"+\", \"-\" or unknown"
-            )),
-        }
-    }
-
-    fn name(self) -> String {
-        match self {
-            ConvKey::Conversion(c) => c.name().to_string(),
-            ConvKey::Unknown => "unknown".to_string(),
+            Key::Dir(d) => d.name().to_string(),
+            Key::Unknown => "unknown".to_string(),
         }
     }
 }
@@ -553,87 +524,50 @@ impl ConvKey {
 pub struct StrandRule {
     /// The name the rule was loaded from, for error messages.
     source: String,
-    origin: Vec<(OriginKey, Cond)>,
-    conversion: Vec<(ConvKey, Cond)>,
-    sequenced: Vec<(SeqDir, Cond)>,
+    original: Vec<(Key, Cond)>,
+    aligned: Vec<(Key, Cond)>,
 }
 
 impl StrandRule {
     /// Compile the tables of one query file.
     ///
     /// Each table is the pairs as written; an absent table is an empty slice.
-    /// The rule does not know which file it came from — the loader does, and
-    /// says so with [`named`](Self::named), which only run-time errors need.
+    /// Both tables are required. The rule does not know which file it came
+    /// from -- the loader does, and says so with [`named`](Self::named), which
+    /// only run-time errors need.
     pub fn from_tables(
-        origin: &[(String, String)],
-        conversion: &[(String, String)],
-        sequenced: &[(String, String)],
+        original: &[(String, String)],
+        aligned: &[(String, String)],
     ) -> Result<StrandRule> {
-        if origin.is_empty() && conversion.is_empty() {
-            bail!("a strand rule needs [strand.origin] or [strand.conversion]");
-        }
-        if !origin.is_empty() && !conversion.is_empty() {
-            bail!(
-                "[strand.origin] and [strand.conversion] are alternatives — \
-                 the conversion strand follows from the origin, and a second declaration \
-                 of it can only disagree"
-            );
-        }
-
-        let origin: Vec<(OriginKey, Cond)> = origin
-            .iter()
-            .map(|(k, v)| Ok((OriginKey::parse(k)?, parse_cond(v).map_err(|e| key_err(k, e))?)))
-            .collect::<Result<_>>()?;
-        let conversion: Vec<(ConvKey, Cond)> = conversion
-            .iter()
-            .map(|(k, v)| Ok((ConvKey::parse(k)?, parse_cond(v).map_err(|e| key_err(k, e))?)))
-            .collect::<Result<_>>()?;
-        let sequenced: Vec<(SeqDir, Cond)> = sequenced
-            .iter()
-            .map(|(k, v)| {
-                let dir = match k.as_str() {
-                    "forward" => SeqDir::Forward,
-                    "reverse" => SeqDir::Reverse,
-                    _ => bail!(
-                        "`{k}` is not a direction: [strand.sequenced] takes forward or reverse"
-                    ),
-                };
-                Ok((dir, parse_cond(v).map_err(|e| key_err(k, e))?))
-            })
-            .collect::<Result<_>>()?;
-
-        // A four-way origin table derives the sequenced direction, so declaring
-        // it as well is declaring a theorem: rejected rather than checked.
-        let origin_needs_sequenced =
-            origin.iter().any(|(k, _)| matches!(k, OriginKey::Conversion(_)));
-        if !conversion.is_empty() && sequenced.is_empty() {
-            bail!(
-                "[strand.conversion] needs [strand.sequenced] beside it — \
-                 that the FLAG's 0x10 gives the sequenced direction is a claim about \
-                 the input, not a default"
-            );
-        }
-        if origin_needs_sequenced && sequenced.is_empty() {
-            bail!(
-                "[strand.origin] claims records with \"+\" or \"-\", whose \
-                 sequenced direction does not follow — add [strand.sequenced]"
-            );
-        }
-        if !origin.is_empty() && !origin_needs_sequenced && !sequenced.is_empty() {
-            bail!(
-                "[strand.sequenced] is already implied by [strand.origin]; \
-                 remove it, or name the records it applies to with \"+\"/\"-\" keys"
-            );
+        match (original.is_empty(), aligned.is_empty()) {
+            (true, true) => bail!("a strand rule needs [strand.original] and [strand.aligned]"),
+            (true, false) => bail!(
+                "a strand rule needs [strand.original] beside [strand.aligned]: \
+                 which reference strand a read came from does not follow from its direction"
+            ),
+            (false, true) => bail!(
+                "a strand rule needs [strand.aligned] beside [strand.original]: \
+                 that FLAG 0x10 gives the aligned direction is a claim about the input, \
+                 not a default"
+            ),
+            (false, false) => {}
         }
 
-        reject_identical("strand.origin", origin.iter().map(|(k, c)| (k.name(), c)))?;
-        reject_identical("strand.conversion", conversion.iter().map(|(k, c)| (k.name(), c)))?;
-        reject_identical(
-            "strand.sequenced",
-            sequenced.iter().map(|(k, c)| (k.name().to_string(), c)),
-        )?;
+        let compile = |table: &str, pairs: &[(String, String)]| -> Result<Vec<(Key, Cond)>> {
+            let compiled: Vec<(Key, Cond)> = pairs
+                .iter()
+                .map(|(k, v)| Ok((Key::parse(table, k)?, parse_cond(v).map_err(|e| key_err(k, e))?)))
+                .collect::<Result<_>>()?;
+            reject_identical(
+                &format!("strand.{table}"),
+                compiled.iter().map(|(k, c)| (k.name(), c)),
+            )?;
+            Ok(compiled)
+        };
+        let original = compile("original", original)?;
+        let aligned = compile("aligned", aligned)?;
 
-        Ok(StrandRule { source: String::new(), origin, conversion, sequenced })
+        Ok(StrandRule { source: String::new(), original, aligned })
     }
 
     /// Name the file this rule was read from, so that a record it cannot cover
@@ -650,70 +584,48 @@ impl StrandRule {
         &self.source
     }
 
-    /// Whether every record this rule classifies gets a strand of origin.
-    ///
-    /// False for a rule built on `[strand.conversion]`, and for a
-    /// `[strand.origin]` table with a `"+"` or `"-"` key: both reach the
-    /// conversion strand and stop, which does not say whether a `+` record is
-    /// OT or CTOT. A `strand` tag writes one value per strand of origin, so
-    /// this is what lets that pairing be refused before the run opens the BAM
-    /// rather than on its first record.
-    ///
-    /// A rule's `unknown` key does not make this false: a record the rule
-    /// declines is skipped and counted, never written.
-    pub fn names_origin(&self) -> bool {
-        !self.origin.is_empty()
-            && !self.origin.iter().any(|(k, _)| matches!(k, OriginKey::Conversion(_)))
-    }
-
-    /// Every key the rule declares, as the file writes it, in declaration
-    /// order: `[strand.origin]`'s or `[strand.conversion]`'s, then
-    /// `[strand.sequenced]`'s.
+    /// Every key the rule declares, as `table.key`, in declaration order:
+    /// `[strand.original]`'s, then `[strand.aligned]`'s.
     ///
     /// This is what a rule promises to be able to say. A file that declares a
-    /// strand it never gets asked about is a claim with nothing behind it, so
-    /// the record fixtures under `queries/strand/records/` are required to
-    /// exercise each of these at least once.
+    /// key it never gets asked about is a claim with nothing behind it, so the
+    /// record fixtures under `queries/strand/records/` are required to exercise
+    /// each of these at least once.
     pub fn declared_keys(&self) -> Vec<String> {
-        let mut keys: Vec<String> = if self.origin.is_empty() {
-            self.conversion.iter().map(|(k, _)| k.name()).collect()
-        } else {
-            self.origin.iter().map(|(k, _)| k.name()).collect()
-        };
-        keys.extend(self.sequenced.iter().map(|(d, _)| d.name().to_string()));
-        keys
+        let original = self.original.iter().map(|(k, _)| format!("original.{}", k.name()));
+        let aligned = self.aligned.iter().map(|(k, _)| format!("aligned.{}", k.name()));
+        original.chain(aligned).collect()
     }
 
-    /// The call for one record, or `None` when the rule says `unknown`.
+    /// The call for one record, or `None` when either table says `unknown`.
+    ///
+    /// `[strand.original]` is asked first. A record it calls `unknown` is not
+    /// put to `[strand.aligned]`, so that table need not cover it.
     ///
     /// An error means the rule did not cover the record: either nothing matched
     /// or more than one key did. Both name the record, because the fix is to
     /// look at it.
     pub fn call(&self, rec: &Record) -> Result<Option<StrandCall>> {
-        if !self.origin.is_empty() {
-            let key = pick(&self.origin, rec, |k| k.name(), "strand.origin", &self.source)?;
-            return match key {
-                OriginKey::Unknown => Ok(None),
-                OriginKey::Origin(s) => Ok(Some(StrandCall::from_origin(s))),
-                OriginKey::Conversion(c) => {
-                    let dir = self.sequenced_of(rec)?;
-                    Ok(Some(StrandCall { conversion: c, sequenced: dir, origin: None }))
-                }
-            };
-        }
-
-        let key = pick(&self.conversion, rec, |k| k.name(), "strand.conversion", &self.source)?;
-        match key {
-            ConvKey::Unknown => Ok(None),
-            ConvKey::Conversion(c) => {
-                let dir = self.sequenced_of(rec)?;
-                Ok(Some(StrandCall { conversion: c, sequenced: dir, origin: None }))
-            }
-        }
+        let Key::Dir(original) = pick(&self.original, rec, "strand.original", &self.source)? else {
+            return Ok(None);
+        };
+        let Key::Dir(aligned) = pick(&self.aligned, rec, "strand.aligned", &self.source)? else {
+            return Ok(None);
+        };
+        Ok(Some(StrandCall { original, aligned }))
     }
 
-    fn sequenced_of(&self, rec: &Record) -> Result<SeqDir> {
-        pick(&self.sequenced, rec, |d| d.name().to_string(), "strand.sequenced", &self.source)
+    /// The keys a record matches, as [`declared_keys`](Self::declared_keys)
+    /// writes them, asked in the order [`call`](Self::call) asks them.
+    #[cfg(test)]
+    fn matched_keys(&self, rec: &Record) -> Result<Vec<String>> {
+        let original = pick(&self.original, rec, "strand.original", &self.source)?;
+        let mut keys = vec![format!("original.{}", original.name())];
+        if original != Key::Unknown {
+            let aligned = pick(&self.aligned, rec, "strand.aligned", &self.source)?;
+            keys.push(format!("aligned.{}", aligned.name()));
+        }
+        Ok(keys)
     }
 }
 
@@ -723,13 +635,7 @@ fn key_err(key: &str, e: anyhow::Error) -> anyhow::Error {
 
 /// Exactly one key must match. Naming every key that matched, rather than the
 /// first, is what makes an overlapping pair of conditions a five-second fix.
-fn pick<K: Copy>(
-    table: &[(K, Cond)],
-    rec: &Record,
-    name: impl Fn(K) -> String,
-    table_name: &str,
-    source: &str,
-) -> Result<K> {
+fn pick(table: &[(Key, Cond)], rec: &Record, table_name: &str, source: &str) -> Result<Key> {
     let mut hits = table.iter().filter(|(_, c)| c.eval(rec));
     let first = hits.next();
     let second = hits.next();
@@ -748,8 +654,8 @@ fn pick<K: Copy>(
             "{source}read `{qname}` (FLAG {}) matches both `{}` and `{}` in [{table_name}]; \
              exactly one must match.",
             rec.flags(),
-            name(*a),
-            name(*b),
+            a.name(),
+            b.name(),
         )),
     }
 }
@@ -790,25 +696,35 @@ pub fn directional() -> std::sync::Arc<StrandRule> {
         let path =
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand/directional.toml");
         let src = std::fs::read_to_string(&path).expect("the shipped directional rule");
-        let v: toml::Value = toml::from_str(&src).expect("valid TOML");
-        let table = |name: &str| -> Vec<(String, String)> {
-            v.get("strand")
-                .and_then(|s| s.get(name))
-                .and_then(|t| t.as_table())
-                .map(|t| {
-                    t.iter()
-                        .map(|(k, v)| {
-                            (k.clone(), v.as_str().expect("a condition is a string").to_string())
-                        })
-                        .collect()
-                })
-                .unwrap_or_default()
-        };
-        let rule = StrandRule::from_tables(&table("origin"), &table("conversion"), &table("sequenced"))
+        let (original, aligned) = tables_of(&src);
+        let rule = StrandRule::from_tables(&original, &aligned)
             .expect("the shipped directional rule compiles");
         Arc::new(rule.named(&path.display().to_string()))
     })
     .clone()
+}
+
+/// One strand table as `(key, condition)` pairs.
+#[cfg(test)]
+type Pairs = Vec<(String, String)>;
+
+/// Read the two `[strand.*]` tables out of a query file's text, without the
+/// query file's own parser.
+#[cfg(test)]
+fn tables_of(src: &str) -> (Pairs, Pairs) {
+    let v: toml::Value = toml::from_str(src).expect("valid TOML");
+    let table = |name: &str| -> Pairs {
+        v.get("strand")
+            .and_then(|s| s.get(name))
+            .and_then(|t| t.as_table())
+            .map(|t| {
+                t.iter()
+                    .map(|(k, v)| (k.clone(), v.as_str().expect("a condition is a string").to_string()))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    (table("original"), table("aligned"))
 }
 
 #[cfg(test)]
@@ -820,18 +736,24 @@ mod tests {
         kv.iter().map(|(k, v)| ((*k).to_string(), (*v).to_string())).collect()
     }
 
-    /// The four-way table every conformant directional aligner gets, which is
+    /// The aligned direction as a conformant FLAG gives it.
+    const FLAG_ALIGNED: &[(&str, &str)] = &[("forward", "not is_reverse"), ("reverse", "is_reverse")];
+
+    /// The rule for a conformant directional library, which is
     /// `queries/strand/directional.toml`.
     fn directional() -> StrandRule {
         StrandRule::from_tables(
             &pairs(&[
-                ("OT", "not is_reverse and not is_last_in_template"),
-                ("CTOT", "is_reverse and is_last_in_template"),
-                ("OB", "is_reverse and not is_last_in_template"),
-                ("CTOB", "not is_reverse and is_last_in_template"),
+                (
+                    "forward",
+                    "(not is_reverse and not is_last_in_template) or (is_reverse and is_last_in_template)",
+                ),
+                (
+                    "reverse",
+                    "(is_reverse and not is_last_in_template) or (not is_reverse and is_last_in_template)",
+                ),
             ]),
-            &[],
-            &[],
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap()
     }
@@ -862,23 +784,25 @@ mod tests {
         let rule = directional();
         for (flags, want) in cases {
             let call = rule.call(&rec(flags, &[])).unwrap().unwrap();
-            assert_eq!(call.origin, Some(want), "flags {flags:#x}");
+            assert_eq!(call.origin(), want, "flags {flags:#x}");
         }
     }
 
+    /// Each strand of origin is one combination of the two directions, and
+    /// each combination is one strand. Stated strand by strand so that a change
+    /// to either half has to be made here too.
     #[test]
-    fn the_walk_direction_and_sequenced_direction_follow_from_the_origin() {
-        // The table in the design doc, which is biology and not convention.
+    fn the_origin_and_the_two_directions_determine_each_other() {
         let cases = [
-            (Strand::Ot, ConvStrand::Plus, SeqDir::Forward),
-            (Strand::Ctot, ConvStrand::Plus, SeqDir::Reverse),
-            (Strand::Ob, ConvStrand::Minus, SeqDir::Reverse),
-            (Strand::Ctob, ConvStrand::Minus, SeqDir::Forward),
+            (Strand::Ot, Dir::Forward, Dir::Forward),
+            (Strand::Ctot, Dir::Forward, Dir::Reverse),
+            (Strand::Ob, Dir::Reverse, Dir::Reverse),
+            (Strand::Ctob, Dir::Reverse, Dir::Forward),
         ];
-        for (origin, conv, dir) in cases {
+        for (origin, original, aligned) in cases {
             let call = StrandCall::from_origin(origin);
-            assert_eq!(call.conversion, conv, "{}", origin.name());
-            assert_eq!(call.sequenced, dir, "{}", origin.name());
+            assert_eq!((call.original, call.aligned), (original, aligned), "{}", origin.name());
+            assert_eq!(StrandCall { original, aligned }.origin(), origin, "{}", origin.name());
         }
     }
 
@@ -886,25 +810,23 @@ mod tests {
     fn a_tag_rule_ignores_a_flag_that_lies() {
         // BSBolt sets 0x10 from the converted reference strand on every *_G2A
         // record, so the FLAG says "reverse" for a read that was sequenced
-        // forward. Naming the origin from YS places it correctly anyway.
+        // forward. Reading both directions from YS places it correctly anyway.
         let rule = StrandRule::from_tables(
             &pairs(&[
-                ("OT", r#"YS == "W_C2T""#),
-                ("CTOT", r#"YS == "W_G2A""#),
-                ("OB", r#"YS == "C_C2T""#),
-                ("CTOB", r#"YS == "C_G2A""#),
+                ("forward", r#"YS == "W_C2T" or YS == "W_G2A""#),
+                ("reverse", r#"YS == "C_C2T" or YS == "C_G2A""#),
                 ("unknown", r#"YS == "WC""#),
             ]),
-            &[],
-            &[],
+            &pairs(&[
+                ("forward", r#"YS == "W_C2T" or YS == "C_G2A""#),
+                ("reverse", r#"YS == "W_G2A" or YS == "C_C2T""#),
+            ]),
         )
         .unwrap();
 
         let r = rec(0x1 | 0x80 | 0x10, &[(b"YS", "W_G2A")]);
         let call = rule.call(&r).unwrap().unwrap();
-        assert_eq!(call.origin, Some(Strand::Ctot));
-        assert_eq!(call.conversion, ConvStrand::Plus);
-        assert_eq!(call.sequenced, SeqDir::Reverse);
+        assert_eq!(call.origin(), Strand::Ctot);
 
         // `unknown` is a call of its own, not an error and not a guess.
         assert!(rule.call(&rec(0x4, &[(b"YS", "WC")])).unwrap().is_none());
@@ -913,14 +835,11 @@ mod tests {
     #[test]
     fn bismark_two_tags_together_name_all_four() {
         let rule = StrandRule::from_tables(
+            &pairs(&[("forward", r#"XG == "CT""#), ("reverse", r#"XG == "GA""#)]),
             &pairs(&[
-                ("OT", r#"XR == "CT" and XG == "CT""#),
-                ("CTOT", r#"XR == "GA" and XG == "CT""#),
-                ("OB", r#"XR == "CT" and XG == "GA""#),
-                ("CTOB", r#"XR == "GA" and XG == "GA""#),
+                ("forward", r#"(XR == "CT" and XG == "CT") or (XR == "GA" and XG == "GA")"#),
+                ("reverse", r#"(XR == "GA" and XG == "CT") or (XR == "CT" and XG == "GA")"#),
             ]),
-            &[],
-            &[],
         )
         .unwrap();
         let cases = [
@@ -931,149 +850,141 @@ mod tests {
         ];
         for ((xr, xg), want) in cases {
             let r = rec(0, &[(b"XR", xr), (b"XG", xg)]);
-            assert_eq!(rule.call(&r).unwrap().unwrap().origin, Some(want), "XR={xr} XG={xg}");
+            assert_eq!(rule.call(&r).unwrap().unwrap().origin(), want, "XR={xr} XG={xg}");
         }
     }
 
+    /// bwa-meth's `YD` names only the original strand, and a strand and its
+    /// PCR copy share it. The copy runs the other way along the reference,
+    /// which the FLAG says, so the pair still names all four strands.
     #[test]
-    fn a_two_way_rule_reports_the_origin_as_unknown() {
+    fn a_tag_for_the_original_strand_and_the_flag_give_all_four() {
         let rule = StrandRule::from_tables(
-            &[],
-            &pairs(&[("+", r#"YD == "f""#), ("-", r#"YD == "r""#)]),
-            &pairs(&[("forward", "not is_reverse"), ("reverse", "is_reverse")]),
+            &pairs(&[("forward", r#"YD == "f""#), ("reverse", r#"YD == "r""#)]),
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap();
-        let call = rule.call(&rec(0x10, &[(b"YD", "r")])).unwrap().unwrap();
-        assert_eq!(call.conversion, ConvStrand::Minus);
-        assert_eq!(call.sequenced, SeqDir::Reverse);
-        assert_eq!(call.origin, None, "YD says which strand was converted, not which read this is");
+        let cases = [
+            (0, "f", Strand::Ot),
+            (0x10, "f", Strand::Ctot),
+            (0x10, "r", Strand::Ob),
+            (0, "r", Strand::Ctob),
+        ];
+        for (flags, yd, want) in cases {
+            let call = rule.call(&rec(flags, &[(b"YD", yd)])).unwrap().unwrap();
+            assert_eq!(call.origin(), want, "flags {flags:#x} YD {yd}");
+        }
     }
 
     #[test]
     fn whole_flag_comparisons_work() {
         // asTair's own table is written as whole FLAG values.
         let rule = StrandRule::from_tables(
-            &[],
             &pairs(&[
-                ("+", "flags == 99 or flags == 147 or flags == 0"),
-                ("-", "flags == 83 or flags == 163 or flags == 16"),
+                ("forward", "flags == 99 or flags == 147 or flags == 0"),
+                ("reverse", "flags == 83 or flags == 163 or flags == 16"),
             ]),
-            &pairs(&[("forward", "not is_reverse"), ("reverse", "is_reverse")]),
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap();
-        assert_eq!(rule.call(&rec(99, &[])).unwrap().unwrap().conversion, ConvStrand::Plus);
-        assert_eq!(rule.call(&rec(163, &[])).unwrap().unwrap().conversion, ConvStrand::Minus);
+        assert_eq!(rule.call(&rec(99, &[])).unwrap().unwrap().original, Dir::Forward);
+        assert_eq!(rule.call(&rec(163, &[])).unwrap().unwrap().original, Dir::Reverse);
     }
 
     #[test]
     fn a_record_no_rule_covers_is_named_not_guessed() {
-        let rule = StrandRule::from_tables(
-            &pairs(&[("OT", "not is_reverse")]),
-            &[],
-            &[],
-        )
-        .unwrap();
+        let rule =
+            StrandRule::from_tables(&pairs(&[("forward", "not is_reverse")]), &pairs(FLAG_ALIGNED))
+                .unwrap();
         let err = rule.call(&rec(0x10, &[])).unwrap_err().to_string();
-        assert!(err.contains("no rule"), "{err}");
+        assert!(err.contains("no rule in [strand.original]"), "{err}");
         assert!(err.contains("read1"), "{err}");
     }
 
     #[test]
     fn two_matching_rules_name_both() {
         let rule = StrandRule::from_tables(
-            &pairs(&[("OT", "not is_reverse"), ("OB", "not is_last_in_template")]),
-            &[],
-            &[],
+            &pairs(&[("forward", "not is_reverse"), ("reverse", "not is_last_in_template")]),
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap();
         let err = rule.call(&rec(0, &[])).unwrap_err().to_string();
-        assert!(err.contains("OT") && err.contains("OB"), "{err}");
+        assert!(err.contains("`forward` and `reverse`"), "{err}");
     }
 
     #[test]
     fn an_absent_tag_matches_nothing() {
         let rule = StrandRule::from_tables(
-            &pairs(&[("OT", r#"XG == "CT""#), ("OB", r#"XG == "GA""#)]),
-            &[],
-            &[],
+            &pairs(&[("forward", r#"XG == "CT""#), ("reverse", r#"XG == "GA""#)]),
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap();
-        // Not "false, therefore OB": no match at all, which is reported.
+        // Not "false, therefore reverse": no match at all, which is reported.
         let err = rule.call(&rec(0, &[])).unwrap_err().to_string();
         assert!(err.contains("no rule"), "{err}");
     }
 
     #[test]
-    fn the_two_forms_are_alternatives() {
-        let err = StrandRule::from_tables(
-            &pairs(&[("OT", "not is_reverse")]),
-            &pairs(&[("+", "not is_reverse")]),
-            &[],
-        )
-        .unwrap_err()
-        .to_string();
-        assert!(err.contains("alternatives"), "{err}");
+    fn both_tables_are_required() {
+        let original = pairs(&[("forward", "true")]);
+        let aligned = pairs(FLAG_ALIGNED);
+        for (o, a, want) in [
+            (&original[..], &[][..], "needs [strand.aligned] beside"),
+            (&[][..], &aligned[..], "needs [strand.original] beside"),
+            (&[][..], &[][..], "needs [strand.original] and [strand.aligned]"),
+        ] {
+            let err = StrandRule::from_tables(o, a).unwrap_err().to_string();
+            assert!(err.contains(want), "{err}");
+        }
     }
 
+    /// `unknown` in either table skips the record. A record the original table
+    /// declines is not put to the aligned table, so that table need not cover
+    /// it: an unmapped bwa-meth record has no `YD`, and its FLAG says nothing.
     #[test]
-    fn conversion_without_sequenced_is_an_error() {
-        let err = StrandRule::from_tables(
-            &[],
-            &pairs(&[("+", r#"YD == "f""#), ("-", r#"YD == "r""#)]),
-            &[],
-        )
-        .unwrap_err()
-        .to_string();
-        assert!(err.contains("[strand.sequenced]"), "{err}");
-    }
-
-    #[test]
-    fn a_four_way_origin_table_may_not_also_declare_the_sequenced_direction() {
-        let err = StrandRule::from_tables(
-            &pairs(&[
-                ("OT", "not is_reverse and not is_last_in_template"),
-                ("CTOT", "is_reverse and is_last_in_template"),
-                ("OB", "is_reverse and not is_last_in_template"),
-                ("CTOB", "not is_reverse and is_last_in_template"),
-            ]),
-            &[],
-            &pairs(&[("forward", "not is_reverse"), ("reverse", "is_reverse")]),
-        )
-        .unwrap_err()
-        .to_string();
-        assert!(err.contains("already implied"), "{err}");
-    }
-
-    #[test]
-    fn a_partly_known_origin_table_needs_the_sequenced_direction() {
-        let tables = pairs(&[("OT", r#"XG == "CT""#), ("+", r#"XG == "CT?""#)]);
-        let err = StrandRule::from_tables(&tables, &[], &[]).unwrap_err().to_string();
-        assert!(err.contains("[strand.sequenced]"), "{err}");
-
-        // With the table present it is accepted, and the "+" records take their
-        // direction from it.
+    fn unknown_in_either_table_skips_the_record() {
         let rule = StrandRule::from_tables(
-            &pairs(&[("OT", r#"XG == "CT""#), ("+", r#"XG == "CU""#)]),
-            &[],
-            &pairs(&[("forward", "not is_reverse"), ("reverse", "is_reverse")]),
+            &pairs(&[
+                ("forward", r#"YD == "f""#),
+                ("reverse", r#"YD == "r""#),
+                ("unknown", "not (YD == \"f\" or YD == \"r\")"),
+            ]),
+            &pairs(&[("forward", "not is_reverse and not is_supplementary"), ("reverse", "is_reverse")]),
         )
         .unwrap();
-        let call = rule.call(&rec(0x10, &[(b"XG", "CU")])).unwrap().unwrap();
-        assert_eq!(call.conversion, ConvStrand::Plus);
-        assert_eq!(call.sequenced, SeqDir::Reverse);
-        assert_eq!(call.origin, None);
+        // Original unknown, and the aligned table would have matched nothing.
+        assert!(rule.call(&rec(0x800, &[])).unwrap().is_none());
+
+        let rule = StrandRule::from_tables(
+            &pairs(&[("forward", "true")]),
+            &pairs(&[("forward", "not is_reverse"), ("reverse", "is_reverse and not is_secondary"), ("unknown", "is_reverse and is_secondary")]),
+        )
+        .unwrap();
+        assert!(rule.call(&rec(0x10 | 0x100, &[])).unwrap().is_none());
+        assert_eq!(rule.call(&rec(0x10, &[])).unwrap().unwrap().origin(), Strand::Ctot);
     }
 
     #[test]
     fn two_keys_with_one_condition_are_rejected_at_load() {
         let err = StrandRule::from_tables(
-            &pairs(&[("OT", "not is_reverse"), ("OB", "not is_reverse")]),
-            &[],
-            &[],
+            &pairs(&[("forward", "not is_reverse"), ("reverse", "not is_reverse")]),
+            &pairs(FLAG_ALIGNED),
         )
         .unwrap_err()
         .to_string();
-        assert!(err.contains("same condition"), "{err}");
+        assert!(err.contains("same condition") && err.contains("[strand.original]"), "{err}");
+    }
+
+    #[test]
+    fn a_key_that_is_not_a_direction_is_rejected() {
+        for (o, a, want) in [
+            (pairs(&[("OT", "true")]), pairs(FLAG_ALIGNED), "`OT` is not a key of [strand.original]"),
+            (pairs(&[("+", "true")]), pairs(FLAG_ALIGNED), "`+` is not a key of [strand.original]"),
+            (pairs(&[("forward", "true")]), pairs(&[("fwd", "true")]), "`fwd` is not a key of [strand.aligned]"),
+        ] {
+            let err = StrandRule::from_tables(&o, &a).unwrap_err().to_string();
+            assert!(err.contains(want), "{err}");
+        }
     }
 
     #[test]
@@ -1086,9 +997,9 @@ mod tests {
         assert_ne!(loose, other);
     }
 
-    /// `true` is what an assay with no conversion needs: one walk direction for
-    /// every record, said plainly rather than as a tautology over some field the
-    /// rule does not otherwise care about.
+    /// `true` is what an assay with no conversion needs: one original strand
+    /// for every record, said plainly rather than as a tautology over some
+    /// field the rule does not otherwise care about.
     #[test]
     fn true_and_false_name_every_record_and_none() {
         let fwd = rec(0, &[]);
@@ -1122,26 +1033,6 @@ mod tests {
         }
     }
 
-    /// Read the `[strand.*]` tables out of a shipped file, without the query
-    /// file's own parser, which does not know about them yet.
-    fn tables_of(src: &str) -> (Vec<(String, String)>, Vec<(String, String)>, Vec<(String, String)>) {
-        let v: toml::Value = toml::from_str(src).expect("valid TOML");
-        let table = |name: &str| -> Vec<(String, String)> {
-            v.get("strand")
-                .and_then(|s| s.get(name))
-                .and_then(|t| t.as_table())
-                .map(|t| {
-                    t.iter()
-                        .map(|(k, v)| {
-                            (k.clone(), v.as_str().expect("a condition is a string").to_string())
-                        })
-                        .collect()
-                })
-                .unwrap_or_default()
-        };
-        (table("origin"), table("conversion"), table("sequenced"))
-    }
-
     /// Every rule alnbase ships compiles. The files are the interface, so a
     /// file that the engine cannot load is a broken release, not a broken test.
     #[test]
@@ -1155,25 +1046,19 @@ mod tests {
             }
             let name = path.file_name().unwrap().to_string_lossy().into_owned();
             let src = std::fs::read_to_string(&path).unwrap();
-            let (origin, conversion, sequenced) = tables_of(&src);
-            StrandRule::from_tables(&origin, &conversion, &sequenced)
-                .unwrap_or_else(|e| panic!("{name}: {e}"));
+            let (original, aligned) = tables_of(&src);
+            StrandRule::from_tables(&original, &aligned).unwrap_or_else(|e| panic!("{name}: {e}"));
             seen += 1;
         }
         assert_eq!(seen, 12, "queries/strand should hold twelve rules");
     }
 
-    /// `directional.toml` is what `--library directional` does, and the point of
+    /// `directional.toml` is what `--library directional` did, and the point of
     /// shipping it is that replacing the hardcoded rule changes nothing. This
     /// checks the shipped file itself, not the copy written out in this module.
     #[test]
     fn the_shipped_directional_file_matches_the_hardcoded_rule() {
-        let src = std::fs::read_to_string(
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("queries/strand/directional.toml"),
-        )
-        .unwrap();
-        let (origin, conversion, sequenced) = tables_of(&src);
-        let rule = StrandRule::from_tables(&origin, &conversion, &sequenced).unwrap();
+        let rule = super::directional();
 
         // Every combination of the two bits the old rule read, plus the
         // unpaired forms, compared against `Library::Directional` itself.
@@ -1181,16 +1066,12 @@ mod tests {
             let r = rec(flags, &[]);
             let want = crate::tags::Library::Directional.strand(&r);
             let got = rule.call(&r).unwrap().unwrap();
-            assert_eq!(got.origin, Some(want), "flags {flags:#x}");
+            assert_eq!(got.origin(), want, "flags {flags:#x}");
             // And the two values the walk actually uses agree with what the
             // walk derives from the FLAG today.
             let bottom_today = r.is_last_in_template() != r.is_reverse();
-            assert_eq!(
-                got.conversion == ConvStrand::Minus,
-                bottom_today,
-                "walk direction disagrees at flags {flags:#x}"
-            );
-            assert_eq!(got.sequenced.is_reverse(), r.is_reverse(), "flags {flags:#x}");
+            assert_eq!(got.walk_reversed(), bottom_today, "walk direction disagrees at flags {flags:#x}");
+            assert_eq!(got.aligned.is_reverse(), r.is_reverse(), "flags {flags:#x}");
             // And the value the written offsets use: mirroring a walk offset
             // into an as-sequenced one was "the record is read 2", which for
             // this rule is what `mirrors_read` comes to.
@@ -1202,12 +1083,10 @@ mod tests {
         }
     }
 
-    /// `mirrors_read` is a against b, and it is the one thing standing between
-    /// a walk offset and `off_5p`. Stated strand by strand so that a change to
-    /// either half of the table has to be made here too.
+    /// `mirrors_read` is the original strand against the aligned direction,
+    /// and it is the one thing standing between a walk offset and `off_5p`.
     #[test]
     fn the_offsets_mirror_when_the_walk_runs_against_the_sequencer() {
-        use crate::tags::Strand;
         for (origin, mirror) in [
             (Strand::Ot, false),   // walked forward, sequenced forward
             (Strand::Ob, false),   // walked backward, sequenced backward
@@ -1216,74 +1095,42 @@ mod tests {
         ] {
             assert_eq!(StrandCall::from_origin(origin).mirrors_read(), mirror, "{origin:?}");
         }
-
-        // A rule naming only the conversion strand still answers, because both
-        // halves were declared; this is the bwa-meth `YD` shape.
-        let call = StrandCall {
-            conversion: ConvStrand::Plus,
-            sequenced: SeqDir::Reverse,
-            origin: None,
-        };
-        assert!(call.mirrors_read());
-        assert!(!call.walk_reversed());
-    }
-
-    #[test]
-    fn a_strand_name_that_is_not_one_is_rejected() {
-        let err = StrandRule::from_tables(&pairs(&[("TOP", "is_reverse")]), &[], &[])
-            .unwrap_err()
-            .to_string();
-        assert!(err.contains("is not a strand"), "{err}");
     }
 
     // ------------------------------------------------ the shipped rules --
 
-    /// The call a fixture record's QNAME asks for, and the rule keys that
-    /// asking it exercises. `None` for `unknown`, which is a rule declining a
-    /// record rather than a strand.
+    /// The call a fixture record's QNAME asks for. `None` for `unknown`, which
+    /// is a rule declining a record rather than a strand.
     ///
-    /// The grammar is the one `queries/strand/records/README.md` states:
-    /// `OT`, `CTOT`, `OB`, `CTOB`, `unknown`, or `<conversion>:<sequenced>`
-    /// for a rule that reaches only the conversion strand, optionally followed
-    /// by `/` and a label for the reader.
-    fn expectation(qname: &str) -> (Option<StrandCall>, Vec<String>) {
+    /// The grammar: `unknown`, or `<original>:<aligned>` with each side
+    /// `forward` or `reverse`, optionally followed by `/` and a label for the
+    /// reader.
+    fn expectation(qname: &str) -> Option<StrandCall> {
         let want = qname.split('/').next().unwrap();
         if want == "unknown" {
-            return (None, vec!["unknown".to_string()]);
+            return None;
         }
-        if let Some(origin) = Strand::from_name(want) {
-            return (Some(StrandCall::from_origin(origin)), vec![origin.name().to_string()]);
-        }
-        let (conv, seq) = want
+        let dir = |s: &str| match s {
+            "forward" => Dir::Forward,
+            "reverse" => Dir::Reverse,
+            _ => panic!("`{s}` in `{qname}` is not forward or reverse"),
+        };
+        let (original, aligned) = want
             .split_once(':')
-            .unwrap_or_else(|| panic!("`{want}` is not a strand, `unknown`, or `conv:sequenced`"));
-        let conversion = match conv {
-            "+" => ConvStrand::Plus,
-            "-" => ConvStrand::Minus,
-            _ => panic!("`{conv}` is not a conversion strand"),
-        };
-        let sequenced = match seq {
-            "forward" => SeqDir::Forward,
-            "reverse" => SeqDir::Reverse,
-            _ => panic!("`{seq}` is not a sequenced direction"),
-        };
-        (
-            Some(StrandCall { conversion, sequenced, origin: None }),
-            vec![conv.to_string(), seq.to_string()],
-        )
+            .unwrap_or_else(|| panic!("`{want}` is not `unknown` or `original:aligned`"));
+        Some(StrandCall { original: dir(original), aligned: dir(aligned) })
     }
 
     /// Every shipped rule is run against records, not only described in prose.
     ///
-    /// This is the other half of open question 3 of
-    /// `docs/design/strand-rules.md`: a file that says Bismark's `XR:Z:GA` with
-    /// `XG:Z:CT` is CTOT now has a record making that claim, so an edit that
-    /// breaks it fails here rather than going on producing calls on the wrong
-    /// strand. The fixtures are written from each aligner's source, the same
-    /// reading the rule itself came from, so they catch a rule that stops
-    /// matching its own documentation — not an aligner that changes what it
-    /// writes. Only that aligner's own BAM can catch the second, which is why
-    /// the validation demos remain the place for it.
+    /// A file that says Bismark's `XR:Z:GA` with `XG:Z:CT` is CTOT has a record
+    /// making that claim, so an edit that breaks it fails here rather than
+    /// going on producing calls on the wrong strand. The fixtures are written
+    /// from each aligner's source, the same reading the rule itself came from,
+    /// so they catch a rule that stops matching its own documentation -- not an
+    /// aligner that changes what it writes. Only that aligner's own BAM can
+    /// catch the second, which is why the validation demos remain the place for
+    /// it.
     #[test]
     fn every_shipped_rule_calls_its_records_as_their_names_say() {
         use rust_htslib::bam::Read as _;
@@ -1311,16 +1158,15 @@ mod tests {
             for rec in reader.records() {
                 let rec = rec.unwrap();
                 let qname = String::from_utf8(rec.qname().to_vec()).unwrap();
-                let (want, keys) = expectation(&qname);
                 let got = rule.call(&rec).unwrap_or_else(|e| panic!("{stem}.sam `{qname}`: {e}"));
-                assert_eq!(got, want, "{stem}.sam `{qname}`");
-                covered.extend(keys);
+                assert_eq!(got, expectation(&qname), "{stem}.sam `{qname}`");
+                covered.extend(rule.matched_keys(&rec).unwrap());
                 records += 1;
             }
             assert!(records > 0, "{stem}.sam has no records");
 
-            // A declared strand no record asks for is a claim with nothing
-            // behind it, which is the failure this fixture exists to prevent.
+            // A declared key no record reaches is a claim with nothing behind
+            // it, which is the failure this fixture exists to prevent.
             let declared = rule.declared_keys();
             let missing: Vec<&String> = declared.iter().filter(|k| !covered.contains(k)).collect();
             assert!(missing.is_empty(), "{stem}.toml declares {missing:?}, which no record exercises");

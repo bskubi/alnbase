@@ -26,3 +26,6 @@ amethyst_facet.log
 /site
 .venv/
 
+
+# Obsidian vault settings for editing docs/.
+docs/.obsidian/

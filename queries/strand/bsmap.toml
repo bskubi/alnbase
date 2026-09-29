@@ -26,8 +26,10 @@
 # sweep. This rule reports what ZS says, which is the honest thing for a rule to do; the
 # error is in the BAM, and alnbase's reference-mismatch count is what surfaces it.
 
-[strand.origin]
-OT   = 'ZS == "++"'
-CTOT = 'ZS == "+-"'
-OB   = 'ZS == "-+"'
-CTOB = 'ZS == "--"'
+[strand.original]
+forward = 'ZS == "++" or ZS == "+-"'
+reverse = 'ZS == "-+" or ZS == "--"'
+
+[strand.aligned]
+forward = 'ZS == "++" or ZS == "--"'
+reverse = 'ZS == "+-" or ZS == "-+"'

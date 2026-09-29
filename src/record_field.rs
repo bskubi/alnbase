@@ -520,7 +520,7 @@ impl RecordField {
             F::SoftClip5p => "soft-clipped bases at the read's sequenced 5' end (off_5p already includes them)",
             F::SoftClip3p => "soft-clipped bases at the read's sequenced 3' end (off_3p already includes them)",
             F::RefrStrand => "reference strand the pattern matched, '+' or '-'",
-            F::ConvStrand => "strand of origin: OT, OB, CTOT or CTOB; null when the rule names only two strands",
+            F::ConvStrand => "strand of origin: OT, OB, CTOT or CTOB",
             F::ReadReverse => "true when the read was sequenced backwards along the reference (not FLAG 0x10)",
             F::InsertSize => "TLEN",
             F::MateTid => "mate reference index; null when the mate is unplaced",

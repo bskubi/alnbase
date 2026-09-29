@@ -5,15 +5,14 @@
 @CO	The four pe rows also cover --non_directional paired-end: there a CTOT pair writes
 @CO	the same two records as an OT pair with the mate bit swapped between them, so no
 @CO	new combination appears (alnbase-validation/demos/bismark-nondirectional-pe).
-@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
-@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
-@CO	conversion strand. Anything after the first "/" is a label for the reader.
-@CO	The convention, and the test that enforces it, are in ./README.md.
-OT/pe-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:CT	XG:Z:CT
-CTOT/pe-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:GA	XG:Z:CT
-OB/pe-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:CT	XG:Z:GA
-CTOB/pe-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:GA	XG:Z:GA
-OT/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:CT
-CTOT/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:CT
-OB/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:GA
-CTOB/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:GA
+@CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",
+@CO	each side forward or reverse, or "unknown". Anything after the first "/" is a label
+@CO	for the reader. The test that enforces it is in src/strand_rule.rs.
+forward:forward/pe-99	99	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:CT	XG:Z:CT
+forward:reverse/pe-147	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:GA	XG:Z:CT
+reverse:reverse/pe-83	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	XR:Z:CT	XG:Z:GA
+reverse:forward/pe-163	163	chr1	101	60	4M	=	301	200	ACGT	IIII	XR:Z:GA	XG:Z:GA
+forward:forward/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:CT
+forward:reverse/se-0	0	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:CT
+reverse:reverse/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:CT	XG:Z:GA
+reverse:forward/se-16	16	chr1	101	60	4M	*	0	0	ACGT	IIII	XR:Z:GA	XG:Z:GA

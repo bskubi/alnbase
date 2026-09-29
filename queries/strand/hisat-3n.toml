@@ -1,23 +1,22 @@
-# HISAT-3N -- YZ:A, conversion strand only.
+# HISAT-3N -- YZ:A for the original strand, FLAG 0x10 for the aligned direction.
 #
 # Read 2026-09-17 from HISAT-3N GitHub master (YZ at alignment_3n.h:717-718; FLAG
 # conformant at aln_sink.h:2574-2575, :2689-2692).
 #
-# YZ is + or -, the 3N index the read hit, which is the conversion strand directly. It does
-# not distinguish the strand of origin. The FLAG is conformant, so the sequenced direction
-# comes from 0x10.
+# YZ is + or -, the 3N index the read hit, which is the original strand directly. The FLAG
+# is conformant, so the aligned direction comes from 0x10.
 #
 # In HISAT-3N's default non-directional mode YZ is INFERRED from the read's conversion
 # counts (alignment_3n.h:288-313), and when the counts tie it falls back to the directional
 # rule (:299-308) -- so a fully methylated read is assigned a strand by assumption, not by
 # evidence, and this file will report that assumption as fact. With --directional-mapping (or
 # the undocumented --directional-mapping-reverse, which is PBAT) the library settles it
-# instead, and directional.toml applies and additionally gives the four-way strand. (There
+# instead, and directional.toml applies. (There
 # is no separate PBAT file; see directional.toml for why.)
 #
 # Checked 2026-09-17 against real HISAT-3N 2.2.1-3n-0.0.3 output, built from commit f5dda37
 # (alnbase-validation/demos/hisat-3n-strand), paired-end. On ordinary partly converted reads all
-# eight records were called with the conversion strand and the sequenced direction their
+# eight records were called with the original strand and the aligned direction their
 # origin implies; YZ was the same on both mates of every pair, 0x10 agreed with how SEQ was
 # really stored on every record, and SEQ was reference-forward throughout. A sweep of 456
 # reads found one converted cytosine to be enough for the inference: it is not a vote that
@@ -37,10 +36,10 @@
 # YZ is '+' when conversionCount[0] is the SMALLER count, while :309 assigns '+' when it is
 # the larger. The code is what this file follows, and the run above confirms it.
 
-[strand.conversion]
-"+" = 'YZ == "+"'
-"-" = 'YZ == "-"'
+[strand.original]
+forward = 'YZ == "+"'
+reverse = 'YZ == "-"'
 
-[strand.sequenced]
+[strand.aligned]
 forward = "not is_reverse"
 reverse = "is_reverse"

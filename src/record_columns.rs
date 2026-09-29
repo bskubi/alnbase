@@ -269,26 +269,23 @@ impl Column {
             F::RefrStrand => match ctx.strand {
                 Some(s) => {
                     self.text.clear();
-                    self.text.push_str(s.conversion.name());
+                    self.text.push_str(s.sign());
                     Cell::Str
                 }
                 None => Cell::Null,
             },
 
-            // Null when the rule named only the conversion strand: the input
-            // does not distinguish OT from CTOT, and picking one would be a
-            // guess that reads like a measurement.
-            F::ConvStrand => match ctx.strand.and_then(|s| s.origin) {
-                Some(origin) => {
+            F::ConvStrand => match ctx.strand {
+                Some(s) => {
                     self.text.clear();
-                    self.text.push_str(origin.name());
+                    self.text.push_str(s.origin().name());
                     Cell::Str
                 }
                 None => Cell::Null,
             },
 
             F::ReadReverse => match ctx.strand {
-                Some(s) => Cell::Bool(s.sequenced.is_reverse()),
+                Some(s) => Cell::Bool(s.aligned.is_reverse()),
                 None => Cell::Null,
             },
 
@@ -944,21 +941,19 @@ mod tests {
     /// The three strand columns say what the rule concluded, even when the
     /// FLAG would have said something else.
     ///
-    /// This is the shape a two-way aligner produces: the reads are the two
-    /// orientations of the top strand's converted copy, so the conversion
-    /// strand is `+` for both and there is no OT/CTOT to report. A run against
-    /// such input used to get `-` here from a flag bit that means something
-    /// else, and an invented `OB`.
+    /// The record here has 0x10 set and is read 1, which a directional
+    /// FLAG reading would call OB. The rule says its original strand is
+    /// forward and it aligns reverse, which is CTOT, and the columns follow
+    /// the rule.
     #[test]
     fn the_strand_columns_are_the_call_not_the_flag() {
-        use crate::strand_rule::{ConvStrand, SeqDir, StrandCall};
+        use crate::strand_rule::{Dir, StrandCall};
         let rec = built(b"r", b"ACGT", &[Cigar::Match(4)], 0, REVERSE);
-        let two_way =
-            StrandCall { conversion: ConvStrand::Plus, sequenced: SeqDir::Reverse, origin: None };
+        let call = StrandCall { original: Dir::Forward, aligned: Dir::Reverse };
         let fields = [RecordField::RefrStrand, RecordField::ConvStrand, RecordField::ReadReverse];
-        let row = extract_row_as(&fields, &rec, two_way);
+        let row = extract_row_as(&fields, &rec, call);
         assert_eq!(row[0].as_deref(), Some("+"), "0x10 is set but the rule says plus");
-        assert_eq!(row[1], None, "two strands named, so there is no strand of origin to give");
+        assert_eq!(row[1].as_deref(), Some("CTOT"), "not OB, which the FLAG alone would give");
         assert_eq!(row[2].as_deref(), Some("true"));
     }
 

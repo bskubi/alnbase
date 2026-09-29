@@ -39,8 +39,10 @@
 # the only one that is right: 0x10 carried the genome conversion on 201 of 201 records,
 # contradicting how SEQ was really stored, so no rule over the FLAG can name those records.
 
-[strand.origin]
-OT   = 'XR == "CT" and XG == "CT"'
-CTOT = 'XR == "GA" and XG == "CT"'
-OB   = 'XR == "CT" and XG == "GA"'
-CTOB = 'XR == "GA" and XG == "GA"'
+[strand.original]
+forward = 'XG == "CT"'
+reverse = 'XG == "GA"'
+
+[strand.aligned]
+forward = '(XR == "CT" and XG == "CT") or (XR == "GA" and XG == "GA")'
+reverse = '(XR == "GA" and XG == "CT") or (XR == "CT" and XG == "GA")'

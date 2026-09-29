@@ -1,20 +1,21 @@
-# BISCUIT 1.10.3 -- YD:A, conversion strand only.
+# BISCUIT 1.10.3 -- YD:A for the original strand, FLAG 0x10 for the aligned direction.
 #
 # Read 2026-09-17 from BISCUIT 1.10.3 (YD at mem_alnreg_format.c:434-437; FLAG conformant
 # at :81-84, :338,357).
 #
-# YD is f or r, the converted contig the read hit, which gives the conversion strand
+# YD is f or r, the converted contig the read hit, which gives the original strand
 # without assuming the library is directional -- BISCUIT's default -b 0 is non-directional.
-# It does not give the strand of origin: a strand and its PCR copy hit the same contig, so
-# OT and CTOT are both f and OB and CTOB are both r. The FLAG is conformant, so the
-# sequenced direction comes from 0x10, declared here rather than assumed.
+# A strand and its PCR copy hit the same contig, so OT and CTOT are both f and OB and CTOB
+# are both r; the copy aligns in the other direction, which is how the two are told apart.
+# The FLAG is conformant, so the aligned direction comes from 0x10, declared here rather
+# than assumed.
 #
 # YD:A:u means no conversion event was seen anywhere in the alignment, so neither strand is
 # supported by evidence. Those records are counted and skipped rather than guessed.
 #
 # Checked 2026-09-17 against real BISCUIT BAMs (alnbase-validation/demos/biscuit-strand), both
-# layouts: two pairs with -b 1 and four with the default -b 0. Every record's conversion
-# strand and sequenced direction came back as the strand it was sequenced from implies, the
+# layouts: two pairs with -b 1 and four with the default -b 0. Every record's original
+# strand and aligned direction came back as the strand it was sequenced from implies, the
 # FLAG was conformant on all twelve records, and SEQ was reference-forward throughout. The
 # contig grouping was counted rather than assumed: f held OT and CTOT, r held OB and CTOB.
 #
@@ -22,11 +23,11 @@
 # recovers all four strands from the library's own design; this file is the honest rule
 # when the library is unknown or non-directional.
 
-[strand.conversion]
-"+"     = 'YD == "f"'
-"-"     = 'YD == "r"'
+[strand.original]
+forward = 'YD == "f"'
+reverse = 'YD == "r"'
 unknown = 'YD == "u"'           # no conversion event observed
 
-[strand.sequenced]
+[strand.aligned]
 forward = "not is_reverse"
 reverse = "is_reverse"

@@ -2,11 +2,10 @@
 @SQ	SN:chr1	LN:1000
 @CO	Records for queries/strand/bsmap.toml
 @CO	queries/strand/bsmap.toml -- ZS, conversion strand then orientation within it.
-@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
-@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
-@CO	conversion strand. Anything after the first "/" is a label for the reader.
-@CO	The convention, and the test that enforces it, are in ./README.md.
-OT/++	99	chr1	101	60	4M	=	301	200	ACGT	IIII	ZS:Z:++
-CTOT/+-	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	ZS:Z:+-
-OB/-+	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	ZS:Z:-+
-CTOB/--	163	chr1	101	60	4M	=	301	200	ACGT	IIII	ZS:Z:--
+@CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",
+@CO	each side forward or reverse, or "unknown". Anything after the first "/" is a label
+@CO	for the reader. The test that enforces it is in src/strand_rule.rs.
+forward:forward/++	99	chr1	101	60	4M	=	301	200	ACGT	IIII	ZS:Z:++
+forward:reverse/+-	147	chr1	101	60	4M	=	301	-200	ACGT	IIII	ZS:Z:+-
+reverse:reverse/-+	83	chr1	101	60	4M	=	301	-200	ACGT	IIII	ZS:Z:-+
+reverse:forward/--	163	chr1	101	60	4M	=	301	200	ACGT	IIII	ZS:Z:--

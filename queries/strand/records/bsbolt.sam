@@ -6,12 +6,11 @@
 @CO	0x20 both come from the Crick contig rather than from orientation, so neither is set on
 @CO	a Watson record and both are set on a Crick one. 0x2 is absent there only because bwa
 @CO	had too few pairs to estimate an insert size, so it is left off here too.
-@CO	Each QNAME is the call the rule must make for that record: one of OT, CTOT, OB,
-@CO	CTOB, "unknown", or "<conversion>:<sequenced>" for a rule that reaches only the
-@CO	conversion strand. Anything after the first "/" is a label for the reader.
-@CO	The convention, and the test that enforces it, are in ./README.md.
-OT/W_C2T	65	chr1	101	60	4M	=	301	200	ACGT	IIII	YS:Z:W_C2T
-CTOT/W_G2A	129	chr1	101	60	4M	=	301	-200	ACGT	IIII	YS:Z:W_G2A
-OB/C_C2T	113	chr1	101	60	4M	=	301	-200	ACGT	IIII	YS:Z:C_C2T
-CTOB/C_G2A	177	chr1	101	60	4M	=	301	200	ACGT	IIII	YS:Z:C_G2A
+@CO	Each QNAME is the call the rule must make for that record: "<original>:<aligned>",
+@CO	each side forward or reverse, or "unknown". Anything after the first "/" is a label
+@CO	for the reader. The test that enforces it is in src/strand_rule.rs.
+forward:forward/W_C2T	65	chr1	101	60	4M	=	301	200	ACGT	IIII	YS:Z:W_C2T
+forward:reverse/W_G2A	129	chr1	101	60	4M	=	301	-200	ACGT	IIII	YS:Z:W_G2A
+reverse:reverse/C_C2T	113	chr1	101	60	4M	=	301	-200	ACGT	IIII	YS:Z:C_C2T
+reverse:forward/C_G2A	177	chr1	101	60	4M	=	301	200	ACGT	IIII	YS:Z:C_G2A
 unknown/WC	4	*	0	0	*	*	0	0	ACGT	IIII	YS:Z:WC
