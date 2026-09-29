@@ -3,6 +3,12 @@
 This package versions separately from the alnbase binary, which has its own
 `CHANGELOG.md` at the repository root.
 
+## 0.8.1 — 2026-09-29
+
+- **Licence declared** (`pyproject.toml`). The package is MIT-licensed, matching
+  `LICENSE` at the repository root. The SPDX `license` string needs setuptools 77
+  or later, so the build requirement moved up from 68.
+
 ## 0.8.0 — 2026-09-23
 
 **Every filter the target formats need is now expressible without raw SQL.**

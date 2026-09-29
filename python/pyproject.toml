@@ -1,12 +1,13 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "alnbase-agg"
-version = "0.8.0"
+version = "0.8.1"
 description = "Aggregate alnbase hit tables with DuckDB, where a run is a SQL script"
 requires-python = ">=3.11"
+license = "MIT"
 # Deliberately short. This package runs a SQL script and hands DuckDB a
 # connection; the formats that need h5py or pyarrow are an extra, so a user who
 # only wants a .cov file does not install a stack for HDF5.

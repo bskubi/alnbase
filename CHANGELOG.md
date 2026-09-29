@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.27 — 2026-09-29
+
+- **Licence and repository declared** (`Cargo.toml`). The crate is MIT-licensed, matching
+  `LICENSE` at the repository root, and `repository` points at
+  `https://github.com/bskubi/alnbase`. Both fields were commented out as undecided.
+
 ## 0.1.26 — 2026-09-21
 
 Documentation aimed at rustdoc, starting with the page a reader lands on.
