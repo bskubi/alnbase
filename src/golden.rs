@@ -56,13 +56,13 @@ const UNMAPPED: u16 = 0x4;
 /// Bismark's eight codes, including `u`/`U` as the complement of the three
 /// determinable contexts. The same file shipped as `docs/bismark-xm.toml`.
 const QUERIES: &str = r#"
-[pat.cg]
+[pattern.cg]
 read = "~~~"
 refr = "CG~"
-[pat.chg]
+[pattern.chg]
 read = "~~~"
 refr = "CHG"
-[pat.chh]
+[pattern.chh]
 read = "~~~"
 refr = "CHH"
 

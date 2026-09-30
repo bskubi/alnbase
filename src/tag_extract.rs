@@ -523,10 +523,10 @@ where = "tg"
 [query.CG]
 mark = "+."
 where = "cg"
-[pat.tg]
+[pattern.tg]
 read = "T~"
 refr = "CG"
-[pat.cg]
+[pattern.cg]
 read = "C~"
 refr = "CG"
 [tag.XM.bases]
@@ -559,7 +559,7 @@ GA = ["CTOT", "CTOB"]
     #[test]
     fn the_most_recent_run_defining_the_tag_wins() {
         let newer = TWO_TAGS.replace("fill = \".\"", "fill = \"-\"");
-        let other = "[query.q]\n[pat.p]\nread = \"C\"\nrefr = \"C\"\n[tag.XE.bases]\nfill = \".\"\ne = \"q\"\n";
+        let other = "[query.q]\n[pattern.p]\nread = \"C\"\nrefr = \"C\"\n[tag.XE.bases]\nfill = \".\"\ne = \"q\"\n";
         let h = header_of(&[("alnbase", TWO_TAGS), ("alnbase.1", &newer), ("alnbase.2", other)]);
 
         let e = choose(&h, None, None).unwrap_err();

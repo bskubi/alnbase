@@ -988,7 +988,7 @@ pub(crate) fn finish(
 
 /// Check a set of queries assembled from several sources.
 ///
-/// A single query file cannot contain a conflict -- duplicate `pat` and `query`
+/// A single query file cannot contain a conflict -- duplicate `pattern` and `query`
 /// names are rejected as it is parsed -- but a run may combine several files
 /// and any number of `-q` strings, and nothing has compared them until now.
 ///
@@ -1151,7 +1151,7 @@ mod tests {
         };
         let two = |r1: &str, f1: &str, r2: &str, f2: &str, w: &str| {
             format!(
-                "[pat.a]\nread = \"{r1}\"\nrefr = \"{f1}\"\n[pat.b]\nread = \"{r2}\"\nrefr = \"{f2}\"\n[query.q]\nmark = \"+.\"\nwhere = \"{w}\"\n"
+                "[pattern.a]\nread = \"{r1}\"\nrefr = \"{f1}\"\n[pattern.b]\nread = \"{r2}\"\nrefr = \"{f2}\"\n[query.q]\nmark = \"+.\"\nwhere = \"{w}\"\n"
             )
         };
         assert_eq!(r(&one("C~", "CG", "+.")), Fixed(Seq::C));

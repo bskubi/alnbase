@@ -20,31 +20,31 @@
 # last two bases of a contig still fires, and falls to Cx because its context
 # columns are reference pads rather than bases.
 
-[pat.c_met]                 # a reference C read as C
+[pattern.c_met]                 # a reference C read as C
 read = "C~~"
 refr = "C~~"
-[pat.c_unmet]               # a reference C read as T: converted by the bisulfite
+[pattern.c_unmet]               # a reference C read as T: converted by the bisulfite
 read = "T~~"
 refr = "C~~"
 
-[pat.cg_met]
+[pattern.cg_met]
 read = "C~~"
 refr = "CG~"
-[pat.cg_unmet]
+[pattern.cg_unmet]
 read = "T~~"
 refr = "CG~"
 
-[pat.chg_met]
+[pattern.chg_met]
 read = "C~~"
 refr = "CHG"
-[pat.chg_unmet]
+[pattern.chg_unmet]
 read = "T~~"
 refr = "CHG"
 
-[pat.chh_met]
+[pattern.chh_met]
 read = "C~~"
 refr = "CHH"
-[pat.chh_unmet]
+[pattern.chh_unmet]
 read = "T~~"
 refr = "CHH"
 

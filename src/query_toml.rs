@@ -5,7 +5,7 @@
 //! mark  = ".......+...."
 //! where = "cpg and not junc_end"
 //!
-//! [pat.cpg]
+//! [pattern.cpg]
 //! read = "~~~~~~~Yo~~~"
 //! refr = "~~~~~~~CG~~~"
 //!
@@ -38,7 +38,7 @@
 //! A syntax or schema error comes from the TOML crate with a position and is
 //! reported by line. A problem found afterwards -- a row of the wrong width, a
 //! code naming a query that does not exist -- is reported by table and key,
-//! e.g. `[pat.cpg] read`, since typed structs keep no positions and every name
+//! e.g. `[pattern.cpg] read`, since typed structs keep no positions and every name
 //! in a file is unique.
 
 use indexmap::IndexMap;
@@ -62,15 +62,15 @@ where = "cpg and not junc_end and not junc_mid"
 mark  = ".......+...."
 where = "cpg and (junc_end or junc_mid)"
 
-[pat.cpg]                   # read has C or T where the reference has CG
+[pattern.cpg]                   # read has C or T where the reference has CG
 read = "~~~~~~~Yo~~~"
 refr = "~~~~~~~CG~~~"
 
-[pat.junc_end]              # DpnII junction on columns 0-7: its final C is
+[pattern.junc_end]              # DpnII junction on columns 0-7: its final C is
 read = "~~~~~~~~~~~~"       # column 7, so a genomic G at 8 fakes a CpG
 refr = "GATCGATC~~~~"
 
-[pat.junc_mid]              # junction on columns 4-11: its own internal CG
+[pattern.junc_mid]              # junction on columns 4-11: its own internal CG
 read = "~~~~~~~~~~~~"       # lands on columns 7-8
 refr = "~~~~GATCGATC"
 
@@ -91,7 +91,7 @@ order, and a query may name a pattern declared below it.
   [alias]           one-letter names for base sets: `o = \"{{N.}}\"`. A row holds one
                     character per column and most base sets have no one-character
                     code, so an alias names one. Lowercase letters only.
-  [pat.NAME]        a pattern: `read` and `refr` rows of equal width, column i of
+  [pattern.NAME]    a pattern: `read` and `refr` rows of equal width, column i of
                     one against column i of the other.
   [query.NAME]      a query: `where`, which patterns it uses combined with
                     and / or / not and parentheses (optional when the file has
@@ -141,7 +141,7 @@ struct RawFile {
     #[serde(default)]
     alias: IndexMap<String, String>,
     #[serde(default)]
-    pat: IndexMap<String, RawPat>,
+    pattern: IndexMap<String, RawPat>,
     #[serde(default)]
     query: IndexMap<String, RawQuery>,
     #[serde(default)]
@@ -228,9 +228,9 @@ pub fn parse_file(src: &str) -> Result<QueryFile, FileError> {
         alias_lines.push((c, seq, at));
     }
 
-    let mut pats = Vec::with_capacity(raw.pat.len());
-    for (name, p) in &raw.pat {
-        let table = format!("[pat.{}]", key(name));
+    let mut pats = Vec::with_capacity(raw.pattern.len());
+    for (name, p) in &raw.pattern {
+        let table = format!("[pattern.{}]", key(name));
         check_name(name, "pattern", &table)?;
         for (row, which) in [(&p.read, "read"), (&p.refr, "refr")] {
             if row.is_empty() {
@@ -273,12 +273,12 @@ pub fn parse_file(src: &str) -> Result<QueryFile, FileError> {
             }
         };
         if let Some((read, refr)) = own {
-            if raw.pat.contains_key(name) {
+            if raw.pattern.contains_key(name) {
                 return Err(err(
                     Loc::Toml(table.clone()),
                     format!(
                         "its 'read' and 'refr' declare a pattern named '{name}', and \
-                         [pat.{}] declares another; a pattern name must mean one thing",
+                         [pattern.{}] declares another; a pattern name must mean one thing",
                         key(name)
                     ),
                 ));
@@ -434,7 +434,7 @@ mod tests {
         parse_file(src).unwrap_err()
     }
 
-    const MIN: &str = "[pat.p]\nread = \"C~\"\nrefr = \"CG\"\n[query.x]\n";
+    const MIN: &str = "[pattern.p]\nread = \"C~\"\nrefr = \"CG\"\n[query.x]\n";
 
     /// The example in `--help` parses, and means what it says it means: four
     /// patterns, two queries anchored on column 7, and the alias they use.
@@ -455,8 +455,8 @@ mod tests {
 
     #[test]
     fn tables_interleave_and_queries_keep_file_order() {
-        let src = "[query.b]\nwhere = \"p\"\n[pat.p]\nread = \"C\"\nrefr = \"C\"\n\
-                   [query.a]\nwhere = \"q\"\n[pat.q]\nread = \"T\"\nrefr = \"C\"\n";
+        let src = "[query.b]\nwhere = \"p\"\n[pattern.p]\nread = \"C\"\nrefr = \"C\"\n\
+                   [query.a]\nwhere = \"q\"\n[pattern.q]\nread = \"T\"\nrefr = \"C\"\n";
         let f = parse_file(src).unwrap_or_else(|e| panic!("{e}"));
         let names: Vec<_> = f.queries.iter().map(|q| q.name.as_str()).collect();
         assert_eq!(names, ["b", "a"]);
@@ -474,56 +474,61 @@ mod tests {
         assert_eq!(e.at, Loc::Line(5));
         assert!(e.msg.contains("unknown field `marks`"), "{e}");
 
-        let e = bad("[pat.p]\nread = C~\nrefr = \"CG\"\n[query.x]\n");
+        let e = bad("[pattern.p]\nread = C~\nrefr = \"CG\"\n[query.x]\n");
         assert_eq!(e.at, Loc::Line(2), "{e}");
 
-        let e = bad(&format!("{MIN}[pat.p]\nread = \"C\"\nrefr = \"C\"\n"));
+        let e = bad(&format!("{MIN}[pattern.p]\nread = \"C\"\nrefr = \"C\"\n"));
         assert!(e.msg.contains("duplicate"), "{e}");
 
-        let e = bad("[pat.p]\nread = \"C\"\n[query.x]\n");
+        let e = bad("[pattern.p]\nread = \"C\"\n[query.x]\n");
         assert!(e.msg.contains("missing field `refr`"), "{e}");
 
-        let e = bad("[query.x]\nwhere = \"p\"\n[pat.p]\nread = \"C\"\nrefr = \"C\"\n[paterns.q]\n");
+        let e = bad("[query.x]\nwhere = \"p\"\n[pattern.p]\nread = \"C\"\nrefr = \"C\"\n[paterns.q]\n");
         assert!(e.msg.contains("unknown field `paterns`"), "{e}");
     }
 
     #[test]
     fn later_errors_name_the_table_and_key() {
-        let e = bad("[pat.p]\nread = \"C~\"\nrefr = \"CGA\"\n[query.x]\n");
-        assert_eq!(e.at, Loc::Toml("[pat.p] read".into()));
+        let e = bad("[pattern.p]\nread = \"C~\"\nrefr = \"CGA\"\n[query.x]\n");
+        assert_eq!(e.at, Loc::Toml("[pattern.p] read".into()));
         assert!(e.msg.contains("read row is 2 columns, refr row is 3"), "{e}");
 
         let e = bad(&format!("{MIN}mark = \"+..\"\n"));
         assert_eq!(e.at, Loc::Toml("[query.x] mark".into()));
 
-        let e = bad("[pat.p]\nread = \"C1\"\nrefr = \"CG\"\n[query.x]\n");
-        assert_eq!(e.at, Loc::Toml("[pat.p] read".into()));
+        let e = bad("[pattern.p]\nread = \"C1\"\nrefr = \"CG\"\n[query.x]\n");
+        assert_eq!(e.at, Loc::Toml("[pattern.p] read".into()));
         assert!(e.msg.contains("digit"), "{e}");
 
-        let e = bad("[pat.\"a b\"]\nread = \"C\"\nrefr = \"C\"\n[query.x]\n");
-        assert_eq!(e.at, Loc::Toml("[pat.\"a b\"]".into()));
+        let e = bad("[pattern.\"a b\"]\nread = \"C\"\nrefr = \"C\"\n[query.x]\n");
+        assert_eq!(e.at, Loc::Toml("[pattern.\"a b\"]".into()));
         assert!(e.msg.contains("whitespace"), "{e}");
 
-        let e = bad("[pat.p]\nread = \"\"\nrefr = \"C\"\n[query.x]\n");
-        assert_eq!(e.at, Loc::Toml("[pat.p] read".into()));
+        let e = bad("[pattern.p]\nread = \"\"\nrefr = \"C\"\n[query.x]\n");
+        assert_eq!(e.at, Loc::Toml("[pattern.p] read".into()));
 
         let e = bad(&format!("{MIN}[alias]\nab = \"C\"\n"));
         assert_eq!(e.at, Loc::Toml("[alias] ab".into()));
         assert!(e.msg.contains("one character"), "{e}");
 
-        let e = bad(&format!("{MIN}[pat.q]\nread = \"C\"\nrefr = \"C\"\n"));
+        // A comma in an alias is a junction only on its own, as in a row.
+        let e = bad(&format!("{MIN}[alias]\ne = \"{{A,C,G,T,_}}\"\n"));
+        assert!(e.msg.contains("commas are not allowed"), "{e}");
+        assert!(parse_file(&format!("{MIN}[alias]\ne = \",\"\nf = \"{{NJ}}\"\n")).is_ok());
+
+        let e = bad(&format!("{MIN}[pattern.q]\nread = \"C\"\nrefr = \"C\"\n"));
         assert_eq!(e.at, Loc::Toml("[query.x]".into()));
         assert!(e.msg.contains("needs a 'where'"), "{e}");
 
-        let e = bad("[pat.p]\nread = \"C\"\nrefr = \"C\"\n");
+        let e = bad("[pattern.p]\nread = \"C\"\nrefr = \"C\"\n");
         assert!(e.msg.contains("no queries, tags or strand rule"), "{e}");
     }
 
     #[test]
     fn an_unused_pattern_is_a_warning_named_by_table() {
-        let f = parse_file(&format!("{MIN}where = \"p\"\n[pat.q]\nread = \"C\"\nrefr = \"C\"\n"))
+        let f = parse_file(&format!("{MIN}where = \"p\"\n[pattern.q]\nread = \"C\"\nrefr = \"C\"\n"))
             .unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!(f.warnings, ["[pat.q]: pattern 'q' is defined but no query uses it"]);
+        assert_eq!(f.warnings, ["[pattern.q]: pattern 'q' is defined but no query uses it"]);
     }
 
     /// Bismark's tags, for the top strands: XM from four queries, and the read
@@ -545,19 +550,19 @@ where = "thh"
 mark = "+.."
 where = "chh"
 
-[pat.tg]
+[pattern.tg]
 read = "T~"
 refr = "CG"
 
-[pat.cg]
+[pattern.cg]
 read = "C~"
 refr = "CG"
 
-[pat.thh]
+[pattern.thh]
 read = "T~~"
 refr = "CHH"
 
-[pat.chh]
+[pattern.chh]
 read = "C~~"
 refr = "CHH"
 
@@ -654,8 +659,8 @@ GA = ["OB", "CTOB"]
     fn a_bases_tag_refuses_anchors_that_can_lack_a_read_base() {
         let file = |read: &str, mark: &str, extra: &str| {
             format!(
-                "[query.q]\nmark = \"{mark}\"\nwhere = \"p{extra}\"\n[pat.p]\nread = \"{read}\"\nrefr = \"CG\"\n\
-                 [pat.c]\nread = \"C~\"\nrefr = \"~~\"\n[tag.XM.bases]\nfill = \".\"\nz = \"q\"\n\
+                "[query.q]\nmark = \"{mark}\"\nwhere = \"p{extra}\"\n[pattern.p]\nread = \"{read}\"\nrefr = \"CG\"\n\
+                 [pattern.c]\nread = \"C~\"\nrefr = \"~~\"\n[tag.XM.bases]\nfill = \".\"\nz = \"q\"\n\
                  [alias]\nj = \"{{C-}}\"\nk = \"{{CT}}\"\n"
             )
         };
@@ -683,7 +688,7 @@ GA = ["OB", "CTOB"]
 
     #[test]
     fn an_unquoted_value_is_reported_as_one() {
-        let e = bad("[query.q]\n[pat.p]\nread = \"C\"\nrefr = \"C\"\n[tag.XM.bases]\nfill = \".\"\nz = TG\n");
+        let e = bad("[query.q]\n[pattern.p]\nread = \"C\"\nrefr = \"C\"\n[tag.XM.bases]\nfill = \".\"\nz = TG\n");
         assert_eq!(e.at, Loc::Line(7));
         assert!(e.msg.starts_with("text must be in quotes in TOML: z = \"TG\""), "{e}");
         for (line, want) in [
@@ -703,7 +708,7 @@ GA = ["OB", "CTOB"]
     /// `where` naming it, down to the operand's name.
     #[test]
     fn a_query_can_hold_its_own_pattern() {
-        let long = parse_file("[pat.CG]\nread = \"C~\"\nrefr = \"CG\"\n[query.CG]\nwhere = \"CG\"\n").unwrap();
+        let long = parse_file("[pattern.CG]\nread = \"C~\"\nrefr = \"CG\"\n[query.CG]\nwhere = \"CG\"\n").unwrap();
         let short = parse_file("[query.CG]\nread = \"C~\"\nrefr = \"CG\"\n").unwrap();
         assert_eq!(format!("{:?}", short.queries), format!("{:?}", long.queries));
         assert_eq!(short.queries[0].anchor, 0, "no mark: the first column is the anchor");
@@ -719,7 +724,7 @@ GA = ["OB", "CTOB"]
         let mut long = String::new();
         for (name, read, refr) in contexts {
             short.push_str(&format!("[query.{name}]\nread = \"{read}\"\nrefr = \"{refr}\"\n"));
-            long.push_str(&format!("[pat.{name}]\nread = \"{read}\"\nrefr = \"{refr}\"\n[query.{name}]\nwhere = \"{name}\"\n"));
+            long.push_str(&format!("[pattern.{name}]\nread = \"{read}\"\nrefr = \"{refr}\"\n[query.{name}]\nwhere = \"{name}\"\n"));
         }
         let a = parse_file(&(short + tag)).unwrap();
         let b = parse_file(&(long + tag)).unwrap();
@@ -731,7 +736,7 @@ GA = ["OB", "CTOB"]
     fn a_query_with_its_own_pattern_can_still_say_where() {
         let src = "[query.cg]\nread = \"C~\"\nrefr = \"CG\"\nwhere = \"cg and not junc\"\n\
                    [query.other]\nwhere = \"cg\"\n\
-                   [pat.junc]\nread = \"~~\"\nrefr = \"GA\"\n";
+                   [pattern.junc]\nread = \"~~\"\nrefr = \"GA\"\n";
         let f = parse_file(src).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(f.queries[0].operands.len(), 2);
         assert_eq!(f.queries[1].operands.len(), 1, "another query can use it by name");
@@ -739,7 +744,7 @@ GA = ["OB", "CTOB"]
 
         // Its own pattern unused by its own where is still a pattern nothing
         // is obliged to use -- reported like any other.
-        let f = parse_file("[query.a]\nread = \"C\"\nrefr = \"C\"\nwhere = \"b\"\n[pat.b]\nread = \"G\"\nrefr = \"G\"\n").unwrap();
+        let f = parse_file("[query.a]\nread = \"C\"\nrefr = \"C\"\nwhere = \"b\"\n[pattern.b]\nread = \"G\"\nrefr = \"G\"\n").unwrap();
         assert_eq!(f.warnings, ["[query.a]: pattern 'a' is defined but no query uses it"]);
     }
 
@@ -750,9 +755,9 @@ GA = ["OB", "CTOB"]
         assert!(e.msg.contains("no 'refr'"), "{e}");
         let e = bad("[query.q]\nrefr = \"CG\"\n");
         assert!(e.msg.contains("no 'read'"), "{e}");
-        let e = bad("[query.q]\nread = \"C~\"\nrefr = \"CG\"\n[pat.q]\nread = \"T~\"\nrefr = \"CG\"\n");
+        let e = bad("[query.q]\nread = \"C~\"\nrefr = \"CG\"\n[pattern.q]\nread = \"T~\"\nrefr = \"CG\"\n");
         assert_eq!(e.at, Loc::Toml("[query.q]".into()));
-        assert!(e.msg.contains("[pat.q] declares another"), "{e}");
+        assert!(e.msg.contains("[pattern.q] declares another"), "{e}");
         let e = bad("[query.q]\nread = \"C~\"\nrefr = \"CGA\"\n");
         assert_eq!(e.at, Loc::Toml("[query.q] read".into()));
         assert!(e.msg.contains("read row is 2 columns, refr row is 3"), "{e}");

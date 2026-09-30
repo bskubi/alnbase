@@ -395,7 +395,7 @@ mod tests {
 
     #[test]
     fn a_dump_carries_its_pg_line_and_the_file_verbatim() {
-        let text = "[query.x]\n[pat.p]\nread = \"C\"\nrefr = \"C\"\n";
+        let text = "[query.x]\n[pattern.p]\nread = \"C\"\nrefr = \"C\"\n";
         let mut h = String::from("@HD\tVN:1.6\n@PG\tID:alnbase\tPN:alnbase\tCL:alnbase query a b c\n");
         h.push_str(&header_lines("alnbase", &[src("q.toml", text)]));
         let d = dump(&h, None, None).unwrap();

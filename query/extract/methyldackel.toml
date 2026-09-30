@@ -15,19 +15,19 @@
 # Configurable MethylDackel filters (MAPQ, base quality, flags) are not queries: the
 # validator turns them off in MethylDackel, or applies the same filter to both tools.
 
-[pat.cytosine_read_C]
+[pattern.cytosine_read_C]
 read = "C~~"
 refr = "C~~"
 
-[pat.cytosine_read_T]
+[pattern.cytosine_read_T]
 read = "T~~"
 refr = "C~~"
 
-[pat.next_is_G]           # the reference base after the C is G
+[pattern.next_is_G]           # the reference base after the C is G
 read = "~~~"
 refr = "~G~"
 
-[pat.second_next_is_G]    # the reference base two after the C is G
+[pattern.second_next_is_G]    # the reference base two after the C is G
 read = "~~~"
 refr = "~~G"
 

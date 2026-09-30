@@ -399,7 +399,7 @@ mod tests {
 
     #[test]
     fn a_plain_pattern_fires_at_the_last_column() {
-        let qs = set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+.\"\nwhere = \"p1\"\n");
+        let qs = set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+.\"\nwhere = \"p1\"\n");
         //                    0    1    2    3
         let fired = run(&qs, &cols("TTCA", "TTCG"));
         assert_eq!(fired[0], Vec::<usize>::new());
@@ -411,7 +411,7 @@ mod tests {
 
     #[test]
     fn patterns_are_interned_across_queries() {
-        let qs = set("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.a]\nmark = \"+.......\"\nwhere = \"p1 and not p2\"\n\n[query.b]\nmark = \"+.......\"\nwhere = \"p2 or p1\"\n");
+        let qs = set("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.a]\nmark = \"+.......\"\nwhere = \"p1 and not p2\"\n\n[query.b]\nmark = \"+.......\"\nwhere = \"p2 or p1\"\n");
         // Four operand mentions, two distinct patterns.
         assert_eq!(qs.patterns.len(), 2);
         assert_eq!(qs.max_span, 8);
@@ -420,18 +420,18 @@ mod tests {
     #[test]
     fn negation_needs_a_positive_operand() {
         assert_eq!(
-            err("[pat.p1]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.q]\nmark = \"+.......\"\nwhere = \"not p1\"\n"),
+            err("[pattern.p1]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.q]\nmark = \"+.......\"\nwhere = \"not p1\"\n"),
             CompileError::AlwaysOnEmpty { query: "not p1".into() }
         );
         // With a positive operand it compiles.
-        set("[pat.p1]\nread = \"~~~~~~~~\"\nrefr = \"========\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.unnamed]\nmark = \"+.......\"\nwhere = \"p1 and not p2\"\n");
+        set("[pattern.p1]\nread = \"~~~~~~~~\"\nrefr = \"========\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.unnamed]\nmark = \"+.......\"\nwhere = \"p1 and not p2\"\n");
     }
 
     #[test]
     fn boolean_exclusion_works_end_to_end() {
         // A CpG at columns 3-4 of an 8-column window, excluded when the
         // reference reads GATCGATC — whose own CG sits at exactly 3-4.
-        let qs = set("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
+        let qs = set("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
         assert_eq!(qs.queries[0].span, 8);
         assert_eq!(qs.queries[0].anchor, 3);
         assert_eq!(&*qs.queries[0].captures, &[3]);
@@ -447,7 +447,7 @@ mod tests {
 
     #[test]
     fn relational_columns_match_and_mismatch() {
-        let qs = set("[pat.p1]\nread = \"~\"\nrefr = \"=\"\n[pat.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p2\"\n");
+        let qs = set("[pattern.p1]\nread = \"~\"\nrefr = \"=\"\n[pattern.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p2\"\n");
         let fired = run(&qs, &cols("ACGT", "ACTT"));
         assert_eq!(fired[0], vec![0]); // A vs A
         assert_eq!(fired[1], vec![0]); // C vs C
@@ -457,7 +457,7 @@ mod tests {
 
     #[test]
     fn relational_codes_ignore_gaps_pads_and_ambiguity() {
-        let qs = set("[pat.p1]\nread = \"~\"\nrefr = \"=\"\n[pat.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p2\"\n");
+        let qs = set("[pattern.p1]\nread = \"~\"\nrefr = \"=\"\n[pattern.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p2\"\n");
         let none: Vec<usize> = vec![];
         // Neither fires: they are not complements.
         assert_eq!(run(&qs, &[(Seq::GAP, Seq::GAP)])[0], none);
@@ -476,13 +476,13 @@ mod tests {
         assert!(matches!(err("[alias]\ng = \"{._}\"\n\n[query.q]\nread = \"g\"\nrefr = \"/\"\n"), CompileError::DeadColumn { .. }));
         // Without a relation the sides constrain independently, so a column
         // whose sides disagree is a mismatch, not a contradiction.
-        set("[pat.p1]\nread = \"M\"\nrefr = \"G\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
+        set("[pattern.p1]\nread = \"M\"\nrefr = \"G\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
     }
 
     #[test]
     fn unreachable_components_warn_without_failing() {
         // The gap can never satisfy '=', so the column reduces to (C, C).
-        let qs = set("[alias]\nj = \"{C.}\"\n\n[pat.p1]\nread = \"j\"\nrefr = \"=\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let qs = set("[alias]\nj = \"{C.}\"\n\n[pattern.p1]\nread = \"j\"\nrefr = \"=\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert_eq!(qs.warnings.len(), 2, "{:?}", qs.warnings);
         assert!(qs.warnings[0].message.contains("unreachable"), "{:?}", qs.warnings[0]);
     }
@@ -491,13 +491,13 @@ mod tests {
     fn backsteps_are_resolved_at_compile_time() {
         // The ring post-increments, so get(1) is the last column of the span
         // and column i is span - i back. Column 3 of an 8-wide span is 5.
-        let qs = set("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"...+....\"\nwhere = \"p1\"\n");
+        let qs = set("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"...+....\"\nwhere = \"p1\"\n");
         let q = &qs.queries[0];
         assert_eq!(&*q.capture_back, &[5]);
         assert_eq!(q.anchor_back, 5);
         // Default anchor is column 0: the far end, matching the old
         // `ring.get(k_pair.len())`.
-        let qs = set("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"+.......\"\nwhere = \"p1\"\n");
+        let qs = set("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"+.......\"\nwhere = \"p1\"\n");
         assert_eq!(qs.queries[0].anchor_back, 8);
         assert_eq!(qs.queries[0].span, 8);
     }
@@ -505,19 +505,19 @@ mod tests {
     #[test]
     fn flat_captures_tracks_the_common_case() {
         // Anchor only, explicit or defaulted: nothing to put in a list.
-        assert!(set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+.\"\nwhere = \"p1\"\n").flat_captures);
-        assert!(set("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"...+....\"\nwhere = \"p1\"\n").flat_captures);
-        assert!(set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n[pat.p2]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"...+....\"\nwhere = \"p2\"\n").flat_captures);
+        assert!(set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+.\"\nwhere = \"p1\"\n").flat_captures);
+        assert!(set("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.unnamed]\nmark = \"...+....\"\nwhere = \"p1\"\n").flat_captures);
+        assert!(set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n[pattern.p2]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"...+....\"\nwhere = \"p2\"\n").flat_captures);
         // One extra capture anywhere turns the whole file into the list form,
         // since a shard has one schema.
-        assert!(!set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+^\"\nwhere = \"p1\"\n").flat_captures);
-        assert!(!set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"+^\"\nwhere = \"p1\"\n").flat_captures);
+        assert!(!set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.unnamed]\nmark = \"+^\"\nwhere = \"p1\"\n").flat_captures);
+        assert!(!set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"+^\"\nwhere = \"p1\"\n").flat_captures);
     }
 
 
     #[test]
     fn shapes_are_reportable() {
-        let qs = set("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n[pat.p2]\nread = \"~~\"\nrefr = \"GA\"\n\n[query.mCpG]\nmark = \"+.\"\nwhere = \"p1 and not p2\"\n");
+        let qs = set("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n[pattern.p2]\nread = \"~~\"\nrefr = \"GA\"\n\n[query.mCpG]\nmark = \"+.\"\nwhere = \"p1 and not p2\"\n");
         let s = &qs.shapes()[0];
         assert!(s.starts_with("mCpG: "), "{s}");
         assert!(s.contains("span 2"), "{s}");

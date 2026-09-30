@@ -419,7 +419,7 @@ mod tests {
 
     #[test]
     fn a_match_reports_the_position_and_the_reasoning() {
-        let t = run("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.mCpG]\nmark = \"+.\"\nwhere = \"p1\"\n", "TTCGTT@TTCGTT");
+        let t = run("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.mCpG]\nmark = \"+.\"\nwhere = \"p1\"\n", "TTCGTT@TTCGTT");
         // The CpG completes on column 3.
         assert!(t.contains("mCpG: matches ending at column 3"), "{t}");
         assert!(t.contains("anchor column 2"), "{t}");
@@ -430,7 +430,7 @@ mod tests {
     #[test]
     fn the_progress_grid_shows_where_a_match_broke() {
         // GATCGATC against a reference that diverges at column 4.
-        let t = run("[pat.p1]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.j]\nmark = \"+.......\"\nwhere = \"p1\"\n", "GATCTATC@GATCTATC");
+        let t = run("[pattern.p1]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.j]\nmark = \"+.......\"\nwhere = \"p1\"\n", "GATCTATC@GATCTATC");
         assert!(t.contains("no match"), "{t}");
         // It got four columns in before the mismatch.
         assert!(t.contains("got 4 of 8 columns"), "{t}");
@@ -439,7 +439,7 @@ mod tests {
 
     #[test]
     fn an_exclusion_that_fires_is_shown_as_the_reason() {
-        let (qs, specs) = compile("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.m]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
+        let (qs, specs) = compile("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.m]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
 
         // A genuine CpG: fires, with the exclusion false.
         let good = columns_from_pair("TTTCGTTT@TTTCGTTT").unwrap();
@@ -459,8 +459,8 @@ mod tests {
     #[test]
     fn named_operands_are_used_when_present() {
         let specs = crate::test_support::queries(
-            "[pat.cpg]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\
-             [pat.junc]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\
+            "[pattern.cpg]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\
+             [pattern.junc]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\
              [query.m]\nmark = \"...+....\"\nwhere = \"cpg and not junc\"\n",
         );
         let qs = QuerySet::compile(&specs).unwrap();
@@ -507,7 +507,7 @@ mod tests {
 
     #[test]
     fn several_queries_are_traced_together() {
-        let t = run("[pat.p1]\nread = \"C~\"\nrefr = \"CG\"\n[pat.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"+\"\nwhere = \"p2\"\n", "CG@CA");
+        let t = run("[pattern.p1]\nread = \"C~\"\nrefr = \"CG\"\n[pattern.p2]\nread = \"~\"\nrefr = \"/\"\n\n[query.a]\nmark = \"+.\"\nwhere = \"p1\"\n\n[query.b]\nmark = \"+\"\nwhere = \"p2\"\n", "CG@CA");
         assert!(t.contains("a: no match"), "{t}");
         assert!(t.contains("b: matches ending at column 1"), "{t}");
     }
@@ -516,7 +516,7 @@ mod tests {
     fn the_window_must_be_full_before_a_query_can_fire() {
         // A negated-only operand would otherwise "match" at column 0 of an
         // 8-wide query, before eight columns have even been seen.
-        let t = run("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.m]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n", "TTTCGTTT@TTTCGTTT");
+        let t = run("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.m]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n", "TTTCGTTT@TTTCGTTT");
         assert!(t.contains("matches ending at column 7"), "{t}");
         assert!(!t.contains("matches ending at column 0"), "{t}");
     }

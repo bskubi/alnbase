@@ -30,7 +30,7 @@ pub const MARK_CAPTURE: char = '^';
 /// checks -- a row of the wrong width, a `where` naming a pattern that does
 /// not exist -- is found after the file has been read into typed structs,
 /// which keep no positions, so it names the table and key instead:
-/// `[pat.cpg] read`. Every name in a file is unique, so that is unambiguous.
+/// `[pattern.cpg] read`. Every name in a file is unique, so that is unambiguous.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Loc {
     Line(usize),
@@ -87,7 +87,7 @@ pub struct QueryFile {
     pub warnings: Vec<String>,
 }
 
-/// A `pat` block, before its rows are lowered.
+/// A `pattern` block, before its rows are lowered.
 #[derive(Debug, Clone)]
 pub(crate) struct PendingPat {
     pub(crate) name: String,
@@ -153,6 +153,15 @@ pub(crate) fn alias_decl(name: &str, set: &str) -> Result<(char, Seq), String> {
         return Err(format!("alias name must be one character, got '{name}'"));
     };
     let set = set.trim();
+    // As in a pattern row, a comma means a junction only on its own. In a
+    // longer value it is the natural guess at a separator -- `{A,C,G}` -- and
+    // would quietly add a junction to the set.
+    if set.contains(',') && set != "," {
+        return Err(format!(
+            "'{set}': commas are not allowed in a base set; write the codes together, as \
+             {{ACG}}, and spell a junction 'J', as {{NJ}}"
+        ));
+    }
     let seq = Seq::from_name(set).ok_or_else(|| format!("'{set}' is not a base set"))?;
     if seq.is_empty() {
         return Err(format!("'{set}' names the empty set"));

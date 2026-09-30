@@ -641,11 +641,11 @@ where = "tg"
 mark = "+."
 where = "cg"
 
-[pat.tg]
+[pattern.tg]
 read = "T~"
 refr = "CG"
 
-[pat.cg]
+[pattern.cg]
 read = "C~"
 refr = "CG"
 
@@ -821,10 +821,10 @@ where = "tg"
 [query.anyCG]
 mark = "+."
 where = "any"
-[pat.tg]
+[pattern.tg]
 read = "T~"
 refr = "CG"
-[pat.any]
+[pattern.any]
 read = "N~"
 refr = "CG"
 [tag.XM.bases]
@@ -847,7 +847,7 @@ x = "anyCG"
 [query.edge]
 mark = ".+"
 where = "p"
-[pat.p]
+[pattern.p]
 read = "~_"
 refr = "~~"
 [tag.XE.bases]

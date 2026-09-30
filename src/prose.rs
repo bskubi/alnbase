@@ -306,7 +306,7 @@ mod tests {
 
     #[test]
     fn the_methyl_hic_query_reads_as_english() {
-        let t = p("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
+        let t = p("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
         println!("{t}");
         assert!(t.contains("p1 matches and p2 does not match"), "{t}");
         // The free columns either side are not mentioned.
@@ -324,67 +324,67 @@ mod tests {
     fn a_single_constrained_column_is_named_not_spelled() {
         // The read is free at column 4, so spelling it would give
         // "C-or-T then anything", which is noise.
-        let t = p("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.x]\nmark = \"+.......\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n\n[query.x]\nmark = \"+.......\"\nwhere = \"p1\"\n");
         assert!(t.contains("the read is C or T at column 3"), "{t}");
         assert!(!t.contains("then anything"), "{t}");
     }
 
     #[test]
     fn relational_columns_get_their_own_clause() {
-        let t = p("[pat.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("agrees with the reference"), "{t}");
         // The caveat is a footnote, stated once, not on every clause.
         assert_eq!(t.matches("unambiguous").count(), 1, "{t}");
-        assert!(!operands("[pat.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n").contains("unambiguous"), "{t}");
-        let t = p("[pat.p1]\nread = \"~\"\nrefr = \"/\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1\"\n");
+        assert!(!operands("[pattern.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n").contains("unambiguous"), "{t}");
+        let t = p("[pattern.p1]\nread = \"~\"\nrefr = \"/\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("differs from the reference"), "{t}");
-        let t = p("[pat.p1]\nread = \"H\"\nrefr = \"/\"\n\n[query.y]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"H\"\nrefr = \"/\"\n\n[query.y]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("the read is A, C or T and the read differs"), "{t}");
     }
 
     #[test]
     fn precedence_survives_into_prose() {
-        let t = p("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"B\"\nrefr = \"B\"\n[pat.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 or p2 and p3\"\n");
+        let t = p("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"B\"\nrefr = \"B\"\n[pattern.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 or p2 and p3\"\n");
         assert!(t.contains("(p1 matches or (p2 matches and p3 matches))"), "{t}");
-        let t = p("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"B\"\nrefr = \"B\"\n[pat.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.y]\nmark = \"+\"\nwhere = \"(p1 or p2) and p3\"\n");
+        let t = p("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"B\"\nrefr = \"B\"\n[pattern.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.y]\nmark = \"+\"\nwhere = \"(p1 or p2) and p3\"\n");
         assert!(t.contains("(p1 matches or p2 matches) and p3 matches"), "{t}");
     }
 
     #[test]
     fn negated_groups_are_spelled_out() {
-        let t = p("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n[pat.p3]\nread = \"G\"\nrefr = \"G\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and not (p2 and p3)\"\n");
+        let t = p("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n[pattern.p3]\nread = \"G\"\nrefr = \"G\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and not (p2 and p3)\"\n");
         assert!(t.contains("it is not the case that"), "{t}");
     }
 
     #[test]
     fn identical_relational_columns_collapse() {
-        let t = operands("[pat.p1]\nread = \"~~~\"\nrefr = \"///\"\n\n[query.mm3]\nmark = \"+..\"\nwhere = \"p1\"\n");
+        let t = operands("[pattern.p1]\nread = \"~~~\"\nrefr = \"///\"\n\n[query.mm3]\nmark = \"+..\"\nwhere = \"p1\"\n");
         assert!(t.contains("at columns 0-2 the read differs from the reference"), "{t}");
         assert_eq!(t.matches("differs from").count(), 1, "{t}");
     }
 
     #[test]
     fn differing_relational_columns_stay_separate() {
-        let t = operands("[pat.p1]\nread = \"~~~\"\nrefr = \"=/=\"\n\n[query.x]\nmark = \"+..\"\nwhere = \"p1\"\n");
+        let t = operands("[pattern.p1]\nread = \"~~~\"\nrefr = \"=/=\"\n\n[query.x]\nmark = \"+..\"\nwhere = \"p1\"\n");
         assert_eq!(t.matches("agrees with").count(), 2, "{t}");
         assert_eq!(t.matches("differs from").count(), 1, "{t}");
     }
 
     #[test]
     fn captures_are_listed() {
-        let t = p("[pat.p1]\nread = \"C~C\"\nrefr = \"CGC\"\n\n[query.x]\nmark = \"+.^\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"C~C\"\nrefr = \"CGC\"\n\n[query.x]\nmark = \"+.^\"\nwhere = \"p1\"\n");
         assert!(t.contains("observed at columns 0, 2"), "{t}");
         // The anchor is recorded even when nothing was marked, so this reads
         // as one capture rather than none.
-        let t = p("[pat.p1]\nread = \"C~\"\nrefr = \"CG\"\n\n[query.y]\nmark = \"+.\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"C~\"\nrefr = \"CG\"\n\n[query.y]\nmark = \"+.\"\nwhere = \"p1\"\n");
         assert!(t.contains("coordinates of column 0, and records what was observed at column 0."), "{t}");
     }
 
     #[test]
     fn gaps_and_pads_are_named() {
-        let t = p("[pat.p1]\nread = \"N\"\nrefr = \".\"\n\n[query.ins]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"N\"\nrefr = \".\"\n\n[query.ins]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("a gap"), "{t}");
-        let t = p("[pat.p1]\nread = \"_N\"\nrefr = \"NN\"\n\n[query.edge]\nmark = \"+.\"\nwhere = \"p1\"\n");
+        let t = p("[pattern.p1]\nread = \"_N\"\nrefr = \"NN\"\n\n[query.edge]\nmark = \"+.\"\nwhere = \"p1\"\n");
         assert!(t.contains("a pad"), "{t}");
     }
 }

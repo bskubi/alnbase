@@ -811,7 +811,7 @@ mod tests {
     /// Written once per test process and only read after that.
     fn default_file() -> String {
         static PATH: std::sync::OnceLock<String> = std::sync::OnceLock::new();
-        PATH.get_or_init(|| query_file("default", "[query.cg]\n[pat.p]\nread = \"C~\"\nrefr = \"CG\"\n"))
+        PATH.get_or_init(|| query_file("default", "[query.cg]\n[pattern.p]\nread = \"C~\"\nrefr = \"CG\"\n"))
             .clone()
     }
 
@@ -840,7 +840,7 @@ mod tests {
     fn a_strand_tag_resolves_under_any_rule() {
         let tag = query_file(
             "xrtag",
-            "[query.cg]\n[pat.p]\nread = \"C~\"\nrefr = \"CG\"\n\n\
+            "[query.cg]\n[pattern.p]\nread = \"C~\"\nrefr = \"CG\"\n\n\
              [tag.XR.strand]\nCT = [\"OT\", \"CTOB\"]\nGA = [\"CTOT\", \"OB\"]\n",
         );
         let yd = query_file(
@@ -881,7 +881,7 @@ mod tests {
     fn queries_come_from_toml_files() {
         let more = query_file(
             "more",
-            "[query.mCpG]\nmark = \"...+........\"\nwhere = \"wide\"\n[pat.wide]\nread = \"~~~Y~~~~~~~~\"\nrefr = \"~~~CG~~~~~~~\"\n",
+            "[query.mCpG]\nmark = \"...+........\"\nwhere = \"wide\"\n[pattern.wide]\nread = \"~~~Y~~~~~~~~\"\nrefr = \"~~~CG~~~~~~~\"\n",
         );
         let strand = strand_arg();
         let r = parse(&["--query-file", &more, "--query-file", &strand]).resolve().unwrap();
@@ -914,7 +914,7 @@ mod tests {
 
     #[test]
     fn duplicate_names_across_files_are_rejected() {
-        let again = query_file("again", "[query.cg]\n[pat.q]\nread = \"T~\"\nrefr = \"CG\"\n");
+        let again = query_file("again", "[query.cg]\n[pattern.q]\nread = \"T~\"\nrefr = \"CG\"\n");
         let e = parse(&["--query-file", &again]).resolve().unwrap_err();
         assert!(e.contains("named 'cg'"), "{e}");
     }
@@ -1149,7 +1149,7 @@ mod tests {
     fn tags_from_several_files_merge() {
         let queries = query_file(
             "tags_queries",
-            "[pat.p]\nread = \"C~\"\nrefr = \"CG\"\n[query.cgx]\n[tag.XM.bases]\nfill = \".\"\nZ = \"cgx\"\n",
+            "[pattern.p]\nread = \"C~\"\nrefr = \"CG\"\n[query.cgx]\n[tag.XM.bases]\nfill = \".\"\nZ = \"cgx\"\n",
         );
         let strands = query_file("tags_strands", "[tag.XG.strand]\nCT = [\"OT\", \"CTOT\"]\nGA = [\"OB\", \"CTOB\"]\n");
         let rule = strand_arg();

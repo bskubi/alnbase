@@ -380,10 +380,10 @@ where = "tg"
 [query.CG]
 mark = "+."
 where = "cg"
-[pat.tg]
+[pattern.tg]
 read = "T~"
 refr = "CG"
-[pat.cg]
+[pattern.cg]
 read = "C~"
 refr = "CG"
 [tag.XM.bases]

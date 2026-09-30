@@ -816,8 +816,8 @@ mod tests {
         assert_eq!(cg("pads_fixed_alone", narrow, &fixed), cg("pads_fixed_beside", &both, &fixed));
 
         // Excluding all-pad windows in the query itself.
-        let no_pads = "[pat.cg_ref]\nread = \"~~\"\nrefr = \"CG\"\n\
-                       [pat.all_pad]\nread = \"__\"\nrefr = \"~~\"\n\
+        let no_pads = "[pattern.cg_ref]\nread = \"~~\"\nrefr = \"CG\"\n\
+                       [pattern.all_pad]\nread = \"__\"\nrefr = \"~~\"\n\
                        [query.cg]\nwhere = \"cg_ref and not all_pad\"\n";
         assert_eq!(cg("pads_not", &format!("{no_pads}{wide}"), &config(false)), vec![3]);
     }

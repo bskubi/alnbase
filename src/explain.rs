@@ -327,7 +327,7 @@ mod tests {
 
     #[test]
     fn the_methyl_hic_query_lines_up() {
-        let t = ex("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
+        let t = ex("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
         assert_aligned(&t);
         assert!(t.contains("mCpG_hic"), "{t}");
         assert!(t.contains("not"), "{t}");
@@ -342,7 +342,7 @@ mod tests {
     fn both_markers_on_one_column_do_not_widen_it() {
         // The anchored-and-captured column must stay the same width as its
         // neighbours; that is the whole reason the markers get a row each.
-        let t = ex("[pat.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pat.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
+        let t = ex("[pattern.p1]\nread = \"~~~Y~~~~\"\nrefr = \"~~~CG~~~\"\n[pattern.p2]\nread = \"~~~~~~~~\"\nrefr = \"GATCGATC\"\n\n[query.mCpG_hic]\nmark = \"...+....\"\nwhere = \"p1 and not p2\"\n");
         assert_aligned(&t);
         let read = t
             .lines()
@@ -368,7 +368,7 @@ mod tests {
     fn the_capture_row_shows_the_implicit_anchor_capture() {
         // The anchor is always recorded, so the capture row is always present
         // and always marks at least the anchor column.
-        let t = ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and p2\"\n");
+        let t = ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and p2\"\n");
         let grid: Vec<&str> = t
             .lines()
             .skip_while(|l| !l.trim_start().starts_with("col "))
@@ -381,25 +381,25 @@ mod tests {
 
     #[test]
     fn wide_groups_do_not_break_alignment() {
-        assert_aligned(&ex("[alias]\nf = \"{C._}\"\n\n[pat.p1]\nread = \"V~f\"\nrefr = \"CGA\"\n[pat.p2]\nread = \"~~~\"\nrefr = \"KCA\"\n\n[query.x]\nmark = \"+..\"\nwhere = \"p1 and p2\"\n"));
+        assert_aligned(&ex("[alias]\nf = \"{C._}\"\n\n[pattern.p1]\nread = \"V~f\"\nrefr = \"CGA\"\n[pattern.p2]\nread = \"~~~\"\nrefr = \"KCA\"\n\n[query.x]\nmark = \"+..\"\nwhere = \"p1 and p2\"\n"));
     }
 
     #[test]
     fn double_digit_columns_do_not_break_alignment() {
-        assert_aligned(&ex("[pat.p1]\nread = \"~~~~~~~~~~~~~~~C\"\nrefr = \"~~~~~~~~~~~~~~~C\"\n\n[query.x]\nmark = \"+...............\"\nwhere = \"p1\"\n"));
+        assert_aligned(&ex("[pattern.p1]\nread = \"~~~~~~~~~~~~~~~C\"\nrefr = \"~~~~~~~~~~~~~~~C\"\n\n[query.x]\nmark = \"+...............\"\nwhere = \"p1\"\n"));
     }
 
     #[test]
     fn relational_columns_render_on_the_written_side() {
-        let t = ex("[pat.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let t = ex("[pattern.p1]\nread = \"~\"\nrefr = \"=\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("="), "{t}");
-        let t = ex("[pat.p1]\nread = \"=\"\nrefr = \"C\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let t = ex("[pattern.p1]\nread = \"=\"\nrefr = \"C\"\n\n[query.m]\nmark = \"+\"\nwhere = \"p1\"\n");
         assert!(t.contains("="), "{t}");
     }
 
     #[test]
     fn polarity_is_reported_per_operand() {
-        let t = ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n");
+        let t = ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n");
         let not_lines: Vec<&str> = t.lines().filter(|l| l.starts_with("not")).collect();
         assert_eq!(not_lines.len(), 1, "{t}");
         // The negated operand is the second one.
@@ -408,7 +408,7 @@ mod tests {
 
     #[test]
     fn an_operand_used_both_ways_is_flagged() {
-        let t = ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and (not p1 or p2)\"\n");
+        let t = ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.x]\nmark = \"+\"\nwhere = \"p1 and (not p1 or p2)\"\n");
         assert!(t.contains("+-"), "expected a mixed-polarity marker in:\n{t}");
     }
 
@@ -425,7 +425,7 @@ mod tests {
     fn precedence_is_visible() {
         // `or` binds loosest, so it must be the root and `and` the subtree.
         // This is the misreading the tree exists to prevent.
-        let t = tree_of(&ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"B\"\nrefr = \"B\"\n[pat.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 or p2 and p3\"\n"));
+        let t = tree_of(&ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"B\"\nrefr = \"B\"\n[pattern.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 or p2 and p3\"\n"));
         assert_eq!(
             t,
             [
@@ -440,7 +440,7 @@ mod tests {
 
     #[test]
     fn parentheses_change_the_root() {
-        let t = tree_of(&ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"B\"\nrefr = \"B\"\n[pat.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"(p1 or p2) and p3\"\n"));
+        let t = tree_of(&ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"B\"\nrefr = \"B\"\n[pattern.p3]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"(p1 or p2) and p3\"\n"));
         assert_eq!(t[0], "  and");
         assert_eq!(t[1], "  |- or");
     }
@@ -449,27 +449,27 @@ mod tests {
     fn negated_patterns_fold_into_one_line() {
         // `not` on a bare pattern is the common case and should not cost a
         // level of nesting.
-        let t = tree_of(&ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n"));
+        let t = tree_of(&ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n"));
         assert_eq!(t, ["  and", "  |- p1  A@A", "  `- not p2  C@C"]);
     }
 
     #[test]
     fn negated_groups_keep_their_own_node() {
-        let t = tree_of(&ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n[pat.p3]\nread = \"G\"\nrefr = \"G\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not (p2 and p3)\"\n"));
+        let t = tree_of(&ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n[pattern.p3]\nread = \"G\"\nrefr = \"G\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not (p2 and p3)\"\n"));
         assert!(t.iter().any(|l| l.trim_end().ends_with("not")), "{t:?}");
         assert!(t.iter().any(|l| l.contains("p3  G@G")), "{t:?}");
     }
 
     #[test]
     fn a_lone_pattern_has_no_tree() {
-        let t = ex("[pat.p1]\nread = \"C~\"\nrefr = \"CG\"\n\n[query.p]\nmark = \"+.\"\nwhere = \"p1\"\n");
+        let t = ex("[pattern.p1]\nread = \"C~\"\nrefr = \"CG\"\n\n[query.p]\nmark = \"+.\"\nwhere = \"p1\"\n");
         assert!(!t.contains("|-"), "{t}");
         assert!(!t.contains("`-"), "{t}");
     }
 
     #[test]
     fn tree_operand_numbers_match_the_grid() {
-        let t = ex("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n[pat.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n");
+        let t = ex("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n[pattern.p2]\nread = \"C\"\nrefr = \"C\"\n\n[query.p]\nmark = \"+\"\nwhere = \"p1 and not p2\"\n");
         // [2] is the negated one in both renderings.
         assert!(t.contains("`- not p2  C@C"), "{t}");
         assert!(t.lines().any(|l| l.starts_with("not p2  read")), "{t}");
@@ -479,7 +479,7 @@ mod tests {
     fn the_grid_uses_declared_aliases() {
         let mut a = Aliases::new();
         a.insert('j', crate::seq::Seq::C | crate::seq::Seq::GAP).unwrap();
-        let spec = crate::test_support::query("[alias]\nj = \"{C.}\"\n\n[pat.p1]\nread = \"j~\"\nrefr = \"CG\"\n\n[query.x]\nmark = \"+.\"\nwhere = \"p1\"\n");
+        let spec = crate::test_support::query("[alias]\nj = \"{C.}\"\n\n[pattern.p1]\nread = \"j~\"\nrefr = \"CG\"\n\n[query.x]\nmark = \"+.\"\nwhere = \"p1\"\n");
 
         let with = explain_with(&spec, None, &a);
         assert!(with.contains(" j "), "{with}");
@@ -496,7 +496,7 @@ mod tests {
     #[test]
     fn named_operands_replace_the_numbers_everywhere() {
         let spec = crate::test_support::query(
-            "[pat.cpg]\nread = \"Y~\"\nrefr = \"CG\"\n[pat.junc]\nread = \"~~\"\nrefr = \"GA\"\n\
+            "[pattern.cpg]\nread = \"Y~\"\nrefr = \"CG\"\n[pattern.junc]\nread = \"~~\"\nrefr = \"GA\"\n\
              [query.mCpG]\nwhere = \"cpg and not junc\"\n",
         );
         let t = explain_with(&spec, Some(("cnf", 2)), &Aliases::new());
@@ -513,7 +513,7 @@ mod tests {
 
     #[test]
     fn works_without_a_compiled_shape() {
-        let spec = crate::test_support::query("[pat.p1]\nread = \"A\"\nrefr = \"A\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
+        let spec = crate::test_support::query("[pattern.p1]\nread = \"A\"\nrefr = \"A\"\n\n[query.unnamed]\nmark = \"+\"\nwhere = \"p1\"\n");
         let t = explain_with(&spec, None, &Aliases::new());
         assert!(!t.contains("compiled"), "{t}");
     }

@@ -645,7 +645,7 @@ mod tests {
     }
 
     fn query_set() -> Arc<QuerySet> {
-        let specs: Vec<QuerySpec> = vec![crate::test_support::query("[pat.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.m]\nmark = \"+.\"\nwhere = \"p1\"\n")];
+        let specs: Vec<QuerySpec> = vec![crate::test_support::query("[pattern.p1]\nread = \"Y~\"\nrefr = \"CG\"\n\n[query.m]\nmark = \"+.\"\nwhere = \"p1\"\n")];
         Arc::new(QuerySet::compile(&specs).unwrap())
     }
 
