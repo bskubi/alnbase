@@ -4,8 +4,6 @@
 *.fa
 *.fa.fai
 
-# The hand-written fixtures ship their references: a case is only reproducible with one.
-!tests/fixtures/*/ref.fa
 
 # The toy dataset ships whole. It is 48 bases and 29 hits, it is what every
 # tutorial runs against, and a tutorial you have to build the inputs for first

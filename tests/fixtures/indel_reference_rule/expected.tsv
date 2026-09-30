@@ -1,7 +1,0 @@
-qname	strand	refr_pos	name	read_base	qual
-del	+	4	CHG_met	C	40
-del	+	17	CG_met	C	40
-ins	+	4	CHG_met	C	40
-ins	+	17	CG_met	C	40
-plain	+	4	CHG_met	C	40
-plain	+	17	CG_met	C	40

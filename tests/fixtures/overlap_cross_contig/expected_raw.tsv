@@ -1,6 +1,0 @@
-qname	ref_name	strand	refr_pos	name	read_base	qual	off_5p	off_3p
-lig	chrA	+	14	CG_met	C	30	4	25
-lig	chrA	+	24	CG_met	C	30	14	15
-lig	chrB	+	14	CG_met	C	30	15	4
-lig	chrB	+	14	CG_met	C	30	24	5
-lig	chrB	+	24	CG_met	C	30	5	14

@@ -1,5 +1,0 @@
-qname	strand	refr_pos	name	read_base	qual
-end_on_c	+	19	CG_met	C	40
-spans	+	19	CG_met	C	40
-spans_rev	-	20	CG_met	C	40
-start_on_g	-	20	CG_met	C	40

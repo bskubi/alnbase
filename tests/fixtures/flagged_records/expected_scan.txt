@@ -1,1 +1,0 @@
-read 6 records, scanned 5, skipped 1 (given a null row)

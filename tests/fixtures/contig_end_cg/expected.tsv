@@ -1,5 +1,0 @@
-qname	strand	refr_pos	name	read_base	qual
-fwd	+	10	CG_met	C	40
-fwd	+	22	Cx_met	C	40
-rev	-	0	Cx_met	C	40
-rev	-	11	CG_met	C	40
