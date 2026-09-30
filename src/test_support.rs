@@ -24,17 +24,52 @@ pub const REVERSE: u16 = 0x10;
 /// SAM flag 0x80, last segment in the template.
 pub const LAST_IN_TEMPLATE: u16 = 0x80;
 
-/// The directory test files go in: one per user, under the system temp
-/// directory.
+/// The directory this test run writes its files in:
+/// `alnbase_test_$USER/<pid>` under the system temp directory.
 ///
-/// Test files have fixed names, so a directory shared by every user would let
-/// one user's leftovers, which nobody else may overwrite or delete in `/tmp`,
-/// fail every other user's run.
+/// Per user, because test files have fixed names, and in `/tmp` a user may not
+/// overwrite or delete another user's leftovers. Per run, so that the first
+/// call can delete the directories of earlier runs, whose files nothing else
+/// cleans up: a Rust test binary has no hook that runs after the last test.
 pub fn temp_dir() -> PathBuf {
-    let user = std::env::var("USER").unwrap_or_else(|_| "anon".to_string());
-    let dir = std::env::temp_dir().join(format!("alnbase_test_{user}"));
-    std::fs::create_dir_all(&dir).expect("create the test temp directory");
-    dir
+    static DIR: std::sync::OnceLock<PathBuf> = std::sync::OnceLock::new();
+    DIR.get_or_init(|| {
+        let user = std::env::var("USER").unwrap_or_else(|_| "anon".to_string());
+        let base = std::env::temp_dir().join(format!("alnbase_test_{user}"));
+        remove_finished_runs(&base);
+        let dir = base.join(std::process::id().to_string());
+        std::fs::create_dir_all(&dir).expect("create the test temp directory");
+        dir
+    })
+    .clone()
+}
+
+/// Delete everything under `base` except the directories of runs still going.
+///
+/// A run's directory is named for its process ID, and the run is still going
+/// while `/proc/<pid>` exists. Without `/proc` (macOS), a directory is kept for
+/// a day instead, which is far longer than a test run takes.
+fn remove_finished_runs(base: &std::path::Path) {
+    let Ok(entries) = std::fs::read_dir(base) else { return };
+    let proc = std::path::Path::new("/proc");
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let pid = entry.file_name().to_str().and_then(|s| s.parse::<u32>().ok());
+        let running = match pid {
+            Some(pid) if proc.is_dir() => proc.join(pid.to_string()).exists(),
+            Some(_) => entry
+                .metadata()
+                .and_then(|m| m.modified())
+                .ok()
+                .and_then(|t| t.elapsed().ok())
+                .is_some_and(|age| age < std::time::Duration::from_secs(24 * 60 * 60)),
+            // A loose file, from before runs had their own directories.
+            None => false,
+        };
+        if !running {
+            let _ = if path.is_dir() { std::fs::remove_dir_all(&path) } else { std::fs::remove_file(&path) };
+        }
+    }
 }
 
 /// A distinct temp path per test, so tests that write files can run in
