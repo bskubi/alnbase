@@ -205,7 +205,7 @@
 //!
 //! - **Coordinates.** Reference positions are 0-based inside the program.
 //!   alnbase reports them in the form that each output format requires. Read
-//!   offsets (`off_5p`, `off_3p`) are defined against the original read as the
+//!   offsets (`read_5p`, `read_3p`) are defined against the original read as the
 //!   sequencer read it, and include hard-clipped bases. They are not defined
 //!   against the BAM record. A column carries the plain `SEQ` offset, which is a
 //!   different number, and [`hits`] adds the hard clip back on when it builds a

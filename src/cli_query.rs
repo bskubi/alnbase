@@ -235,7 +235,7 @@ pub struct QueryArgs {
     /// pattern can see reference context beyond the read. On the read side, the
     /// columns nearest a soft-clipped end are clips (`:`), one per clipped base,
     /// with that base's offsets; the rest are pads (`_`), which have no read
-    /// offset: off_5p and off_3p are null on a hit anchored on one.
+    /// offset: read_5p and read_3p are null on a hit anchored on one.
     ///
     /// Defaults to k, the span of the widest query in the run: far enough past a
     /// read end for every query, the widest included, to fit a whole window

@@ -24,8 +24,8 @@ def build(hits, exclude, fai, sample, min_total=2):
     run = Run(hits, block="XB", fai=fai)
     run.where("qual >= 20")
     run.where("mapq >= 30")
-    run.where("off_5p >= 10")
-    run.where("off_3p >= 2")
+    run.where("read_5p >= 10")
+    run.where("read_3p >= 2")
     run.drop_reads(mCH.ratio.gt(0.4), mCH.consecutive.gt(3))
     run.drop_reads(listed(exclude))
     run.drop_blocks(mCG.total.lt(min_total))
@@ -40,7 +40,7 @@ CREATE OR REPLACE VIEW src AS
 SELECT *, ref_name AS contig,
        {{'qname': qname, 'mate': is_first_in_template}} AS read, XB AS block
 FROM read_parquet('{hits}')
-WHERE (qual >= 20) AND (mapq >= 30) AND (off_5p >= 10) AND (off_3p >= 2);
+WHERE (qual >= 20) AND (mapq >= 30) AND (read_5p >= 10) AND (read_3p >= 2);
 
 CREATE OR REPLACE VIEW measure (measure, name, category) AS VALUES
   ('mCG', 'CG', 'methylated'), ('mCG', 'TG', 'unmethylated'),
@@ -109,9 +109,9 @@ def test_conditions_in_one_call_are_or_and_separate_calls_are_and(hits):
     of calls, and you write a boolean yourself only where you meant one."""
     run = Run(hits, block="XB")
     run.where("qual >= 20")
-    run.where("off_5p >= 10", "off_3p >= 2")
+    run.where("read_5p >= 10", "read_3p >= 2")
     text = run.sql()
-    assert "WHERE (qual >= 20)\n  AND (off_5p >= 10 OR off_3p >= 2);" in text
+    assert "WHERE (qual >= 20)\n  AND (read_5p >= 10 OR read_3p >= 2);" in text
 
 
 def test_a_run_with_no_where_has_no_where_clause(hits):

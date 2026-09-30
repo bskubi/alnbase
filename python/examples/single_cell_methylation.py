@@ -49,8 +49,8 @@ def build(hits, fai, sample, exclude=None, min_block_depth=1000):
     # sequenced, including hard-clipped bases.
     run.where("qual >= 20")
     run.where("mapq >= 30")
-    run.where("off_5p >= 10")
-    run.where("off_3p >= 2")
+    run.where("read_5p >= 10")
+    run.where("read_3p >= 2")
 
     # 2. WHICH OBSERVATIONS SURVIVE
     #

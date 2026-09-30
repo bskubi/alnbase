@@ -7,14 +7,14 @@
 //!   query file the run stored in the BAM header, which `alnbase dump-query`
 //!   prints -- so a row stays interpretable without the command line, without
 //!   spelling the whole query out on every row.
-//! - `off_5p` / `off_3p` / `refr_pos` / `qual` describe the **anchor**
+//! - `read_5p` / `read_3p` / `refr_pos` / `qual` describe the **anchor**
 //!   column, not the pattern's first column. With the default anchor those are
 //!   the same column, so single-pattern output reads as you would expect.
 //!
 //! # The two read offsets
 //!
-//! `off_5p` counts from the 5' end of the read as sequenced, and `off_3p`
-//! counts from the 3' end. The last sequenced base is therefore `off_3p == 0`.
+//! `read_5p` counts from the 5' end of the read as sequenced, and `read_3p`
+//! counts from the 3' end. The last sequenced base is therefore `read_3p == 0`.
 //!
 //! Both are written because they localise different artefacts. End-repair and
 //! adapter read-through sit a fixed distance from the 3' end. The 5' bias from
@@ -28,13 +28,13 @@
 //! the sequencing order only for a read sequenced in that direction. For the
 //! rest, the walk offsets are mirrored when written; see `as_sequenced`. The
 //! run's strand call says which reads those are, and for a directional library
-//! it is read 2. `off_5p == 0` is therefore always the first base the sequencer
+//! it is read 2. `read_5p == 0` is therefore always the first base the sequencer
 //! read, whatever the aligner put in the FLAG.
 //!
 //! Soft-clipped bases that the walk skipped are still counted, because the
 //! sequencer read them. Both offsets are measured against the length of SEQ,
 //! which excludes hard-clipped bases. For a hard-clipped record neither offset
-//! refers to the full original read, and `off_5p + off_3p == read_len - 1`
+//! refers to the full original read, and `read_5p + read_3p == read_len - 1`
 //! still holds.
 //!
 //! A pad is not a base of the read, so a row anchored on one has both offsets
@@ -75,7 +75,7 @@ use crate::seq::Seq;
 /// changes. Written into every file's metadata (the parquet footer and the
 /// Arrow schema) beside `coordinate_base`, so a reader can tell what it has.
 /// No history of earlier versions is kept before the first release.
-pub const FORMAT_VERSION: &str = "9";
+pub const FORMAT_VERSION: &str = "10";
 
 /// Capture columns, in whichever shape the query set allows.
 enum Captures {
@@ -88,7 +88,7 @@ enum Captures {
         refr: ListBuilder<StringBuilder>,
         qual: ListBuilder<UInt8Builder>,
         read_off: ListBuilder<Int64Builder>,
-        read_off_3p: ListBuilder<Int64Builder>,
+        read_read_3p: ListBuilder<Int64Builder>,
         refr_pos: ListBuilder<Int64Builder>,
     },
 }
@@ -98,7 +98,7 @@ pub struct HitBuilder {
     name: StringBuilder,
     read_off: Int64Builder,
     /// The same offset from the other end; see the module comment.
-    read_off_3p: Int64Builder,
+    read_read_3p: Int64Builder,
     refr_pos: Int64Builder,
     qual: UInt8Builder,
 
@@ -150,7 +150,7 @@ impl HitBuilder {
             record_id: UInt64Builder::with_capacity(cap),
             name: StringBuilder::with_capacity(cap, cap * 8),
             read_off: Int64Builder::with_capacity(cap),
-            read_off_3p: Int64Builder::with_capacity(cap),
+            read_read_3p: Int64Builder::with_capacity(cap),
             refr_pos: Int64Builder::with_capacity(cap),
             qual: UInt8Builder::with_capacity(cap),
 
@@ -166,7 +166,7 @@ impl HitBuilder {
                     refr: ListBuilder::new(StringBuilder::new()),
                     qual: ListBuilder::new(UInt8Builder::new()),
                     read_off: ListBuilder::new(Int64Builder::new()),
-                    read_off_3p: ListBuilder::new(Int64Builder::new()),
+                    read_read_3p: ListBuilder::new(Int64Builder::new()),
                     refr_pos: ListBuilder::new(Int64Builder::new()),
                 }
             },
@@ -220,11 +220,11 @@ impl HitBuilder {
         // gets none. A clip is a sequenced base and keeps its offset.
         if anchor.read == Seq::PAD {
             self.read_off.append_null();
-            self.read_off_3p.append_null();
+            self.read_read_3p.append_null();
         } else {
             let (five, three) = as_sequenced(self.read_len, self.mirror, anchor.read_off, self.hard_5p, self.hard_3p);
             self.read_off.append_value(five);
-            self.read_off_3p.append_option(three);
+            self.read_read_3p.append_option(three);
         }
         self.refr_pos.append_value(anchor.refr_pos);
         append_qual(&mut self.qual, anchor);
@@ -238,7 +238,7 @@ impl HitBuilder {
                 read.append_value(anchor.read.name());
                 refr.append_value(anchor.refr.name());
             }
-            Captures::Lists { col, read, refr, qual, read_off, read_off_3p, refr_pos } => {
+            Captures::Lists { col, read, refr, qual, read_off, read_read_3p, refr_pos } => {
                 for (&back, &col_idx) in q.capture_back.iter().zip(q.captures.iter()) {
                     let c = ring.get(back);
                     read.values().append_value(c.read.name());
@@ -253,10 +253,10 @@ impl HitBuilder {
                     if c.read.0 & (Seq::GAP.0 | Seq::SKIP.0 | Seq::PAD.0) == 0 {
                         let (five, three) = as_sequenced(read_len, mirror, c.read_off, hard_5p, hard_3p);
                         read_off.values().append_value(five);
-                        read_off_3p.values().append_option(three);
+                        read_read_3p.values().append_option(three);
                     } else {
                         read_off.values().append_null();
-                        read_off_3p.values().append_null();
+                        read_read_3p.values().append_null();
                     }
                     refr_pos.values().append_value(c.refr_pos);
                     col.values().append_value(col_idx as i32);
@@ -266,7 +266,7 @@ impl HitBuilder {
                 refr.append(true);
                 qual.append(true);
                 read_off.append(true);
-                read_off_3p.append(true);
+                read_read_3p.append(true);
                 refr_pos.append(true);
             }
         }
@@ -283,7 +283,7 @@ impl HitBuilder {
     /// layout -- a tag records the anchor and nothing else a query captured.
     ///
     /// `read_off` is in walk order, like a walked hit's, and is converted to
-    /// the as-sequenced `off_5p` / `off_3p` the same way.
+    /// the as-sequenced `read_5p` / `read_3p` the same way.
     pub fn push_decoded(
         &mut self,
         name: &str,
@@ -298,7 +298,7 @@ impl HitBuilder {
         self.name.append_value(name);
         let (five, three) = as_sequenced(self.read_len, self.mirror, read_off, self.hard_5p, self.hard_3p);
         self.read_off.append_value(five);
-        self.read_off_3p.append_option(three);
+        self.read_read_3p.append_option(three);
         self.refr_pos.append_option(refr_pos);
         self.qual.append_option(qual);
         match &mut self.captures {
@@ -325,7 +325,7 @@ impl HitBuilder {
         self.record_id.append_value(self.rid);
         self.name.append_null();
         self.read_off.append_null();
-        self.read_off_3p.append_null();
+        self.read_read_3p.append_null();
         self.refr_pos.append_null();
         self.qual.append_null();
         match &mut self.captures {
@@ -335,13 +335,13 @@ impl HitBuilder {
             }
             // A null list, not an empty one: nothing was examined here, which
             // is different from a query that captured nothing.
-            Captures::Lists { col, read, refr, qual, read_off, read_off_3p, refr_pos } => {
+            Captures::Lists { col, read, refr, qual, read_off, read_read_3p, refr_pos } => {
                 col.append(false);
                 read.append(false);
                 refr.append(false);
                 qual.append(false);
                 read_off.append(false);
-                read_off_3p.append(false);
+                read_read_3p.append(false);
                 refr_pos.append(false);
             }
         }
@@ -357,7 +357,7 @@ impl HitBuilder {
         cols.extend(self.record_cols.finish());
         cols.push(Arc::new(self.name.finish()));
         cols.push(Arc::new(self.read_off.finish()));
-        cols.push(Arc::new(self.read_off_3p.finish()));
+        cols.push(Arc::new(self.read_read_3p.finish()));
         cols.push(Arc::new(self.refr_pos.finish()));
         cols.push(Arc::new(self.qual.finish()));
         match &mut self.captures {
@@ -365,13 +365,13 @@ impl HitBuilder {
                 cols.push(Arc::new(read.finish()));
                 cols.push(Arc::new(refr.finish()));
             }
-            Captures::Lists { col, read, refr, qual, read_off, read_off_3p, refr_pos } => {
+            Captures::Lists { col, read, refr, qual, read_off, read_read_3p, refr_pos } => {
                 cols.push(Arc::new(col.finish()));
                 cols.push(Arc::new(read.finish()));
                 cols.push(Arc::new(refr.finish()));
                 cols.push(Arc::new(qual.finish()));
                 cols.push(Arc::new(read_off.finish()));
-                cols.push(Arc::new(read_off_3p.finish()));
+                cols.push(Arc::new(read_read_3p.finish()));
                 cols.push(Arc::new(refr_pos.finish()));
             }
         }
@@ -392,8 +392,8 @@ impl HitBuilder {
         fields.extend(self.record_cols.arrow_fields());
         fields.extend([
             Field::new("name", DataType::Utf8, true),
-            Field::new("off_5p", DataType::Int64, true),
-            Field::new("off_3p", DataType::Int64, true),
+            Field::new("read_5p", DataType::Int64, true),
+            Field::new("read_3p", DataType::Int64, true),
             Field::new("refr_pos", DataType::Int64, true),
             Field::new("qual", DataType::UInt8, true),
         ]);
@@ -409,8 +409,8 @@ impl HitBuilder {
                 list_field("capture_read", DataType::Utf8),
                 list_field("capture_refr", DataType::Utf8),
                 list_field("capture_qual", DataType::UInt8),
-                list_field("capture_off_5p", DataType::Int64),
-                list_field("capture_off_3p", DataType::Int64),
+                list_field("capture_read_5p", DataType::Int64),
+                list_field("capture_read_3p", DataType::Int64),
                 list_field("capture_refr_pos", DataType::Int64),
             ]),
         }
@@ -428,7 +428,7 @@ impl HitBuilder {
     /// `name` has one distinct value per query, `qual` has ninety
     /// odd and the base columns five -- all dictionaries. `record_id` only ever
     /// increases, and a record's rows are contiguous and ordered 5'->3', so
-    /// `off_5p`, `off_3p` and `refr_pos` each move in small steps within
+    /// `read_5p`, `read_3p` and `refr_pos` each move in small steps within
     /// a record and jump only between records: delta.
     pub fn column_encodings(&self) -> Vec<(String, ColumnEncoding)> {
         use ColumnEncoding as E;
@@ -439,8 +439,8 @@ impl HitBuilder {
         out.extend(self.record_cols.column_encodings());
         out.extend([
             ("name".into(), E::Dictionary),
-            ("off_5p".into(), E::Delta),
-            ("off_3p".into(), E::Delta),
+            ("read_5p".into(), E::Delta),
+            ("read_3p".into(), E::Delta),
             ("refr_pos".into(), E::Delta),
             ("qual".into(), E::Dictionary),
         ]);
@@ -456,8 +456,8 @@ impl HitBuilder {
                 ("capture_read".into(), E::Dictionary),
                 ("capture_refr".into(), E::Dictionary),
                 ("capture_qual".into(), E::Dictionary),
-                ("capture_off_5p".into(), E::Delta),
-                ("capture_off_3p".into(), E::Delta),
+                ("capture_read_5p".into(), E::Delta),
+                ("capture_read_3p".into(), E::Delta),
                 ("capture_refr_pos".into(), E::Delta),
             ]),
         }
@@ -475,11 +475,11 @@ impl HitBuilder {
 
 /// The two written offsets for a column at walk offset `walk_off`.
 ///
-/// `off_5p` counts from the first base the sequencer read and `off_3p` from the
+/// `read_5p` counts from the first base the sequencer read and `read_3p` from the
 /// last, over the whole read: SEQ plus any hard-clipped bases, which are not in
 /// the record but were sequenced (`hard_5p` at the 5' end, `hard_3p` at the 3'
 /// end). So a supplementary alignment reports the same offsets for a base as the
-/// primary alignment of the same read, and `off_5p + off_3p` is the read's length
+/// primary alignment of the same read, and `read_5p + read_3p` is the read's length
 /// minus 1. The walk emits columns along the conversion strand (see
 /// `walk_alignment`), which is the sequencing order only when the read was
 /// sequenced in that direction; `mirror` says it was not, and the walk offset
@@ -487,10 +487,10 @@ impl HitBuilder {
 ///
 /// Flank columns lie outside the read, and the arithmetic carries that through
 /// without a special case: a column before the first sequenced base has a
-/// negative `off_5p` and an `off_3p` past the far end.
+/// negative `read_5p` and an `read_3p` past the far end.
 ///
 /// A record with no SEQ (`*`, so `seq_len` is 0) has no ends to measure from:
-/// `off_5p` is the walk offset unchanged and `off_3p` is `None`.
+/// `read_5p` is the walk offset unchanged and `read_3p` is `None`.
 #[inline]
 fn as_sequenced(seq_len: i64, mirror: bool, walk_off: i64, hard_5p: i64, hard_3p: i64) -> (i64, Option<i64>) {
     if seq_len <= 0 {
@@ -672,7 +672,7 @@ mod tests {
     }
 
     /// The two offsets are measured from opposite ends of the same read, so
-    /// they sum to `read_len - 1` -- which is the whole of what `read_off_3p`
+    /// they sum to `read_len - 1` -- which is the whole of what `read_read_3p`
     /// means, and the only thing a consumer can rely on.
     #[test]
     fn the_two_offsets_are_measured_from_opposite_ends() {
@@ -694,9 +694,9 @@ mod tests {
         let names = field_names(&HitBuilder::new(RecordField::CORE, 4, qs.flat_captures, 0));
         let at = |n: &str| arrays[names.iter().position(|x| x == n).unwrap()].clone();
 
-        let five = at("off_5p");
+        let five = at("read_5p");
         let five = five.as_any().downcast_ref::<Int64Array>().unwrap();
-        let three = at("off_3p");
+        let three = at("read_3p");
         let three = three.as_any().downcast_ref::<Int64Array>().unwrap();
         assert_eq!(five.value(0), 10);
         assert_eq!(three.value(0), 89);
@@ -742,7 +742,7 @@ mod tests {
         let names = field_names(&HitBuilder::new(RecordField::CORE, 4, false, 0));
         let at = |n: &str| arrays[names.iter().position(|x| x == n).unwrap()].clone();
 
-        for c in ["capture_off_5p", "capture_off_3p"] {
+        for c in ["capture_read_5p", "capture_read_3p"] {
             let a = at(c);
             let a = a.as_any().downcast_ref::<ListArray>().unwrap();
             let inner = a.value(0);
@@ -751,7 +751,7 @@ mod tests {
             assert!(inner.is_null(1), "{c}: the deletion must be null");
         }
 
-        let a = at("capture_off_3p");
+        let a = at("capture_read_3p");
         let a = a.as_any().downcast_ref::<ListArray>().unwrap();
         let inner = a.value(0);
         let inner = inner.as_any().downcast_ref::<Int64Array>().unwrap();
@@ -774,12 +774,12 @@ mod tests {
             let names = field_names(&HitBuilder::new(RecordField::CORE, 4, flat, 0));
             let arrays = b.finish();
             let at = |n: &str| arrays[names.iter().position(|x| x == n).unwrap()].clone();
-            for c in ["off_5p", "off_3p"] {
+            for c in ["read_5p", "read_3p"] {
                 assert!(at(c).is_null(0), "flat {flat}: {c} of a pad");
             }
             assert!(!at("refr_pos").is_null(0), "flat {flat}: a pad keeps its reference position");
             if !flat {
-                let a = at("capture_off_5p");
+                let a = at("capture_read_5p");
                 let a = a.as_any().downcast_ref::<ListArray>().unwrap().value(0);
                 assert!(a.is_null(0), "the pad capture has no offset either");
             }
@@ -800,10 +800,10 @@ mod tests {
         let names = field_names(&HitBuilder::new(RecordField::CORE, 4, false, 0));
         let arrays = b.finish();
         let at = |n: &str| arrays[names.iter().position(|x| x == n).unwrap()].clone();
-        let off = at("off_5p");
+        let off = at("read_5p");
         assert_eq!(off.as_any().downcast_ref::<Int64Array>().unwrap().value(0), 1, "the clip anchor");
         assert!(at("qual").is_null(0));
-        let list = at("capture_off_5p");
+        let list = at("capture_read_5p");
         let list = list.as_any().downcast_ref::<ListArray>().unwrap().value(0);
         let list = list.as_any().downcast_ref::<Int64Array>().unwrap();
         assert_eq!((list.value(0), list.value(1)), (1, 2), "neither capture is null");

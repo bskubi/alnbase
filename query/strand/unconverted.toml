@@ -14,7 +14,7 @@
 # the top strand -- there is no converted strand to name. For the same reason `conv_strand`,
 # which is OT for a forward read and CTOT for a reverse one here, says nothing about
 # conversion. The read's own orientation is not lost: it is
-# `read_reverse`, taken from FLAG 0x10, and it is what `off_5p` and `off_3p` count from, so a
+# `read_reverse`, taken from FLAG 0x10, and it is what `read_5p` and `read_3p` count from, so a
 # position "20 bases from the 5' end" means the sequencer's 5' end on both orientations.
 #
 # Do NOT use this file on a bisulfite, TAPS or other conversion BAM. It would walk every

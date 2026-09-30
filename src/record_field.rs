@@ -137,7 +137,7 @@ pub enum RecordField {
     /// aligners write something else in it -- BSBolt puts the converted
     /// reference strand there, so its reverse-flagged records are not the
     /// reverse-sequenced ones. This column is what the run's strand rule
-    /// concluded, and it is the direction `off_5p` and `off_3p` count from.
+    /// concluded, and it is the direction `read_5p` and `read_3p` count from.
     ReadReverse,
 
     // ---- mate
@@ -202,7 +202,7 @@ impl RecordField {
     /// The default extra columns when `--field` is not given.
     ///
     /// Deliberately small. Every row already carries the hit columns —
-    /// `shard`, `record_id`, `name`, `off_5p`, `off_3p`, `refr_pos`, `qual`,
+    /// `shard`, `record_id`, `name`, `read_5p`, `read_3p`, `refr_pos`, `qual`,
     /// and the captured bases (`read_base`/`refr_base`, or the `capture_*`
     /// lists) — so the default only adds what those cannot express:
     ///
@@ -514,10 +514,10 @@ impl RecordField {
             F::MapQ => "mapping quality",
             F::Cigar => "CIGAR string",
             F::ReadLen => "length of SEQ (excludes hard-clipped bases)",
-            F::HardClip5p => "hard-clipped bases at the read's sequenced 5' end (off_5p already includes them)",
-            F::HardClip3p => "hard-clipped bases at the read's sequenced 3' end (off_3p already includes them)",
-            F::SoftClip5p => "soft-clipped bases at the read's sequenced 5' end (off_5p already includes them)",
-            F::SoftClip3p => "soft-clipped bases at the read's sequenced 3' end (off_3p already includes them)",
+            F::HardClip5p => "hard-clipped bases at the read's sequenced 5' end (read_5p already includes them)",
+            F::HardClip3p => "hard-clipped bases at the read's sequenced 3' end (read_3p already includes them)",
+            F::SoftClip5p => "soft-clipped bases at the read's sequenced 5' end (read_5p already includes them)",
+            F::SoftClip3p => "soft-clipped bases at the read's sequenced 3' end (read_3p already includes them)",
             F::RefrStrand => "reference strand the pattern matched, '+' or '-'",
             F::ConvStrand => "strand of origin: OT, OB, CTOT or CTOB",
             F::ReadReverse => "true when the read was sequenced backwards along the reference (not FLAG 0x10)",
@@ -693,10 +693,10 @@ impl RecordField {
              `-F NM:i` is `core` plus that tag and needs no restating of `core`. The two\n\
              combine: `-f bools -F NM:i` is the flag columns plus the tag.\n\n\
              These are in addition to the hit columns, which are on every row whatever\n\
-             you pass here: shard, record_id, name, off_5p, off_3p,\n\
-             refr_pos, qual, and the matched bases. off_5p counts from the 5' end of\n\
-             the read as sequenced and off_3p from the 3' end, so the last base\n\
-             sequenced is off_3p 0.\n\nGroups:\n",
+             you pass here: shard, record_id, name, read_5p, read_3p,\n\
+             refr_pos, qual, and the matched bases. read_5p counts from the 5' end of\n\
+             the read as sequenced and read_3p from the 3' end, so the last base\n\
+             sequenced is read_3p 0.\n\nGroups:\n",
         );
         for (name, members) in GROUPS {
             let list = if *name == "all" {

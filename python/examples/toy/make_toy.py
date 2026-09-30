@@ -139,7 +139,7 @@ HITS = [
 COLUMNS = (
     "qname VARCHAR, is_first_in_template BOOLEAN, XB VARCHAR, "
     "name VARCHAR, ref_name VARCHAR, refr_pos BIGINT, strand VARCHAR, "
-    "qual UTINYINT, mapq UTINYINT, off_5p BIGINT, off_3p BIGINT"
+    "qual UTINYINT, mapq UTINYINT, read_5p BIGINT, read_3p BIGINT"
 )
 
 #: What every row shares. Constant here so that a hit-level filter in a

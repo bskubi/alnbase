@@ -808,7 +808,7 @@ class Run:
 
             run.where("qual >= 20")
             run.where("mapq >= 30")
-            run.where("off_5p >= 10", "off_3p >= 2")   # either end is enough
+            run.where("read_5p >= 10", "read_3p >= 2")   # either end is enough
 
         This is where per-position artefacts go: end repair sits a fixed
         distance from the 3' end and random priming the same distance from the

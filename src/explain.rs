@@ -289,7 +289,7 @@ fn names_a_pad(spec: &QuerySpec) -> bool {
 
 /// Printed under a query that places a pad. This is the one case where the
 /// direction of a pattern and the direction of an offset differ.
-const READ2_PAD_NOTE: &str = "\n  note     patterns run along the conversion strand, but off_5p/off_3p count from\n           \
+const READ2_PAD_NOTE: &str = "\n  note     patterns run along the conversion strand, but read_5p/read_3p count from\n           \
      the ends as sequenced. For read 1 a pad left of the read is past its 5' end;\n           \
      for read 2 (CTOT, CTOB) it is past its 3' end, and a pad on the right is past\n           \
      its 5' end.\n";

@@ -4,7 +4,7 @@ Every test below asserts against numbers you can get by reading this file, so
 the data is spelled out rather than generated. The columns are the ones an
 alnbase run selects with
 
-    -F qname,is_first_in_template,ref_name,strand,mapq,qual,off_5p,off_3p
+    -F qname,is_first_in_template,ref_name,strand,mapq,qual,read_5p,read_3p
 
 plus `XB`, a cell barcode moved into a tag upstream.
 
@@ -36,7 +36,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 COLUMNS = (
     "qname VARCHAR, is_first_in_template BOOLEAN, XB VARCHAR, name VARCHAR, "
     "ref_name VARCHAR, refr_pos BIGINT, strand VARCHAR, qual UTINYINT, "
-    "mapq UTINYINT, off_5p BIGINT, off_3p BIGINT"
+    "mapq UTINYINT, read_5p BIGINT, read_3p BIGINT"
 )
 
 # qname, mate, block, query name, contig, 0-based position, strand

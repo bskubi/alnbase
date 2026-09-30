@@ -15,7 +15,7 @@
 //!   base is informative.
 //! - **the aligned direction** (`[strand.aligned]`): whether the read *as
 //!   sequenced* runs along the reference forward or backward. This is what
-//!   `off_5p` and `off_3p` count from.
+//!   `read_5p` and `read_3p` count from.
 //!
 //! Both tables take the keys `forward`, `reverse` and `unknown`.
 //!
@@ -129,7 +129,7 @@ impl StrandCall {
     /// order runs backwards through SEQ exactly when the original strand is
     /// reverse, and sequencing order runs backwards through it exactly when
     /// the read aligns reverse. When those disagree the walk offset has to be
-    /// mirrored to give `off_5p`. For a directional library that is precisely
+    /// mirrored to give `read_5p`. For a directional library that is precisely
     /// read 2.
     pub fn mirrors_read(self) -> bool {
         self.walk_reversed() != self.aligned.is_reverse()
@@ -1120,7 +1120,7 @@ mod tests {
     }
 
     /// `mirrors_read` is the original strand against the aligned direction,
-    /// and it is the one thing standing between a walk offset and `off_5p`.
+    /// and it is the one thing standing between a walk offset and `read_5p`.
     #[test]
     fn the_offsets_mirror_when_the_walk_runs_against_the_sequencer() {
         for (origin, mirror) in [

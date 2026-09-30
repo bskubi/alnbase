@@ -149,7 +149,7 @@ pub enum Insertions {
     /// reference bases that are still adjacent, and it breaks every pattern that
     /// spans it. A reference-anchored caller never sees these columns.
     /// MethylDackel is one example, and any other caller that works from a
-    /// pileup is another. The read offsets (`off_5p`, `off_3p`) still count the
+    /// pileup is another. The read offsets (`read_5p`, `read_3p`) still count the
     /// inserted bases, so they stay true offsets into SEQ.
     Skip,
     /// Emit them against a gap (`Seq::GAP`) on the reference side. You need this
@@ -461,8 +461,8 @@ where
 
 /// Count the soft-clipped bases at the read's sequenced 5' and 3' ends.
 ///
-/// SEQ holds the soft-clipped bases, and `off_5p` and `off_3p` already count
-/// them. `off_5p - soft_clip_5p - hard_clip_5p` is therefore the offset from the
+/// SEQ holds the soft-clipped bases, and `read_5p` and `read_3p` already count
+/// them. `read_5p - soft_clip_5p - hard_clip_5p` is therefore the offset from the
 /// first aligned base. A soft clip sits inside any hard clip at the same end. If
 /// a soft clip is the only operation in the CIGAR that is not a hard clip, the
 /// function counts it once, at the 5' end.

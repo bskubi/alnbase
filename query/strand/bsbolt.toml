@@ -11,7 +11,7 @@
 # reverse-complemented by the read's true orientation (:938-963), so FLAG 0x10 is inverted
 # on every *_G2A record -- read 2 of every pair in a directional library. Any rule that
 # reads 0x10 on this input, including alnbase's own historical one, calls those records on
-# the wrong strand and counts off_5p from the wrong end
+# the wrong strand and counts read_5p from the wrong end
 # (alnbase-validation/demos/premethyst-bugs/README.md). Deriving both from YS avoids the bit
 # entirely, so BSBolt BAMs need no FLAG repair before alnbase reads them.
 #

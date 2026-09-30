@@ -62,7 +62,7 @@ def contigs(chr1_len=len(CHR1), chr2_len=len(CHR2)):
 def manifest_doc(files, contig_list=None, reference=None, coordinate_base=0):
     return {
         "alnbase_version": "0.1.25",
-        "format_version": "9",
+        "format_version": "10",
         "coordinate_base": coordinate_base,
         "run_id": "t",
         "command": "query",

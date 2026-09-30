@@ -29,7 +29,7 @@ pub struct Column {
     /// the offset of the clipped base itself. A pad has no offset and carries
     /// [`PAD_READ_OFF`].
     ///
-    /// This is not the `off_5p` or `off_3p` value that the outputs report.
+    /// This is not the `read_5p` or `read_3p` value that the outputs report.
     /// Those values count from the end of the read *as the sequencer read it*,
     /// and SEQ does not include the hard-clipped bases. `crate::hits` therefore
     /// adds the hard clip back on when it builds a row.

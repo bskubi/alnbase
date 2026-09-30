@@ -102,7 +102,7 @@ impl Default for ParquetOpts {
 /// group holding a repeated group `list` holding the item, so the path to the
 /// values a policy is about is `name.list.item` and the type is the item's, not
 /// the list's. Deriving both from the schema rather than spelling them out is
-/// what keeps a policy on `capture_off_5p` pointed at the column it names --
+/// what keeps a policy on `capture_read_5p` pointed at the column it names --
 /// a wrong path is not an error, it is a setting that silently does nothing.
 fn leaf(schema: &Schema, name: &str) -> Result<(ColumnPath, DataType)> {
     let field = schema
@@ -464,7 +464,7 @@ mod tests {
         assert!(used(&cols, "qname").contains(&Encoding::DELTA_BYTE_ARRAY));
         assert!(!used(&cols, "qname").contains(&Encoding::RLE_DICTIONARY));
         // Delta for the monotonic id and the coordinates.
-        for c in ["record_id", "off_5p", "off_3p", "refr_pos", "pos"] {
+        for c in ["record_id", "read_5p", "read_3p", "refr_pos", "pos"] {
             assert!(
                 used(&cols, c).contains(&Encoding::DELTA_BINARY_PACKED),
                 "{c} should be delta-packed, got {:?}",
@@ -491,7 +491,7 @@ mod tests {
     fn a_list_columns_policy_reaches_the_item_inside_it() {
         let cols = written_with("enc_list", false, &ParquetOpts::default());
         assert!(
-            used(&cols, "capture_off_5p.list.item").contains(&Encoding::DELTA_BINARY_PACKED),
+            used(&cols, "capture_read_5p.list.item").contains(&Encoding::DELTA_BINARY_PACKED),
             "the leaf inside the list is what carries the policy"
         );
         assert!(used(&cols, "capture_read.list.item").contains(&Encoding::RLE_DICTIONARY));

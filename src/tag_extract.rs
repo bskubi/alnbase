@@ -23,7 +23,7 @@
 //! found it:
 //!
 //! - `name` of the query the character stands for.
-//! - `off_5p` / `off_3p` from the character's position in SEQ, counted from
+//! - `read_5p` / `read_3p` from the character's position in SEQ, counted from
 //!   the ends of the read as sequenced, exactly as a direct `query --parquet`
 //!   run reports them.
 //! - `refr_pos` of that base, by the walk's conventions: an inserted or

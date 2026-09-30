@@ -357,46 +357,46 @@ unmapped      ACGTACGTACGT   XM=-              XR=- XG=-
 \
 ";
 const GOLDEN_ROWS: &str = "\
-shard=0 record_id=0 ref_name=chr1 strand=+ name=Z off_5p=3 off_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=0 ref_name=chr1 strand=+ name=Z read_5p=3 read_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=0 ref_name=chr1 strand=+ name=Z off_5p=8 off_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
+shard=0 record_id=0 ref_name=chr1 strand=+ name=Z read_5p=8 read_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=1 ref_name=chr1 strand=+ name=z off_5p=3 off_3p=10 refr_pos=3 qual=37 read_base=T refr_base=C
+shard=0 record_id=1 ref_name=chr1 strand=+ name=z read_5p=3 read_3p=10 refr_pos=3 qual=37 read_base=T refr_base=C
 \
-shard=0 record_id=1 ref_name=chr1 strand=+ name=z off_5p=8 off_3p=5 refr_pos=8 qual=37 read_base=T refr_base=C
+shard=0 record_id=1 ref_name=chr1 strand=+ name=z read_5p=8 read_3p=5 refr_pos=8 qual=37 read_base=T refr_base=C
 \
-shard=0 record_id=2 ref_name=chr1 strand=- name=Z off_5p=4 off_3p=9 refr_pos=9 qual=37 read_base=C refr_base=C
+shard=0 record_id=2 ref_name=chr1 strand=- name=Z read_5p=4 read_3p=9 refr_pos=9 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=2 ref_name=chr1 strand=- name=Z off_5p=9 off_3p=4 refr_pos=4 qual=37 read_base=C refr_base=C
+shard=0 record_id=2 ref_name=chr1 strand=- name=Z read_5p=9 read_3p=4 refr_pos=4 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=3 ref_name=chr1 strand=+ name=Z off_5p=10 off_3p=3 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=3 ref_name=chr1 strand=+ name=Z read_5p=10 read_3p=3 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=3 ref_name=chr1 strand=+ name=Z off_5p=5 off_3p=8 refr_pos=8 qual=37 read_base=C refr_base=C
+shard=0 record_id=3 ref_name=chr1 strand=+ name=Z read_5p=5 read_3p=8 refr_pos=8 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=4 ref_name=chr1 strand=- name=Z off_5p=9 off_3p=4 refr_pos=9 qual=37 read_base=C refr_base=C
+shard=0 record_id=4 ref_name=chr1 strand=- name=Z read_5p=9 read_3p=4 refr_pos=9 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=4 ref_name=chr1 strand=- name=Z off_5p=4 off_3p=9 refr_pos=4 qual=37 read_base=C refr_base=C
+shard=0 record_id=4 ref_name=chr1 strand=- name=Z read_5p=4 read_3p=9 refr_pos=4 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=5 ref_name=chr1 strand=+ name=Z off_5p=3 off_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=5 ref_name=chr1 strand=+ name=Z read_5p=3 read_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=5 ref_name=chr1 strand=+ name=Z off_5p=10 off_3p=3 refr_pos=8 qual=37 read_base=C refr_base=C
+shard=0 record_id=5 ref_name=chr1 strand=+ name=Z read_5p=10 read_3p=3 refr_pos=8 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=6 ref_name=chr1 strand=+ name=Z off_5p=3 off_3p=8 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=6 ref_name=chr1 strand=+ name=Z read_5p=3 read_3p=8 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=6 ref_name=chr1 strand=+ name=Z off_5p=6 off_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
+shard=0 record_id=6 ref_name=chr1 strand=+ name=Z read_5p=6 read_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=7 ref_name=chr1 strand=+ name=Z off_5p=3 off_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=7 ref_name=chr1 strand=+ name=Z read_5p=3 read_3p=10 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=7 ref_name=chr1 strand=+ name=Z off_5p=8 off_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
+shard=0 record_id=7 ref_name=chr1 strand=+ name=Z read_5p=8 read_3p=5 refr_pos=8 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=8 ref_name=chr1 strand=+ name=Z off_5p=3 off_3p=0 refr_pos=3 qual=37 read_base=C refr_base=C
+shard=0 record_id=8 ref_name=chr1 strand=+ name=Z read_5p=3 read_3p=0 refr_pos=3 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=9 ref_name=chr1 strand=+ name=H off_5p=1 off_3p=10 refr_pos=19 qual=37 read_base=C refr_base=C
+shard=0 record_id=9 ref_name=chr1 strand=+ name=H read_5p=1 read_3p=10 refr_pos=19 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=9 ref_name=chr1 strand=+ name=H off_5p=2 off_3p=9 refr_pos=20 qual=37 read_base=C refr_base=C
+shard=0 record_id=9 ref_name=chr1 strand=+ name=H read_5p=2 read_3p=9 refr_pos=20 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=9 ref_name=chr1 strand=+ name=U off_5p=4 off_3p=7 refr_pos=22 qual=37 read_base=C refr_base=C
+shard=0 record_id=9 ref_name=chr1 strand=+ name=U read_5p=4 read_3p=7 refr_pos=22 qual=37 read_base=C refr_base=C
 \
-shard=0 record_id=9 ref_name=chr1 strand=+ name=Z off_5p=9 off_3p=2 refr_pos=27 qual=37 read_base=C refr_base=C
+shard=0 record_id=9 ref_name=chr1 strand=+ name=Z read_5p=9 read_3p=2 refr_pos=27 qual=37 read_base=C refr_base=C
 \
 ";

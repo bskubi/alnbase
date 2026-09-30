@@ -41,8 +41,8 @@ SELECT *,
 FROM read_parquet(getvariable('hits'))
 WHERE qual >= 20
   AND mapq >= 30
-  AND off_5p >= 10
-  AND off_3p >= 2;
+  AND read_5p >= 10
+  AND read_3p >= 2;
 
 
 -- 2. WHAT THE QUERY NAMES MEAN ---------------------------------------------
