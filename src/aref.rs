@@ -364,7 +364,7 @@ mod tests {
     use super::*;
 
     fn roundtrip(tag: &str) -> Aref {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let fa = dir.join(format!("aref_{tag}.fa"));
         let mm = dir.join(format!("aref_{tag}.aref"));
         std::fs::write(&fa, b">chr1 some description\nACGTN\nacgtu\n>chr2\nTTTT\n").unwrap();

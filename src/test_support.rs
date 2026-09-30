@@ -24,10 +24,23 @@ pub const REVERSE: u16 = 0x10;
 /// SAM flag 0x80, last segment in the template.
 pub const LAST_IN_TEMPLATE: u16 = 0x80;
 
+/// The directory test files go in: one per user, under the system temp
+/// directory.
+///
+/// Test files have fixed names, so a directory shared by every user would let
+/// one user's leftovers, which nobody else may overwrite or delete in `/tmp`,
+/// fail every other user's run.
+pub fn temp_dir() -> PathBuf {
+    let user = std::env::var("USER").unwrap_or_else(|_| "anon".to_string());
+    let dir = std::env::temp_dir().join(format!("alnbase_test_{user}"));
+    std::fs::create_dir_all(&dir).expect("create the test temp directory");
+    dir
+}
+
 /// A distinct temp path per test, so tests that write files can run in
 /// parallel. Callers pass a tag unique within the crate.
 pub fn temp_path(tag: &str, ext: &str) -> PathBuf {
-    std::env::temp_dir().join(format!("alnbase_test_{tag}.{ext}"))
+    temp_dir().join(format!("alnbase_test_{tag}.{ext}"))
 }
 
 /// A one-contig reference index on disk, opened the way the scanner opens one.

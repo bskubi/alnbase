@@ -244,7 +244,7 @@ mod tests {
 
     /// A reference whose contig order deliberately differs from the header's.
     fn refr(tag: &str, contigs: &[(&str, &str)]) -> Aref {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let fa = dir.join(format!("contigmap_{tag}.fa"));
         let mm = dir.join(format!("contigmap_{tag}.refrmm"));
         let mut body = String::new();

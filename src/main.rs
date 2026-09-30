@@ -451,7 +451,7 @@ mod info_tests {
     /// windows and would not say so.
     #[test]
     fn info_seq_matches_faidx_coordinates() {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let fa = dir.join(format!("alnbase_seq_{}.fa", std::process::id()));
         let idx = dir.join(format!("alnbase_seq_{}.aref", std::process::id()));
         let seq = "ACGTTGCAAGGCTTACGATC";
@@ -476,7 +476,7 @@ mod info_tests {
 
     #[test]
     fn info_reports_the_index() {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let fa = dir.join(format!("alnbase_info_{}.fa", std::process::id()));
         let idx = dir.join(format!("alnbase_info_{}.aref", std::process::id()));
         std::fs::write(&fa, ">chr1\nACGTACGTAC\n>chr2\nACGT\n").unwrap();
@@ -501,7 +501,7 @@ mod info_tests {
     /// shortens the list unless you ask for the full list.
     #[test]
     fn a_long_contig_list_is_abridged() {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let fa = dir.join(format!("alnbase_info_many_{}.fa", std::process::id()));
         let idx = dir.join(format!("alnbase_info_many_{}.aref", std::process::id()));
         let body: String = (0..14).map(|i| format!(">c{i}\nACGT\n")).collect();

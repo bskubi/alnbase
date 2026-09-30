@@ -1117,7 +1117,7 @@ mod tests {
         //
         // SAFETY: the variable is set before any CRAM is opened, and no other
         // test reads it or opens a CRAM, so nothing reads it concurrently.
-        let no_refs = std::env::temp_dir().join("alnbase_test_no_ref_path");
+        let no_refs = crate::test_support::temp_dir().join("alnbase_test_no_ref_path");
         std::fs::create_dir_all(&no_refs).unwrap();
         unsafe { std::env::set_var("REF_PATH", format!("{}/%s", no_refs.display())) };
 

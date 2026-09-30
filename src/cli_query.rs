@@ -798,7 +798,7 @@ mod tests {
     /// readers see as one step; the process id keeps two `cargo test` runs
     /// from sharing names at all.
     fn query_file(tag: &str, text: &str) -> String {
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let pid = std::process::id();
         let path = dir.join(format!("alnbase_cli_{tag}_{pid}.toml"));
         let scratch = dir.join(format!("alnbase_cli_{tag}_{pid}_{:?}.part", std::thread::current().id()));
@@ -906,7 +906,7 @@ mod tests {
     /// its first line, with a pointer to the format.
     #[test]
     fn a_line_syntax_file_is_refused_with_a_hint() {
-        let path = std::env::temp_dir().join(format!("alnbase_cli_line_syntax_{}.txt", std::process::id()));
+        let path = crate::test_support::temp_dir().join(format!("alnbase_cli_line_syntax_{}.txt", std::process::id()));
         std::fs::write(&path, "pat p\n  read C~\n  refr CG\nquery cg\n").unwrap();
         let e = parse(&["--query-file", path.to_str().unwrap()]).resolve().unwrap_err();
         assert!(e.contains("query files are TOML"), "{e}");

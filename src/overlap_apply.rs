@@ -1512,7 +1512,7 @@ mod tests {
     fn the_compression_level_is_honoured() {
         use rust_htslib::bam::header::HeaderRecord;
         use rust_htslib::bam::{Format, Writer};
-        let dir = std::env::temp_dir();
+        let dir = crate::test_support::temp_dir();
         let input = dir.join("alnbase_test_overlap_level_in.bam");
         let mut h = Header::new();
         let mut hd = HeaderRecord::new(b"HD");
