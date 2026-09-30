@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="784" height="464" class="svgbob">
+  <style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: white;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: white;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: white;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}
+
+</style>
+  <defs>
+    <marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,0 0,4 4,2 0,0"></polygon>
+    </marker>
+    <marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,2 2,0 4,2 2,4 0,2"></polygon>
+    </marker>
+    <marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="filled"></circle>
+    </marker>
+    <marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="bg_filled"></circle>
+    </marker>
+    <marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="3" class="bg_filled"></circle>
+    </marker>
+  </defs>
+  <rect class="backdrop" x="0" y="0" width="784" height="464"></rect>
+  <rect x="4" y="8" width="768" height="432" class="solid nofill" rx="0"></rect>
+  <text x="170" y="76" >4</text>
+  <text x="202" y="76" >5</text>
+  <text x="234" y="76" >6</text>
+  <polygon points="200,172 204,160 208,172" class="filled"></polygon>
+  <text x="170" y="268" >5</text>
+  <text x="202" y="268" >6</text>
+  <text x="234" y="268" >7</text>
+  <text x="266" y="268" >8</text>
+  <text x="170" y="316" >13</text>
+  <text x="202" y="316" >14</text>
+  <text x="234" y="316" >14</text>
+  <text x="266" y="316" >15</text>
+  <polygon points="232,380 236,368 240,380" class="filled"></polygon>
+  <text x="18" y="44" >1. mark = &#39;.+.&#39; reports the C, not the first column</text>
+  <text x="18" y="76" >column</text>
+  <text x="18" y="92" >read</text>
+  <text x="162" y="92" >A</text>
+  <text x="194" y="92" >C</text>
+  <text x="226" y="92" >G</text>
+  <text x="18" y="108" >refr</text>
+  <text x="162" y="108" >A</text>
+  <text x="194" y="108" >C</text>
+  <text x="226" y="108" >G</text>
+  <text x="18" y="124" >pattern read</text>
+  <text x="162" y="124" >~</text>
+  <text x="194" y="124" >C</text>
+  <text x="226" y="124" >~</text>
+  <text x="18" y="140" >pattern refr</text>
+  <text x="162" y="140" >H</text>
+  <text x="194" y="140" >C</text>
+  <text x="226" y="140" >G</text>
+  <text x="18" y="156" >mark</text>
+  <text x="162" y="156" >.</text>
+  <text x="194" y="156" >+</text>
+  <text x="226" y="156" >.</text>
+  <text x="234" y="204" >refr_pos 12, read_5p 2, read_3p 11</text>
+  <text x="18" y="236" >2. an anchor on an inserted base reports the position 5′ of it</text>
+  <text x="18" y="268" >column</text>
+  <text x="18" y="284" >read</text>
+  <text x="162" y="284" >G</text>
+  <text x="194" y="284" >T</text>
+  <text x="226" y="284" >G</text>
+  <text x="258" y="284" >C</text>
+  <text x="18" y="300" >refr</text>
+  <text x="162" y="300" >G</text>
+  <text x="194" y="300" >T</text>
+  <text x="226" y="300" >.</text>
+  <text x="258" y="300" >C</text>
+  <text x="18" y="316" >refr_pos</text>
+  <text x="18" y="332" >pattern read</text>
+  <text x="162" y="332" >~</text>
+  <text x="194" y="332" >~</text>
+  <text x="226" y="332" >N</text>
+  <text x="258" y="332" >~</text>
+  <text x="18" y="348" >pattern refr</text>
+  <text x="162" y="348" >~</text>
+  <text x="194" y="348" >~</text>
+  <text x="226" y="348" >.</text>
+  <text x="258" y="348" >~</text>
+  <text x="18" y="364" >mark</text>
+  <text x="162" y="364" >.</text>
+  <text x="194" y="364" >.</text>
+  <text x="226" y="364" >+</text>
+  <text x="258" y="364" >.</text>
+  <text x="266" y="412" >refr_pos 14, the position of the T before the inserted G</text>
+  <g>
+    <line x1="204" y1="172" x2="204" y2="200" class="solid"></line>
+    <line x1="204" y1="200" x2="224" y2="200" class="solid"></line>
+  </g>
+  <g>
+    <line x1="236" y1="380" x2="236" y2="408" class="solid"></line>
+    <line x1="236" y1="408" x2="256" y2="408" class="solid"></line>
+  </g>
+</svg>

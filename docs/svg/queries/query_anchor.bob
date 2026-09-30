@@ -1,0 +1,28 @@
++-----------------------------------------------------------------------------------------------+
+|                                                                                               |
+| "1. mark = '.+.' reports the C, not the first column"                                         |
+|                                                                                               |
+| "column"           4   5   6                                                                  |
+| "read"            "A" "C" "G"                                                                 |
+| "refr"            "A" "C" "G"                                                                 |
+| "pattern read"    "~" "C" "~"                                                                 |
+| "pattern refr"    "H" "C" "G"                                                                 |
+| "mark"            "." "+" "."                                                                 |
+|                        ^                                                                      |
+|                        |                                                                      |
+|                        +-- "refr_pos 12, read_5p 2, read_3p 11"                               |
+|                                                                                               |
+| "2. an anchor on an inserted base reports the position 5′ of it"                              |
+|                                                                                               |
+| "column"           5   6   7   8                                                              |
+| "read"            "G" "T" "G" "C"                                                             |
+| "refr"            "G" "T" "." "C"                                                             |
+| "refr_pos"         13  14  14  15                                                             |
+| "pattern read"    "~" "~" "N" "~"                                                             |
+| "pattern refr"    "~" "~" "." "~"                                                             |
+| "mark"            "." "." "+" "."                                                             |
+|                            ^                                                                  |
+|                            |                                                                  |
+|                            +-- "refr_pos 14, the position of the T before the inserted G"     |
+|                                                                                               |
++-----------------------------------------------------------------------------------------------+

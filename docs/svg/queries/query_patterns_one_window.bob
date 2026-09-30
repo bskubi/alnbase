@@ -1,0 +1,16 @@
++------------------------------------------------------------------------------+
+|                                                                              |
+| "one window: columns 13-15"                                                  |
+|                                                                              |
+| "column"           13  14  15                                                |
+| "read"            "C" "C" "A"                                                |
+| "refr"            "C" "C" "A"                                                |
+|                                                                              |
+| "pattern"         "read"        "refr"        "match?"                       |
+| "CG_methylated"   "C~~"         "CG~"         "no: refr G needed at 14"      |
+| "CHG_methylated"  "C~~"         "CHG"         "no: refr G needed at 15"      |
+| "CHH_methylated"  "C~~"         "CHH"         "yes"                          |
+|                                                                              |
+| "C_methylated = CG_methylated or CHG_methylated or CHH_methylated:  hit"     |
+|                                                                              |
++------------------------------------------------------------------------------+

@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="648" height="272" class="svgbob">
+  <style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: white;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: white;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: white;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}
+
+</style>
+  <defs>
+    <marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,0 0,4 4,2 0,0"></polygon>
+    </marker>
+    <marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <polygon points="0,2 2,0 4,2 2,4 0,2"></polygon>
+    </marker>
+    <marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="filled"></circle>
+    </marker>
+    <marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="2" class="bg_filled"></circle>
+    </marker>
+    <marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <circle cx="4" cy="4" r="3" class="bg_filled"></circle>
+    </marker>
+  </defs>
+  <rect class="backdrop" x="0" y="0" width="648" height="272"></rect>
+  <rect x="4" y="8" width="632" height="240" class="solid nofill" rx="0"></rect>
+  <text x="170" y="76" >13</text>
+  <text x="202" y="76" >14</text>
+  <text x="234" y="76" >15</text>
+  <text x="18" y="44" >one window: columns 13-15</text>
+  <text x="18" y="76" >column</text>
+  <text x="18" y="92" >read</text>
+  <text x="162" y="92" >C</text>
+  <text x="194" y="92" >C</text>
+  <text x="226" y="92" >A</text>
+  <text x="18" y="108" >refr</text>
+  <text x="162" y="108" >C</text>
+  <text x="194" y="108" >C</text>
+  <text x="226" y="108" >A</text>
+  <text x="18" y="140" >pattern</text>
+  <text x="162" y="140" >read</text>
+  <text x="274" y="140" >refr</text>
+  <text x="386" y="140" >match?</text>
+  <text x="18" y="156" >CG_methylated</text>
+  <text x="162" y="156" >C~~</text>
+  <text x="274" y="156" >CG~</text>
+  <text x="386" y="156" >no: refr G needed at 14</text>
+  <text x="18" y="172" >CHG_methylated</text>
+  <text x="162" y="172" >C~~</text>
+  <text x="274" y="172" >CHG</text>
+  <text x="386" y="172" >no: refr G needed at 15</text>
+  <text x="18" y="188" >CHH_methylated</text>
+  <text x="162" y="188" >C~~</text>
+  <text x="274" y="188" >CHH</text>
+  <text x="386" y="188" >yes</text>
+  <text x="18" y="220" >C_methylated = CG_methylated or CHG_methylated or CHH_methylated:  hit</text>
+</svg>
