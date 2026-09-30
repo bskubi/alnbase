@@ -19,9 +19,7 @@ __pycache__/
 *.egg-info/
 amethyst_facet.log
 
-# Generated API documentation, and the local virtualenv that renders it.
-# Rebuild with ./make-docs.sh.
-/site
+# A local Python virtualenv.
 .venv/
 
 
